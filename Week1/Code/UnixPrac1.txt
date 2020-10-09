@@ -2,13 +2,10 @@
 #2 tail -n +2 E.coli.fasta 
 #3 tail -n +2 E.coli.fasta | wc -m #Or 'wc -c'
 #4 tail -n +2 E.coli.fasta | tr -d '\n' | grep -o 'ATGC' | wc -l
-#5 seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | egrep -o 'A|T' | wc -l); cg=$(echo $seq | egrep -o 'C|G' | wc -l); bc -l <<< "$at/($at + $cg)"
+#5 seq=$(tail -n +2 E.coli.fasta | tr -d '\n' | sed 's/[^ATCG]//g'); at=$(echo $seq | sed 's/[CG]//g'); bc -l <<< "${#at}/${#seq}"
 
 
 # WHY DOESN'T PARAMETER EXPANSION WORK: seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=${seq//[GC]/}; bc -l <<< "${#at}/${#seq}"   
 
 
-# BUT SED DOES: seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | sed 's/[GC]//g'); bc -l <<< "${#at}/${#seq}"
-
-
-# ALTERNATIVE: seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | egrep -o 'A|T' | wc -l); bc -l <<< "$at/${#seq}"
+# OLD: seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | egrep -o 'A|T' | wc -l); cg=$(echo $seq | egrep -o 'C|G' | wc -l); bc -l <<< "$at/($at+$cg)"
