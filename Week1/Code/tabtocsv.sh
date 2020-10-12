@@ -6,7 +6,7 @@
 # Arguments: 1 -> tab-delimited file
 # Date: Oct 2020
 
-if if (( $# != 1 )) 
+if (( $# != 1 )) 
 then
 	echo "This script requires 1 argument (a tab-delimited file). \
 You have provided $#." # How to wrap multi-line strings w. indent?
