@@ -1,6 +1,8 @@
-## Locally generated files
+## Misc
 *~ 
 *.tmp
+
+## Mac files
 .DS_Store
 
 ## Core latex/pdflatex auxiliary files:
