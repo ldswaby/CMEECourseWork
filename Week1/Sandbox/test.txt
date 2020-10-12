@@ -9,3 +9,4 @@ ACGCCT
 TATTACG
 ACGTT
 YTTGCA
+lala	baba	lolo

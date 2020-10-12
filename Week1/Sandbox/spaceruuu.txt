@@ -1,7 +1,7 @@
 My first line.
 My second line.
 test \t\t test
-tab,2tab
+tab 2tab
 Yes\nNo
 YesNo
 YesNo
@@ -9,4 +9,4 @@ ACGCCT
 TATTACG
 ACGTT
 YTTGCA
-lala,baba,lolo
+lala baba lolo

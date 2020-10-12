@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 # Author: Luke Swaby lds20@ic.ac.uk
 # Script: MyExampleScript.sh
 # Desc: Playing around with variables
