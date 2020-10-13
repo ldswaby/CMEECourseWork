@@ -17,15 +17,13 @@ TBA
 
 ## CMEECoursework Structure and Usage
 
-This repository is divided into weeks, with the directory for each week \
-containing a combination of the following subdirectories:
+This repository is divided into weeks, with the directory for each week containing a combination of the following subdirectories:
 * Data - contains data files used during the week.
 * Code - contains all code scripts for the week.
 * Results - contains any results generated during the week's exercises.
 * Sandbox - contains any 'dummy' files/scripts used to experiment.
 
-Scripts in the *Code/* directory are typically run on files in the *Data/*\
-directory, with results being pushed into the *Results/* directory.
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results being pushed into the *Results/* directory.
 
 E.g.
 
