@@ -1,9 +1,12 @@
+#!/usr/bin/env python
+
+"""Playing around with CSVs"""
+
 import csv
 
 # Read a file containing:
 # 'Species','Infraorder','Family','Distribution','Body mass male (Kg)'
-
-f = open('../Data/testcsv.csv', 'r')
+f = open('../data/testcsv.csv', 'r')
 
 csvread = csv.reader(f)
 temp = []
@@ -14,12 +17,12 @@ for row in csvread:
 
 f.close()
 
-f = open('../Data/testcsv.csv', 'r')
-g = open('../Data/bodymass.csv', 'w')
+# write a file containing only species name and Body mass
+f = open('../data/testcsv.csv', 'r')
+g = open('../data/bodymass.csv', 'w')
 
 csvread = csv.reader(f)
 csvwrite = csv.writer(g)
-
 for row in csvread:
     print(row)
     csvwrite.writerow([row[0], row[4]])

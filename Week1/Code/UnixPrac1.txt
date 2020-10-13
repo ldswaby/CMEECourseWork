@@ -1,5 +1,5 @@
-#1 wc -l * #Assuming the fasta files are all you have in here, otherwise 'wc -l *.fasta'
-#2 tail -n +2 E.coli.fasta 
-#3 tail -n +2 E.coli.fasta | wc -m #Or 'wc -c'
-#4 tail -n +2 E.coli.fasta | tr -d '\n' | grep -o 'ATGC' | wc -l
-#5 seq=$(tail -n +2 E.coli.fasta | tr -d '\n' | sed 's/[^ATCG]//g'); at=$(echo $seq | sed 's/[CG]//g'); bc -l <<< "${#at}/${#seq}"
+wc -l * # Assuming the fasta files are all you have in cwd, otherwise 'wc -l *.fasta' #1
+tail -n +2 E.coli.fasta #2
+tail -n +2 E.coli.fasta | wc -m # or 'wc -c' #3 
+tail -n +2 E.coli.fasta | tr -d '\n' | grep -o 'ATGC' | wc -l #4
+seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | sed 's/[^AT]//g'); gc=$(echo $seq | sed 's/[^GC]//g'); bc -l <<< "${#at}/${#gc}" #Or, alternatively: bc -l <<< "$(tail -n +2 E.coli.fasta | tr -d '\n' | grep -o [A,T] | wc -l) / $(tail -n +2 E.coli.fasta | tr -d '\n' | grep -o [G,C] | wc -l)" #5

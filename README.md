@@ -2,36 +2,36 @@
 
 This repository contains coursework for the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) at Imperial College London.
 
-## Languages
+## Prerequisites
 
-The following languages (with versions) are used in the project:
+This project was developed on a Unix OS.
+
+The following packages (with versions) are used in the project:
+* LaTeX 
 * Python (3.7.7)
 * R (3.6.3)
 
 ## Dependencies
 
-## Installing CMEECoursework
+TBA
 
-To install <project_name>, follow these steps:
+## CMEECoursework Structure and Usage
 
-Linux and macOS:
-```
-<install_command>
-```
+This repository is divided into weeks, with the directory for each week \
+containing a combination of the following subdirectories:
+* Data - contains data files used during the week.
+* Code - contains all code scripts for the week.
+* Results - contains any results generated during the week's exercises.
+* Sandbox - contains any 'dummy' files/scripts used to experiment.
 
-Windows:
-```
-<install_command>
-```
-## <project_name> Structure and Usage
+Scripts in the *Code/* directory are typically run on files in the *Data/*\
+directory, with results being pushed into the *Results/* directory.
 
-To use <project_name>, follow these steps:
+E.g.
 
 ```
-<usage_example>
+>> sh Week1/Code/CountLines.sh Week1/Data/E.coli.fasta 
 ```
-
-Add run commands and examples you think users will find useful. Provide an options reference for bonus points!
 
 ## Contact
 
