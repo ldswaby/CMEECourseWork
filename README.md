@@ -23,7 +23,7 @@ This repository is divided into weeks, with the directory for each week containi
 * Results - contains any results generated during the week's exercises.
 * Sandbox - contains any 'dummy' files/scripts used to experiment.
 
-Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results being pushed into the *Results/* directory.
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
 
 E.g.
 
