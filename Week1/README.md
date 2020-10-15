@@ -10,10 +10,12 @@ Topics covered are:
 
 ## Prerequisites
 
-This project was developed on a Unix OS.
+This week's work was completed on a Unix OS.
 
-The following packages (with versions) are used in the project:
+The following packages were used:
 * LaTeX 
+
+Installed with the following command
 
 ## CMEECoursework Structure and Usage
 

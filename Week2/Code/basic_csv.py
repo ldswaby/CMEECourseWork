@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-"""Playing around with CSVs"""
-
 import csv
 
 # Read a file containing:

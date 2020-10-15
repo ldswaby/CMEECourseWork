@@ -3,9 +3,9 @@ for j in range(12):
         print('hello')
 
 for j in range(15):
-     if j % 5 == 3:
+    if j % 5 == 3:
         print('hello')
-     elif j % 4 == 3:
+    elif j % 4 == 3:
         print('hello')
 
 z = 0
@@ -20,4 +20,4 @@ while z < 100:
             print('hello')
     elif z == 18:
         print('hello')
-    z = z + 1
+    z += 1
