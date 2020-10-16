@@ -5,9 +5,8 @@
 # Arguments: 2 -> A CSV file and the file path/name of new version
 # Date: Oct 2020
 
-if (( $# != 2 )) 
-then
-	echo "This script requires 2 arguments (a CSV file and a file \
+if (( $# != 2 )); then
+	echo "ERROR: This script requires 2 arguments (a CSV file and a file \
 path/name for new space-separated version). You have provided $#." 
 	# How to wrap multi-line strings w. indent?
 	exit

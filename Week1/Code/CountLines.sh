@@ -5,9 +5,9 @@
 # Arguments: 1
 # Date: Oct 2020
 
-if if (( $# != 1 )) 
-then
-	echo "This script requires 1 argument (a file path). You have provided $#."
+if (( $# != 1 )); then
+	echo "ERROR: This script requires 1 argument (a file path). You have \
+provided $#."
 	exit
 fi
 

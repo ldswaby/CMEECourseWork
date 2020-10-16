@@ -5,10 +5,9 @@
 # Arguments: 3 -> 2 files, and new concatenated file path/name
 # Date: Oct 2020
 
-if (( $# != 3 )) 
-then
-	echo "This script requires 3 arguments (2 filepaths and a name for the \
-new file). You have provided $#." # How to wrap multi-line strings w. indent?
+if (( $# != 3 )); then
+	echo "ERROR: This script requires 3 arguments (2 filepaths and a name for \
+the new file). You have provided $#." # How to wrap multi-line strings w. indent?
 	exit
 fi
 
