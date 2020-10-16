@@ -23,6 +23,7 @@ sudo apt-get install texlive-full texlive-fonts-recommended texlive-pictures tex
 ```
 
 macOS:
+
 ```brew install mactex ``` 
 OR 
 ```brew install basictex ```
