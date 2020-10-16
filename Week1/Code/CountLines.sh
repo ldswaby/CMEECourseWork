@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: Luke Swaby lds20@ic.ac.uk
 # Script: CountLines.sh
-# Desc: More playing around with variables
+# Desc: Count lines of input file
 # Arguments: 1
 # Date: Oct 2020
 
