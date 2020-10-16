@@ -33,4 +33,4 @@ E.g.
 
 ## Contact
 
-If you want to contact me you can reach me at <lds20@ic.ac.uk>.
+Email: <lds20@ic.ac.uk>.

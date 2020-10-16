@@ -16,6 +16,13 @@ The following packages were used:
 * LaTeX 
 
 Installed with the following command
+Linux:
+```
+<sudo apt-get install texlive-full texlive-fonts-recommended texlive-pictures texlive-latex-extra imagemagick>
+```
+
+macOS:
+```<brew install mactex> ``` OR ```<brew install basictex> ```
 
 ## CMEECoursework Structure and Usage
 
