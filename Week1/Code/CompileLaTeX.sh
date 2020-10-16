@@ -33,21 +33,20 @@ fi
 
 #Compile into pdf
 pdflatex $1 > /dev/null 2>&1
-pdflatex $1 > /dev/null 2>&1
 echo "\n\nCOMPILING BIBLIOGRAPHY WITH BIBTEX...\n\n"
 bibtex ${TEX%.*}
-echo "\n\nCOMPILING PDF WITH PDFLATEX...\n\n"
+echo "\n\nCOMPILING PDF WITH CITATIONS...\n\n"
 pdflatex $1 > /dev/null 2>&1
 pdflatex $1
 
 #Open pdf (renaming if requested)
-echo "\n\nOPENING FILE...\n\n"
-
 if [ -n "$3" ]; then
+	echo "\n\nRENAMING/OPENING FILE...\n\n"
 	mv ${TEX%.*}.pdf $3
 	#open $3 #Mac
 	evince $3 #Linux
 else
+	echo "\n\nOPENING FILE...\n\n"
 	#open ${TEX%.*}.pdf #Mac
 	evince ${TEX%.*}.pdf #Linux
 fi

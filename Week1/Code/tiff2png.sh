@@ -18,7 +18,7 @@ else
 	# Convert all specified files
 	for f in "$@"
 	do 
-		# if filename doesn't end in '.tif' exit with an error message
+		# if filename doesn't end in '.tif' skip with an error message
 		if [ ${f: -4} != ".tif" ]; then
 			echo "\nERROR: File '$f' is not a .tif file."
 			continue
