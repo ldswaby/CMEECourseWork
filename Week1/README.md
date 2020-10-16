@@ -19,13 +19,13 @@ Installed with the following command
 
 Linux:
 ```
-<sudo apt-get install texlive-full texlive-fonts-recommended texlive-pictures texlive-latex-extra imagemagick>
+sudo apt-get install texlive-full texlive-fonts-recommended texlive-pictures texlive-latex-extra imagemagick
 ```
 
 macOS:
-```<brew install mactex> ``` 
+```brew install mactex ``` 
 OR 
-```<brew install basictex> ```
+```brew install basictex ```
 
 ## CMEECoursework Structure and Usage
 
