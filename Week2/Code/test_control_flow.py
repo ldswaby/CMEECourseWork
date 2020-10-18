@@ -2,12 +2,10 @@
 
 """Some functions exemplifying the use of control statements"""
 
-__author__ = 'Your Name (Your.Name@your.email.address)'
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
-import sys
 import doctest  # Import the doctest module
-
 
 def even_or_odd(x=0):
     """Find whether a number x is even or odd.
@@ -26,12 +24,14 @@ def even_or_odd(x=0):
     >>> even_or_odd(-2)
     '-2 is Even!'
 
+    >>> even_or_odd(3)
+    '3 is Even!'
+
     """
     # Define function to be tested
     if x % 2 == 0:
         return "%d is Even!" % x
     return "%d is Odd!" % x
-
 
 # def main(argv):
 #     print even_or_odd(22)
@@ -41,4 +41,4 @@ def even_or_odd(x=0):
 # if (__name__ == "__main__"):
 #     status = main(sys.argv)
 
-doctest.testmod()  # To run with embedded tests
+#doctest.testmod()  # To run with embedded tests
