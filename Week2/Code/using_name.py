@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+#TODO: No functions, but no script-level docstring either. 2 pts deducted
+
 # Filename: using_name.py
 
 if __name__ == '__main__':

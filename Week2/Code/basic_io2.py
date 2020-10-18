@@ -1,3 +1,6 @@
+#TODO: No functions, but no script-level docstring either. 2 pts deducted
+
+#TODO: No such file or directory: '../Sandbox/testout.txt'
 #############################
 # FILE OUTPUT
 #############################

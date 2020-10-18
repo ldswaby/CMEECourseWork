@@ -1,3 +1,4 @@
+# TODO: No functions, but no script-level docstring either. 2 pts deducted
 birds = (('Passerculus sandwichensis', 'Savannah sparrow', 18.7),
          ('Delichon urbica', 'House martin', 19),
          ('Junco phaeonotus', 'Yellow-eyed junco', 19.5),
