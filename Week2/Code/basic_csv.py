@@ -2,6 +2,10 @@
 
 """Playing around with CSVs"""
 
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
+## Imports ##
 import csv
 
 # Read a file containing:

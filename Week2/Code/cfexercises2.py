@@ -2,6 +2,9 @@
 
 """Playing with loops and conditionals"""
 
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
 for j in range(12):
     if j % 3 == 0:
         print('hello')

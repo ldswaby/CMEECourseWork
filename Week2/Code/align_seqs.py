@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
+#TODO: Write README.md  
+
 """Aligns sequences"""
 
-## Variables ##
-__author__ = 'Luke Swaby (lds20@ic.ac.uk'
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## Imports ##
 import sys
+from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
 
 ## Functions ##
 def calculate_score(s1, s2, l1, l2, startpoint):
@@ -36,26 +40,30 @@ def calculate_score(s1, s2, l1, l2, startpoint):
 
     return score, matches
 
-# Test the function with some example starting points:
-# calculate_score(s1, s2, l1, l2, 0)
-# calculate_score(s1, s2, l1, l2, 1)
-# calculate_score(s1, s2, l1, l2, 5)
-
 def main(argv):
     """Run functions"""
 
+    ## FASTA IN
+    try:
+        seqfile = argv[1]
+    except:
+        seqfile = '../Data/seqs.fa'
+
+    recs = list(SeqIO.parse(seqfile, 'fasta'))
+    seq1 = str(recs[0].seq)
+    seq2 = str(recs[1].seq)
+
+    """
     ## TEXT IN
-    with open(argv[1], 'r') as f:
+    try:
+        seqfile = argv[1]
+    except:
+        seqfile = '../Data/seqs.txt'
+
+    with open(seqfile, 'r') as f:
         recs = f.read().splitlines()  #To strip newlines
         seq1 = recs[0]
         seq2 = recs[1]
-
-    """
-    ## FASTA IN
-    from Bio import SeqIO
-    recs = list(SeqIO.parse(argv[1], 'fasta'))
-    seq1 = recs[0].seq
-    seq2 = recs[1].seq
     """
 
     # Assign the longer sequence s1, and the shorter to s2
@@ -87,29 +95,27 @@ def main(argv):
     print(s1)
     print("Best score:", my_best_score)
 
+    ## FASTA OUT
+    outrec1 = SeqRecord(
+        Seq(my_best_align),
+        id="Seq1",
+        description=f'Best Score: {my_best_score}'
+    )
+    outrec2 = SeqRecord(
+        Seq(s1),
+        id="Seq2",
+        description=''
+    )
+    outrecs = [outrec1, outrec2]
+    SeqIO.write(outrecs, '../Results/algmt.fa', 'fasta')
+
+    """
     ## TEXT OUT
-    with open(f'../Results/output_algmt.txt', 'w') as algmt:
+    with open(f'../Results/algmt.txt', 'w') as algmt:
         algmt.write(f"{my_best_match.replace('-', '.')}\n")
         algmt.write(f'{my_best_align}\n')
         algmt.write(str(s1))
         algmt.write('\n\n' + f"Best score: {my_best_score}")
-
-    """
-    ## FASTA OUT
-    from Bio import SeqIO
-    from Bio.SeqRecord import SeqRecord
-    outrec1 = SeqRecord(
-        my_best_align,
-        id="Seq1",
-        description='(shorter)'
-    )
-    outrec2 = SeqRecord(
-        s1,
-        id="Seq2",
-        description='(longer)'
-    )
-    outrecs = [outrec1, outrec2]
-    SeqIO.write(outrecs, '../Results/output_algmt.fa', 'fasta')
     """
 
     return 0
@@ -117,6 +123,3 @@ def main(argv):
 if __name__ == '__main__':
     status = main(sys.argv)
     sys.exit(status)
-
-    #TODO: WHAT IS THE SCRIPT MEANT TO DO IF RUN WITH NO ARGS??
-    #TODO: SHOULDN'T THE USER SPECIFY THE OUTPUT AS A SECOND ARG?

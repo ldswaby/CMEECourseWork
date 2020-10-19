@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 """File I/O exercises 2"""
-#TODO: No such file or directory: '../Sandbox/testout.txt'
+
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
 #############################
 # FILE OUTPUT
 #############################

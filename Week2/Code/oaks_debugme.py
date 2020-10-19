@@ -2,15 +2,16 @@
 
 """Playing with doc tests and debugging"""
 
-# Fix the bug (e.g., you could insert a debugging breakpoint using import ipdb; ipdb.set_trace())
-# TODO: why do we need to do this if the error message alerts us to the bug instantly?
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
 
+## Imports ##
 import csv
 import sys
 
 #Define function
 def is_an_oak(name):
-    """ Returns True if lowercase name is starts with 'quercus '
+    """ Returns True if lowercase name is starts with 'quercus'
 
     >>> is_an_oak('Fagus sylvatica')
     False

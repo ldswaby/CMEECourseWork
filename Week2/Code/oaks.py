@@ -2,6 +2,9 @@
 
 """More playing with comprehensions"""
 
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
 ## Finds just those taxa that are oak trees from a list of species
 
 taxa = ['Quercus robur',

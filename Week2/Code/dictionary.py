@@ -2,6 +2,9 @@
 
 """Dictionaries practical"""
 
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
 taxa = [('Myotis lucifugus', 'Chiroptera'),
         ('Gerbillus henleyi', 'Rodentia',),
         ('Peromyscus crinitus', 'Rodentia'),

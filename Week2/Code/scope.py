@@ -2,6 +2,9 @@
 
 """Playing with global variables"""
 
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
+
 ## 1
 
 _a_global = 10

@@ -2,7 +2,8 @@
 
 """File I/O exercises 3"""
 
-#TODO: No such file or directory: '../Sandbox/testp.p' (AS SANDBOX IS GITIGNORED)
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__version__ = '0.0.1'
 
 #############################
 # STORING OBJECTS

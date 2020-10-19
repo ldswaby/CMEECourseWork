@@ -4,7 +4,7 @@
 You can use several lines"""
 
 __appname__ = 'boilerplate.py'
-__author__ = 'Luke Swaby lds20@ic.ac.uk'
+__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 __license__ = "License for this code/program"
 
