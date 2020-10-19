@@ -16,11 +16,12 @@ import sys
 ## Functions ##
 #TODO: this function doesn't actually do anythng with the input args?
 def main(argv):
-    """ Main entry point of the program """
+    """ Main entry point of the program
+    """
     print('This is a boilerplate')  # NOTE: indented using two tabs or 4 spaces
     return 0
 
 if __name__ == '__main__':
-    """Makes sure the "main" function is called from command line"""
+    # Makes sure the "main" function is called from command line
     status = main(sys.argv)
     sys.exit(status)

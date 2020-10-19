@@ -7,7 +7,7 @@
 # FILE INPUT
 #############################
 # Open a file for reading
-f = open('../Sandbox/test.txt', 'r')
+f = open('../Data/test.txt', 'r')
 
 for line in f:
     print(line)
@@ -16,7 +16,7 @@ for line in f:
 f.close()
 
 # Same example, skip blank lines
-f = open('../Sandbox/test.txt', 'r')
+f = open('../Data/test.txt', 'r')
 for line in f:
     if len(line.strip()) > 0:
         print(line)

@@ -1,9 +1,9 @@
-# Fix the bug (e.g., you could insert a debugging breakpoint using import ipdb; ipdb.set_trace())
-# TODO: why do we need to do this if the error message alerts us to the bug instantly?
-
 #!/urs/bin/env python3
 
 """Playing with doc tests and debugging"""
+
+# Fix the bug (e.g., you could insert a debugging breakpoint using import ipdb; ipdb.set_trace())
+# TODO: why do we need to do this if the error message alerts us to the bug instantly?
 
 import csv
 import sys
@@ -26,7 +26,9 @@ def is_an_oak(name):
     """
     return name.split()[0].lower() == 'quercus'
 
-def main(argv): 
+def main(argv):
+    """Run functions
+    """
     f = open('../data/TestOaksData.csv','r')
     g = open('../data/JustOaksData.csv','w')
     taxa = csv.reader(f)
@@ -43,5 +45,6 @@ def main(argv):
 
     return 0
     
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     status = main(sys.argv)
+    sys.exit(status)
