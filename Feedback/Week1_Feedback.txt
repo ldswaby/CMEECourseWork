@@ -1,0 +1,1090 @@
+Starting weekly feedback for Luke, Week1
+
+Current Points = 100
+
+Note that: 
+(1) Major sections begin with a double "====" line 
+(2) Subsections begin with a single "====" line 
+(3) Code output or text file content are printed within single "*****" lines 
+
+======================================================================
+======================================================================
+Your Git repo size this week is about 1.60 MiB on disk 
+
+PART 1: Checking project workflow...
+
+Found the following directories in parent directory: .git, Feedback, Week1, Week2
+
+Found the following files in parent directory: README.md, .gitignore
+
+Checking for key files in parent directory...
+
+Found .gitignore in parent directory, great! 
+
+Printing contents of .gitignore:
+
+**********************************************************************
+## MISC ##
+
+*~ 
+*.tmp
+.idea/
+Feedback.py
+Sandbox/
+
+## MAC FILES ##
+
+.DS_Store
+
+## LATEX ##
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+## Intermediate documents:
+*.dvi
+*.xdv
+*-converted-to.*
+# these rules might exclude image files for figures etc.
+# *.ps
+# *.eps
+# *.pdf
+
+## Generated if empty string is given at "Please type another file name for output:"
+.pdf
+
+## Bibliography auxiliary files (bibtex/biblatex/biber):
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+## Build tool auxiliary files:
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+
+## Build tool directories for auxiliary files
+# latexrun
+latex.out/
+
+## Auxiliary and intermediate files from other packages:
+# algorithms
+*.alg
+*.loa
+
+# achemso
+acs-*.bib
+
+# amsthm
+*.thm
+
+# beamer
+*.nav
+*.pre
+*.snm
+*.vrb
+
+# changes
+*.soc
+
+# comment
+*.cut
+
+# cprotect
+*.cpt
+
+# elsarticle (documentclass of Elsevier journals)
+*.spl
+
+# endnotes
+*.ent
+
+# fixme
+*.lox
+
+# feynmf/feynmp
+*.mf
+*.mp
+*.t[1-9]
+*.t[1-9][0-9]
+*.tfm
+
+#(r)(e)ledmac/(r)(e)ledpar
+*.end
+*.?end
+*.[1-9]
+*.[1-9][0-9]
+*.[1-9][0-9][0-9]
+*.[1-9]R
+*.[1-9][0-9]R
+*.[1-9][0-9][0-9]R
+*.eledsec[1-9]
+*.eledsec[1-9]R
+*.eledsec[1-9][0-9]
+*.eledsec[1-9][0-9]R
+*.eledsec[1-9][0-9][0-9]
+*.eledsec[1-9][0-9][0-9]R
+
+# glossaries
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.lzo
+*.lzs
+
+# uncomment this for glossaries-extra (will ignore makeindex's style files!)
+# *.ist
+
+# gnuplottex
+*-gnuplottex-*
+
+# gregoriotex
+*.gaux
+*.gtex
+
+# htlatex
+*.4ct
+*.4tc
+*.idv
+*.lg
+*.trc
+*.xref
+
+# hyperref
+*.brf
+
+# knitr
+*-concordance.tex
+# TODO Uncomment the next line if you use knitr and want to ignore its generated tikz files
+# *.tikz
+*-tikzDictionary
+
+# listings
+*.lol
+
+# luatexja-ruby
+*.ltjruby
+
+# makeidx
+*.idx
+*.ilg
+*.ind
+
+# minitoc
+*.maf
+*.mlf
+*.mlt
+*.mtc[0-9]*
+*.slf[0-9]*
+*.slt[0-9]*
+*.stc[0-9]*
+
+# minted
+_minted*
+*.pyg
+
+# morewrites
+*.mw
+
+# nomencl
+*.nlg
+*.nlo
+*.nls
+
+# pax
+*.pax
+
+# pdfpcnotes
+*.pdfpc
+
+# sagetex
+*.sagetex.sage
+*.sagetex.py
+*.sagetex.scmd
+
+# scrwfile
+*.wrt
+
+# sympy
+*.sout
+*.sympy
+sympy-plots-for-*.tex/
+
+# pdfcomment
+*.upa
+*.upb
+
+# pythontex
+*.pytxcode
+pythontex-files-*/
+
+# tcolorbox
+*.listing
+
+# thmtools
+*.loe
+
+# TikZ & PGF
+*.dpth
+*.md5
+*.auxlock
+
+# todonotes
+*.tdo
+
+# vhistory
+*.hst
+*.ver
+
+# easy-todo
+*.lod
+
+# xcolor
+*.xcp
+
+# xmpincl
+*.xmpi
+
+# xindy
+*.xdy
+
+# xypic precompiled matrices and outlines
+*.xyc
+*.xyd
+
+# endfloat
+*.ttt
+*.fff
+
+# Latexian
+TSWLatexianTemp*
+
+## Editors:
+# WinEdt
+*.bak
+*.sav
+
+# Texpad
+.texpadtmp
+
+# LyX
+*.lyx~
+
+# Kile
+*.backup
+
+# gummi
+.*.swp
+
+# KBibTeX
+*~[0-9]*
+
+# TeXnicCenter
+*.tps
+
+# auto folder when using emacs and auctex
+./auto/*
+*.el
+
+# expex forward references with \gathertags
+*-tags.tex
+
+# standalone packages
+*.sta
+
+# Makeindex log files
+*.lpz
+
+# xwatermark package
+*.xwm
+
+## PYTHON ## 
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+**********************************************************************
+
+Found README in parent directory, named: README.md
+
+Printing contents of README.md:
+
+**********************************************************************
+# My CMEE Coursework Repository
+
+This repository contains coursework for the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) at Imperial College London.
+
+## Prerequisites
+
+This project was developed on a Unix OS.
+
+The following packages (with versions) are used in the project:
+* LaTeX 
+* Python (3.7.7)
+* R (3.6.3)
+
+## Dependencies
+
+TBA
+
+## CMEECoursework Structure and Usage
+
+This repository is divided into weeks, with the directory for each week containing a combination of the following subdirectories:
+* Data - contains data files used during the week.
+* Code - contains all code scripts for the week.
+* Results - contains any results generated during the week's exercises.
+* Sandbox - contains any 'dummy' files/scripts used to experiment.
+
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
+
+E.g.
+
+```
+>> sh Week1/Code/CountLines.sh Week1/Data/E.coli.fasta 
+```
+
+## Contact
+
+Email: <lds20@ic.ac.uk>.
+**********************************************************************
+
+======================================================================
+Looking for the weekly directories...
+
+Found 2 weekly directories: Week1, Week2
+
+The Week1 directory will be assessed 
+
+======================================================================
+======================================================================
+PART 2: Checking weekly code and workflow...
+
+======================================================================
+Assessing WEEK1...
+
+Found the following directories: Data, Code, Results
+
+Found the following files: README.md
+
+Checking for readme file in weekly directory...
+
+Found README in parent directory, named: README.md
+
+Printing contents of README.md:
+
+**********************************************************************
+# Week 1
+
+This directory contains coursework for week 1 of the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) course at Imperial College London.
+
+Topics covered are:
+* [UNIX/Linux](https://mhasoba.github.io/TheMulQuaBio/notebooks/01-Unix.html)
+* [Shell Scripting](https://mhasoba.github.io/TheMulQuaBio/notebooks/02-ShellScripting.html)
+* [Git](https://mhasoba.github.io/TheMulQuaBio/notebooks/03-Git.html)
+* [LaTeX](https://mhasoba.github.io/TheMulQuaBio/notebooks/04-LaTeX.html)
+
+## Prerequisites
+
+This week's work was completed on a Unix OS.
+
+The following packages were used:
+* LaTeX 
+
+Installed with the following command
+
+Linux:
+```
+sudo apt-get install texlive-full texlive-fonts-recommended texlive-pictures texlive-latex-extra imagemagick
+```
+
+macOS:
+
+```brew install mactex ``` 
+OR 
+```brew install basictex ```
+
+## CMEECoursework Structure and Usage
+
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
+
+E.g.
+
+```
+>> sh Code/CountLines.sh Data/E.coli.fasta 
+```
+
+## Contact
+
+If you want to contact me you can reach me at <lds20@ic.ac.uk>.
+
+**********************************************************************
+
+Results directory is empty - good! 
+
+Found 12 code files: ConcatenateTwoFiles.sh, tiff2png.sh, UnixPrac1.txt, variables.sh, CountLines.sh, FirstBiblio.bib, csvtospace.sh, CompileLaTeX.sh, boilerplate.sh, FirstExample.tex, tabtocsv.sh, MyExampleScript.sh
+
+======================================================================
+Testing script/code files...
+
+======================================================================
+Inspecting script file ConcatenateTwoFiles.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: ConcatenateTwoFiles.sh
+# Desc: Concatenates two files
+# Arguments: 3 -> 2 files, and new concatenated file path/name
+# Date: Oct 2020
+
+if (( $# != 3 )); then
+	echo "ERROR: This script requires 3 arguments (2 filepaths and a name for \
+the new file). You have provided $#." # How to wrap multi-line strings w. indent?
+	exit
+fi
+
+cat $1 > $3
+cat $2 >> $3
+echo "Merged file is:"
+cat $3
+**********************************************************************
+
+Testing ConcatenateTwoFiles.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+ERROR: This script requires 3 arguments (2 filepaths and a name for the new file). You have provided 0.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00733s
+
+======================================================================
+Inspecting script file tiff2png.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: tiff2png.sh
+# Desc: Converts .tif to .png files in the working directory
+# Arguments: inf -> If 0 args are provided the script will convert all .tif 
+# files in the cwd, otherwise it will convert any provided, skipping any 
+# without a .tif extension.
+# Date: Oct 2020
+
+if (( $# == 0 )); then
+	# Convert all .tif files in cwd
+	for f in *.tif
+    do
+      	echo "\nConverting $f";
+      	convert "$f" "$(basename "$f" .tif).png";
+    done
+else
+	# Convert all specified files
+	for f in "$@"
+	do 
+		# if filename doesn't end in '.tif' skip with an error message
+		if [ ${f: -4} != ".tif" ]; then
+			echo "\nERROR: File '$f' is not a .tif file."
+			continue
+		fi
+		echo "\nConverting $f";
+      	convert "$f" "$(basename "$f" .tif).png";
+    done
+fi
+
+echo "\nDone!"
+**********************************************************************
+
+Testing tiff2png.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+\nConverting *.tif
+\nDone!
+
+**********************************************************************
+
+Encountered error (or warning):
+convert-im6.q16: unable to open image `*.tif': No such file or directory @ error/blob.c/OpenBlob/2874.
+convert-im6.q16: no images defined `*.png' @ error/convert.c/ConvertImageCommand/3258.
+
+======================================================================
+Inspecting script file UnixPrac1.txt...
+
+File contents are:
+
+**********************************************************************
+wc -l * # Assuming the fasta files are all you have in cwd, otherwise 'wc -l *.fasta' #1
+tail -n +2 E.coli.fasta #2
+tail -n +2 E.coli.fasta | wc -m #Or 'wc -c' #3 
+tail -n +2 E.coli.fasta | tr -d '\n' | grep -o 'ATGC' | wc -l #4
+seq=$(tail -n +2 E.coli.fasta | tr -d '\n'); at=$(echo $seq | sed 's/[^AT]//g'); gc=$(echo $seq | sed 's/[^GC]//g'); bc -l <<< "${#at}/${#gc}" #Or, alternatively: bc -l <<< "$(tail -n +2 E.coli.fasta | tr -d '\n' | grep -o [A,T] | wc -l) / $(tail -n +2 E.coli.fasta | tr -d '\n' | grep -o [G,C] | wc -l)" #5
+**********************************************************************
+
+Testing UnixPrac1.txt...
+
+======================================================================
+Inspecting script file variables.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: variables.sh
+# Desc: Playing around with variables
+# Arguments: NA
+# Date: Oct 2020
+
+# Shows use of variables
+MyVar='My String'
+echo "The variable is currently named '$MyVar'"
+echo 'Please enter a new string'
+read MyVar
+echo "The variable is currently named '$MyVar'"
+
+# Managing multiple variables
+echo 'Enter 2 numbers separates by a space(s)'
+read a b
+echo 'You entered' $a 'and' $b'. Their sum is:'
+mysum=$(expr $a + $b)
+echo $mysum
+**********************************************************************
+
+Testing variables.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+The variable is currently named 'My String'
+Please enter a new string
+The variable is currently named ''
+Enter 2 numbers separates by a space(s)
+You entered and . Their sum is:
+
+
+**********************************************************************
+
+Encountered error (or warning):
+expr: syntax error: missing argument after ‘+’
+
+======================================================================
+Inspecting script file CountLines.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: CountLines.sh
+# Desc: Count lines of input file
+# Arguments: 1
+# Date: Oct 2020
+
+if (( $# != 1 )); then
+	echo "ERROR: This script requires 1 argument (a file path). You have \
+provided $#."
+	exit
+fi
+
+NumLines=$(wc -l < $1 | tr -d '[:space:]') #Strip whitespace generated by wc -l
+Filename=${1##*/}
+echo "The file '$Filename' contains $NumLines lines."
+**********************************************************************
+
+Testing CountLines.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+ERROR: This script requires 1 argument (a file path). You have provided 0.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00462s
+
+======================================================================
+Inspecting script file FirstBiblio.bib...
+
+File contents are:
+
+**********************************************************************
+@article{einstein1905does,
+  title={Does the inertia of a body depend upon its energy-content},
+  author={Einstein, Albert},
+  journal={Ann Phys},
+  volume={18},
+  pages={639--641},
+  year={1905}
+}
+**********************************************************************
+
+Testing FirstBiblio.bib...
+
+======================================================================
+Inspecting script file csvtospace.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: csvtospace.sh
+# Desc: Takes a CSV file and creates a space-separated version
+# Arguments: 2 -> A CSV file and the file path/name of new version
+# Date: Oct 2020
+
+if (( $# != 2 )); then
+	echo "ERROR: This script requires 2 arguments (a CSV file and a file \
+path/name for new space-separated version). You have provided $#." 
+	# How to wrap multi-line strings w. indent?
+	exit
+fi
+
+echo "Creating space-separated version of '${1##*/}'..."
+cat $1 | tr -s "," " " >> $2
+echo "Done!"
+exit
+
+**********************************************************************
+
+Testing csvtospace.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+ERROR: This script requires 2 arguments (a CSV file and a file path/name for new space-separated version). You have provided 0.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00678s
+
+======================================================================
+Inspecting script file CompileLaTeX.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby (lds20@ic.ac.uk)
+# Script: CompileLaTex.sh
+# Desc: Compiles LaTeX with bibtex. Note that pdf output will be generated
+# in your cwd.
+# Arguments: 3 -> .tex filepath (required), .bib filepath, and .pdf output 
+# filepath.
+# Date: Oct 2020
+
+#Check inputs
+if ! [[ $# == 1 || $# == 2 || $# == 3 ]]; then
+  echo "ERROR: This script requires at least 1 argument (a .tex filepath) and \
+at most 3 (.tex filepath, .bib filepath, and .pdf output filepath, in that \
+order). You have provided $#. \n\nNOTE:\n * If the third argument is omitted, \
+the pdf output will be generated in the cwd.\n * If the second and third \
+arguments are omitted, the script will assume that your .bib file is in the \
+cwd (your output will lack a bibliography if not) and generate your output in \
+the cwd."
+  exit
+fi
+	
+#Strip filename in case user is operating from separate directory
+TEX=${1##*/}
+
+#Check for .bib file and copy into cwd if not present
+if [ -n "$2" ]; then
+	BIB=${2##*/}
+	if ! [ -e "./$BIB" ]; then
+		cp $2 ./
+		copy=1
+	fi
+fi
+
+#Compile into pdf
+pdflatex $1 > /dev/null 2>&1
+echo "\n\nCOMPILING BIBLIOGRAPHY WITH BIBTEX...\n\n"
+bibtex ${TEX%.*}
+echo "\n\nCOMPILING PDF WITH CITATIONS...\n\n"
+pdflatex $1 > /dev/null 2>&1
+pdflatex $1
+
+#Open pdf (renaming if requested)
+if [ -n "$3" ]; then
+	echo "\n\nRENAMING/OPENING FILE...\n\n"
+	mv ${TEX%.*}.pdf $3
+	#open $3 #Mac
+	evince $3 #Linux
+else
+	echo "\n\nOPENING FILE...\n\n"
+	#open ${TEX%.*}.pdf #Mac
+	evince ${TEX%.*}.pdf #Linux
+fi
+
+#Cleanup
+echo "CLEANING UP...\n\n"
+
+rm *~ > /dev/null 2>&1
+rm *.aux > /dev/null 2>&1
+rm *.dvi > /dev/null 2>&1
+rm *.log > /dev/null 2>&1
+rm *.nav > /dev/null 2>&1
+rm *.out > /dev/null 2>&1
+rm *.snm > /dev/null 2>&1
+rm *.toc > /dev/null 2>&1
+rm *.bbl > /dev/null 2>&1
+rm *.blg > /dev/null 2>&1
+if [ -n "$copy" ];
+then
+	rm $BIB
+fi		
+
+echo "DONE!"
+**********************************************************************
+
+Testing CompileLaTeX.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+ERROR: This script requires at least 1 argument (a .tex filepath) and at most 3 (.tex filepath, .bib filepath, and .pdf output filepath, in that order). You have provided 0. \n\nNOTE:\n * If the third argument is omitted, the pdf output will be generated in the cwd.\n * If the second and third arguments are omitted, the script will assume that your .bib file is in the cwd (your output will lack a bibliography if not) and generate your output in the cwd.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00416s
+
+======================================================================
+Inspecting script file boilerplate.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: boilerplate.sh
+# Desc: simple boilerplate for shell scripts
+# Arguments: NA
+# Date: Oct 2020
+
+echo '\nThis is a shell script! \n'
+
+#exit
+**********************************************************************
+
+Testing boilerplate.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+\nThis is a shell script! \n
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00840s
+
+======================================================================
+Inspecting script file FirstExample.tex...
+
+File contents are:
+
+**********************************************************************
+\documentclass[12pt]{article}
+
+\title{A Simple Document}
+
+\author{Luke Swaby}
+
+\date{October 2020}
+
+\begin{document}
+	\maketitle
+  
+	\begin{abstract}
+	This paper must be cool!
+	\end{abstract}
+  
+	\section{Introduction}
+	Blah Blah!
+  
+	\section{Materials \& Methods}
+	One of the most famous equations is:
+	\begin{equation}
+	E = mc^2
+	\end{equation}
+	This equation was first proposed by Einstein in 1905 
+	\cite{einstein1905does}.
+  
+	\bibliographystyle{plain}
+	\bibliography{FirstBiblio}
+\end{document}
+**********************************************************************
+
+Testing FirstExample.tex...
+
+======================================================================
+Inspecting script file tabtocsv.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: tabtocsv.sh
+# Desc: substitute tabs in a file with commas
+# Saves the output to a .csv file
+# Arguments: 1 -> tab-delimited file
+# Date: Oct 2020
+
+if (( $# != 1 )); then
+	echo "ERROR: This script requires 1 argument (a tab-delimited file). \
+You have provided $#." # How to wrap multi-line strings w. indent?
+	exit
+fi
+
+echo "Creating comma-delimited version of '${1##*/}'..."
+cat $1 | tr -s "\t" "," >> ${1%.*}.csv
+# Change '>>' to '>' if you wish to have each run overwrite any 
+# identically named files on output instead of appending to them.
+echo "Done!"
+exit
+**********************************************************************
+
+Testing tabtocsv.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+ERROR: This script requires 1 argument (a tab-delimited file). You have provided 0.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.00578s
+
+======================================================================
+Inspecting script file MyExampleScript.sh...
+
+File contents are:
+
+**********************************************************************
+#!/bin/bash
+# Author: Luke Swaby lds20@ic.ac.uk
+# Script: MyExampleScript.sh
+# Desc: Playing around with variables
+# Arguments: None
+# Date: Oct 2020
+
+msg1="Hello"
+msg2=$USER
+echo "$msg1 $msg2."
+echo "Hello $USER."
+**********************************************************************
+
+Testing MyExampleScript.sh...
+
+Output (only first 500 characters): 
+
+
+**********************************************************************
+Hello mhasoba.
+Hello mhasoba.
+
+**********************************************************************
+
+Code ran without errors
+
+Time consumed = 0.01118s
+
+======================================================================
+======================================================================
+Finished running scripts
+
+Ran into 2 errors
+
+======================================================================
+======================================================================
+
+FINISHED WEEKLY ASSESSMENT
+
+Current Points for the Week = 100
+
+NOTE THAT THESE ARE POINTS, NOT MARKS FOR THE WEEK!
