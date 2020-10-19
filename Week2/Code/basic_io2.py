@@ -1,5 +1,6 @@
-#TODO: No functions, but no script-level docstring either. 2 pts deducted
+#!/usr/bin/env python3
 
+"""File I/O exercises 2"""
 #TODO: No such file or directory: '../Sandbox/testout.txt'
 #############################
 # FILE OUTPUT

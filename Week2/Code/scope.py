@@ -1,3 +1,7 @@
+#!/urs/bin/env python3
+
+"""Playing with global variables"""
+
 ## 1
 
 _a_global = 10
@@ -5,6 +9,9 @@ _a_global = 10
 print("Outside the function, the value of _a_global is", _a_global)
 
 def a_function():
+    """Demonstrates global variables defined within functions can be re-used
+    outside
+    """
     global _a_global
     _a_global = 5
     _a_local = 4
@@ -21,9 +28,14 @@ print("Outside the function, the value of _a_global now is", _a_global)
 ## 2
 
 def a_function():
+    """Demonstrates global variables defined within functions is only set when
+    function is called
+    """
     _a_global = 10
 
     def _a_function2():
+        """Set global variable
+        """
         global _a_global
         _a_global = 20
 
@@ -44,7 +56,11 @@ print("The value of a_global in main workspace / namespace is ", _a_global)
 _a_global = 10
 
 def a_function():
+    """Calling a global variable set in a function within a function
+    """
     def _a_function2():
+        """Set global variable
+        """
         global _a_global
         _a_global = 20
 

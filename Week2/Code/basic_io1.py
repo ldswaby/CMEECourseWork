@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+
+"""File I/O exercises 1"""
+#TODO: How are these meant to run if we ignore Sandbox?
+
 #############################
 # FILE INPUT
 #############################

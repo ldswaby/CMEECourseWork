@@ -1,3 +1,7 @@
+#!/urs/bin/env python3
+
+"""More playing with comprehensions"""
+
 ## Finds just those taxa that are oak trees from a list of species
 
 taxa = ['Quercus robur',
@@ -7,6 +11,8 @@ taxa = ['Quercus robur',
         'Quercus petraea']
 
 def is_an_oak(name):
+    """Return True if lowercase input starts with 'quercus '
+    """
     return name.lower().startswith('quercus ')
 
 ##Using for loops

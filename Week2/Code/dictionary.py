@@ -1,3 +1,7 @@
+#!/urs/bin/env python3
+
+"""Dictionaries practical"""
+
 taxa = [('Myotis lucifugus', 'Chiroptera'),
         ('Gerbillus henleyi', 'Rodentia',),
         ('Peromyscus crinitus', 'Rodentia'),

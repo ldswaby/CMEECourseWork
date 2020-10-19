@@ -109,7 +109,7 @@ def main(argv):
         description='(longer)'
     )
     outrecs = [outrec1, outrec2]
-    SeqIO.write(outrecs, f'../Results/output_algmt.fa', 'fasta')
+    SeqIO.write(outrecs, '../Results/output_algmt.fa', 'fasta')
     """
 
     return 0

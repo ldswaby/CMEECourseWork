@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#TODO: No functions, but no script-level docstring either. 2 pts deducted
+"""Playing with __name__ == '__main__'"""
 
 # Filename: using_name.py
 

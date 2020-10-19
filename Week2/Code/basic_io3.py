@@ -1,6 +1,8 @@
-#TODO: No functions, but no script-level docstring either. 2 pts deducted
+#!/usr/bin/env python3
 
-#TODO: No such file or directory: '../Sandbox/testp.p'
+"""File I/O exercises 3"""
+
+#TODO: No such file or directory: '../Sandbox/testp.p' (AS SANDBOX IS GITIGNORED)
 
 #############################
 # STORING OBJECTS
