@@ -1,0 +1,5 @@
+.....*****
+CAATTCGGAT
+ATCGCCGGATTACGGG
+
+Best score: 5

@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 
-#TODO: Write README.md  
+#TODO: Write README.md
 
-"""Aligns sequences"""
+"""Aligns 2 sequences in an input text file."""
 
 __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## Imports ##
 import sys
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
 
 ## Functions ##
 def calculate_score(s1, s2, l1, l2, startpoint):
-    """A function that computes a score by returning the number of matches
-    starting from arbitrary startpoint (chosen by user)"""
+    """Calculate best alignment score (no. of matched bases) of 2
+    sequences
+    """
     matched = "" # to hold string displaying alignements
     score = 0
     for i in range(l2):
@@ -41,9 +39,32 @@ def calculate_score(s1, s2, l1, l2, startpoint):
     return score, matches
 
 def main(argv):
-    """Run functions"""
+    """Run functions
+    """
+    # Parse inputs
+    if len(argv) == 1:
+        seqfile = '../Data/seqs.txt'
+    elif len(argv) == 2:
+        seqfile = argv[1]
+    else:
+        sys.exit('ERROR: too many arguments were provided.')
 
+    """
+    try:
+        seqfile = argv[1]
+    except:
+        seqfile = '../Data/seqs.txt'
+    """
+
+    ## TEXT IN
+    with open(seqfile, 'r') as f:
+        recs = f.read().splitlines()  # To strip newlines
+        seq1 = recs[0]
+        seq2 = recs[1]
+
+    """
     ## FASTA IN
+    from Bio import SeqIO
     try:
         seqfile = argv[1]
     except:
@@ -52,18 +73,6 @@ def main(argv):
     recs = list(SeqIO.parse(seqfile, 'fasta'))
     seq1 = str(recs[0].seq)
     seq2 = str(recs[1].seq)
-
-    """
-    ## TEXT IN
-    try:
-        seqfile = argv[1]
-    except:
-        seqfile = '../Data/seqs.txt'
-
-    with open(seqfile, 'r') as f:
-        recs = f.read().splitlines()  #To strip newlines
-        seq1 = recs[0]
-        seq2 = recs[1]
     """
 
     # Assign the longer sequence s1, and the shorter to s2
@@ -95,7 +104,12 @@ def main(argv):
     print(s1)
     print("Best score:", my_best_score)
 
+    """
     ## FASTA OUT
+    from Bio import SeqIO
+    from Bio.SeqRecord import SeqRecord
+    from Bio.Seq import Seq
+    
     outrec1 = SeqRecord(
         Seq(my_best_align),
         id="Seq1",
@@ -108,15 +122,14 @@ def main(argv):
     )
     outrecs = [outrec1, outrec2]
     SeqIO.write(outrecs, '../Results/algmt.fa', 'fasta')
-
     """
+
     ## TEXT OUT
     with open(f'../Results/algmt.txt', 'w') as algmt:
         algmt.write(f"{my_best_match.replace('-', '.')}\n")
         algmt.write(f'{my_best_align}\n')
         algmt.write(str(s1))
         algmt.write('\n\n' + f"Best score: {my_best_score}")
-    """
 
     return 0
 
