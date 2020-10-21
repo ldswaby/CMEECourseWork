@@ -28,14 +28,23 @@ macOS:
 OR 
 ```brew install basictex ```
 
-## CMEECoursework Structure and Usage
+## Week 1 Structure and Usage
 
-Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
+This directory containins the following folders:
+* Data - contains data files used during the week.
+* Code - contains all code scripts for the week.
+* Results - contains any results generated during the week's exercises.
+
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory. However, most (if not all) scripts can be run with no arguments.
 
 E.g.
 
 ```
->> sh Code/CountLines.sh Data/E.coli.fasta 
+$ sh Code/CountLines.sh Data/E.coli.fasta 
+```
+Or:
+```
+$ sh Code/CountLines.sh
 ```
 
 ## Contact
