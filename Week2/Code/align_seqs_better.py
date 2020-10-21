@@ -7,9 +7,6 @@ __version__ = '0.0.1'
 
 ## Imports ##
 import sys
-from Bio import SeqIO
-from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
 
 ## Functions ##
 def calculate_score(s1, s2, l1, l2, startpoint):

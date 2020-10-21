@@ -33,12 +33,13 @@ def main(argv):
     f = open('../data/TestOaksData.csv','r')
     g = open('../data/JustOaksData.csv','w')
     taxa = csv.reader(f)
-    next(taxa)
+    header = next(taxa, None)
     csvwrite = csv.writer(g)
-    oaks = set()
+    csvwrite.writerow(header)
+    #oaks = set()
     for row in taxa:
         print(row)
-        print ("The genus is: ") 
+        print("The genus is: ")
         print(row[0] + '\n')
         if is_an_oak(row[0]):
             print('FOUND AN OAK!\n')

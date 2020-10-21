@@ -49,13 +49,6 @@ def main(argv):
     else:
         sys.exit('ERROR: too many arguments were provided.')
 
-    """
-    try:
-        seqfile = argv[1]
-    except:
-        seqfile = '../Data/seqs.txt'
-    """
-
     ## TEXT IN
     with open(seqfile, 'r') as f:
         recs = f.read().splitlines()  # To strip newlines

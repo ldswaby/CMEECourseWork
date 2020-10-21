@@ -42,6 +42,8 @@ def main(argv):
         sys.exit('ERROR: too many arguments were provided.')
 
     ## TEXT IN
+    #TODO: account for csv inputs
+
     with open(seqfile1, 'r') as f1:
         head1 = f1.readline().strip()
         seq1 = ''.join(line.strip() for line in f1)
