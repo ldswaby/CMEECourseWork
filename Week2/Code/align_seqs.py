@@ -35,7 +35,7 @@ def calculate_score(s1, s2, startpoint):
     # negative indexing won't work for i=0
     print(s1)
     print(f'Score: {score}')
-    print('\n')
+    print(' ')
 
     return score, matches
 
@@ -61,14 +61,14 @@ def main(argv):
     l1 = len(seq1)
     l2 = len(seq2)
     if l1 >= l2:
-        s1algn = (l2-1)*'-' + seq1 + (l2-1)*'-'
-        s2algn = seq2 + (l1+l2-2)*'-'
-        padlen = len(s2algn)
+        s1 = (l2 - 1) * '-' + seq1 + (l2 - 1) * '-'
+        s2 = seq2 + (l1 + l2 - 2) * '-'
+        padlen = len(s2)
     else:
         l1, l2 = l2, l1  # swap the two lengths
-        s1algn = (l2-1)*'-' + seq2 + (l2-1)*'-'
-        s2algn = seq1 + (l1+l2-2)*'-'
-        padlen = len(s2algn)
+        s1 = (l2 - 1) * '-' + seq2 + (l2 - 1) * '-'
+        s2 = seq1 + (l1 + l2 - 2) * '-'
+        padlen = len(s2)
 
     # Find best match (highest score) for the two sequences
     my_best_align = None
@@ -76,37 +76,37 @@ def main(argv):
 
     for i in range(padlen-l2+1):
         # Note that only last alignment with the highest score is recorded
-        print(f'Startpoint: {i}')
-        z, match = calculate_score(s1algn, s2algn, i)
+        print(f'Start index: {i}')
+        z, match = calculate_score(s1, s2, i)
         if z > my_best_score:
-            my_best_align = "-"*i + s2algn[:-i]  # start sequence at startpoint
+            my_best_align = "-" * i + s2[:-i]  # start sequence at startpoint
             my_best_score = z
             my_best_match = match
 
     # Clip trailing hyphens
-    s1start = re.search(r'[^-]', s1algn).start()
+    s1start = re.search(r'[^-]', s1).start()
     s2start = re.search(r'[^-]', my_best_align).start()
     start = max(s1start, s2start)
 
-    s1end = re.search(r'[^A-Z]', s1algn[start:]).start()
+    s1end = re.search(r'[^A-Z]', s1[start:]).start()
     s2end = re.search(r'[^A-Z]', my_best_align[start:]).start()
-    stop = len(s1algn[start:]) - max(s1end, s2end)
+    stop = len(s1[start:]) - max(s1end, s2end)
 
     my_best_match = my_best_match[start:-stop]
     my_best_align = my_best_align[start:-stop]
-    s1algn = s1algn[start:-stop]
+    s1 = s1[start:-stop]
 
     # Print result
     print(my_best_match)
     print(my_best_align)
-    print(s1algn)
+    print(s1)
     print("Best score:", my_best_score)
 
     # Text file out
     with open(f'../Results/algmt.txt', 'w') as algmt:
         algmt.write(f"{my_best_match}\n")
         algmt.write(f'{my_best_align}\n')
-        algmt.write(str(s1algn))
+        algmt.write(str(s1))
         algmt.write('\n\n' + f"Best score: {my_best_score}")
 
     return 0
