@@ -14,7 +14,7 @@ The following packages (with versions) are used in the project:
 
 ## Dependencies
 
-TBA
+NA
 
 ## Week 2 Structure and Usage
 
