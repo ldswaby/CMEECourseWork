@@ -14,7 +14,7 @@ import sys
 
 #Define function
 def is_an_oak(name):
-    """ Returns True if lowercase name is starts with 'quercus'
+    """ Returns True if lowercase name contains 'quercus'
 
     >>> is_an_oak('Fagus sylvatica')
     False
@@ -26,9 +26,15 @@ def is_an_oak(name):
     True
 
     >>> is_an_oak('Quercuss ajoensis')
+    True
+
+    >>> is_an_oak('aQuercus')
+    True
+
+    >>> is_an_oak('Fagus quercusi')
     False
     """
-    return name.split()[0].lower() == 'quercus'
+    return 'quercus' in name.split()[0].lower()
 
 def main(argv):
     """Run functions
