@@ -1,5 +1,8 @@
 #!/urs/bin/env python3
 
+#TODO: 2 practicals on this, one group one single, so do we keep a copy in each?
+#TODO: README dependencies
+
 """Playing with doc tests and debugging"""
 
 __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
