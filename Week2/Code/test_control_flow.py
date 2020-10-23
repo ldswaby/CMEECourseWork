@@ -7,7 +7,7 @@ __version__ = '0.0.1'
 
 ## Imports ##
 #import doctest  # Import the doctest module
-#import sys
+import sys
 
 def even_or_odd(x=0):
     """Find whether a number x is even or odd.
@@ -27,7 +27,7 @@ def even_or_odd(x=0):
     '-2 is Even!'
 
     >>> even_or_odd(3)
-    '3 is Even!'
+    '3 is Odd!'
 
     """
     # Define function to be tested
@@ -35,16 +35,16 @@ def even_or_odd(x=0):
         return "%d is Even!" % x
     return "%d is Odd!" % x
 
-#def main(argv):
-#    """Run functions
-#    """
-#    print even_or_odd(22)
-#    print even_or_odd(33)
-#    return 0
+def main(argv):
+    """Run functions
+    """
+    print(even_or_odd(22))
+    print(even_or_odd(33))
+    return 0
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
     # Run as script then exit
-#    status = main(sys.argv)
-#    sys.exit(status)
+    status = main(sys.argv)
+    sys.exit(status)
 
 #doctest.testmod()  # To run with embedded tests

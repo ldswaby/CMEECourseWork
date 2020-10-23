@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-# TODO: Write README.md
-
 """Aligns 2 sequences in an input text file."""
 
 __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## Imports ##
-import sys, re
+import sys
 
 ## Functions ##
 def calculate_score(s1, s2, startpoint):
@@ -27,7 +25,7 @@ def calculate_score(s1, s2, startpoint):
                 # otherwise add '-' to matched str
                 matched += "-"
 
-    # some formatted output
+    # Formatted output
     matches = "-" * startpoint + matched
     print(matches)
     print("-" * startpoint + s2[:len(s2)-startpoint])
@@ -44,7 +42,7 @@ def main(argv):
     """
     # Parse inputs
     if len(argv) == 1:
-        seqfile = '../Data/seqs.txt'
+        seqfile = '../Data/seqs.fa'
     elif len(argv) == 2:
         seqfile = argv[1]
     else:
@@ -52,9 +50,10 @@ def main(argv):
 
     # Text file in
     with open(seqfile, 'r') as f:
-        recs = f.read().splitlines()  # To strip newlines
-        seq1 = recs[0]
-        seq2 = recs[1]
+        # Assumes input fasta is not wrapped...
+        seqs = [s for s in f.read().splitlines() if not s.startswith('>')]
+        seq1 = seqs[0]
+        seq2 = seqs[1]
 
     # Assign the longer sequence s1, and the shorter to s2
     # l1 is length of the longest, l2 that of the shortest
@@ -84,12 +83,12 @@ def main(argv):
             my_best_match = match
 
     # Clip trailing hyphens
-    s1start = re.search(r'[^-]', s1).start()
-    s2start = re.search(r'[^-]', my_best_align).start()
+    s1start = s1.find(next(filter(str.isalpha, s1)))
+    s2start = s2.find(next(filter(str.isalpha, s2)))
     start = max(s1start, s2start)
 
-    s1end = re.search(r'[^A-Z]', s1[start:]).start()
-    s2end = re.search(r'[^A-Z]', my_best_align[start:]).start()
+    s1end = s1[start:].find('-')
+    s2end = my_best_align[start:].find('-')
     stop = len(s1[start:]) - max(s1end, s2end)
 
     my_best_match = my_best_match[start:-stop]

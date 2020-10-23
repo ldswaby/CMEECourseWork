@@ -1,5 +1,3 @@
-#TODO: add this back to git repo
-
 #!/usr/bin/env python3
 
 """Some functions exemplifying the use of control statements"""
@@ -56,9 +54,6 @@ def find_all_primes(x=22):
             allprimes.append(i)
     print("There are %d primes between 2 and %d" % (len(allprimes), x))
     return allprimes
-
-#TODO: individual functions are still callable even if below section is
-# deleted?
 
 def main(argv):
     """Run functions

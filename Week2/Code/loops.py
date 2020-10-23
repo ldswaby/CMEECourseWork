@@ -25,7 +25,6 @@ while z < 100:
     z = z + 1
     print(z)
 
-#TODO: INFINITE LOOP BREAKS FEEDBACK.PY
 b = True
 while b:
     print("GERONIMO! infinite loop! ctrl+c to stop!")

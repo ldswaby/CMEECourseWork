@@ -14,7 +14,6 @@ import sys
 ## Constants ##
 
 ## Functions ##
-#TODO: this function doesn't actually do anythng with the input args?
 def main(argv):
     """ Main entry point of the program
     """
