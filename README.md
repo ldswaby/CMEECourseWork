@@ -28,7 +28,7 @@ Scripts in the *Code/* directory are typically run on files in the *Data/* direc
 E.g.
 
 ```
->> sh Week1/Code/CountLines.sh Week1/Data/E.coli.fasta 
+$ sh Week1/Code/CountLines.sh Week1/Data/E.coli.fasta 
 ```
 
 ## Contact
