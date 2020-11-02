@@ -5,9 +5,13 @@
 *.tmp
 .idea/
 Feedback.py
+
+## DIRECTORIES ##
+
 Sandbox/
+Lectures/
+Week4/
 Groupwork/
-Results/!.*
 
 
 ## MAC FILES ##
@@ -446,6 +450,7 @@ cython_debug/
 
 ## R ##
 
+.RProj
 
 # History files
 .Rhistory
