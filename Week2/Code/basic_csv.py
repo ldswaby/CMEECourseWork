@@ -10,7 +10,7 @@ import csv
 
 # Read a file containing:
 # 'Species','Infraorder','Family','Distribution','Body mass male (Kg)'
-f = open('../data/testcsv.csv', 'r')
+f = open('../Data/testcsv.csv', 'r')
 
 csvread = csv.reader(f)
 next(csvread)
@@ -23,8 +23,8 @@ for row in csvread:
 f.close()
 
 # write a file containing only species name and Body mass
-f = open('../data/testcsv.csv', 'r')
-g = open('../data/bodymass.csv', 'w')
+f = open('../Data/testcsv.csv', 'r')
+g = open('../Data/bodymass.csv', 'w')
 
 csvread = csv.reader(f)
 next(csvread)

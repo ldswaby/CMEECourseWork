@@ -4,10 +4,10 @@
 
 ############# Load the dataset ###############
 # header = false because the raw data don't have real headers
-MyData <- as.matrix(read.csv("../data/PoundHillData.csv",header = F)) 
+MyData1 <- as.matrix(read.csv("../data/PoundHillData.csv",header = F)) 
 
 # header = true because we do have metadata headers
-MyMetaData <- read.csv("../data/PoundHillMetaData.csv",header = T, sep=";", stringsAsFactors = F)
+MyMetaData1 <- read.csv("../data/PoundHillMetaData.csv",header = T, sep=";", stringsAsFactors = F)
 
 ############# Inspect the dataset ###############
 head(MyData)
@@ -51,3 +51,10 @@ head(MyWrangledData)
 dim(MyWrangledData)
 
 ############# Exploring the data (extend the script below)  ###############
+require(tidyverse)
+tibble::as_tibble(MyWrangledData) 
+dplyr::glimpse(MyWrangledData) #like str(), but nicer!
+utils::View(MyWrangledData) #same as fix()
+dplyr::filter(MyWrangledData, Count>100) #like subset(), but nicer!
+dplyr::slice(MyWrangledData, 10:15) # Look at an arbitrary set of data rows
+
