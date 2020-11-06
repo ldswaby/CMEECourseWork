@@ -1,10 +1,9 @@
 ################################################################
 ################## Wrangling the Pound Hill Dataset ############
 ################################################################
-rm(list=ls())
 
 ############## Imports ##############
-require(tidyverse)
+library(tidyverse)
 
 ############# Load the dataset ###############
 # header = false because the raw data don't have real headers
@@ -15,13 +14,13 @@ MyMetaData <- read_delim("../data/PoundHillMetaData.csv", col_names = T, delim =
 
 ############# Inspect the dataset ###############
 dplyr::glimpse(MyData)
-utils::View(MyData)
+#utils::View(MyData) # Hashed out as it takes ages!
 
 ############# Transpose ###############
 # To get those species into columns and treatments into rows 
 MyData <- t(MyData) 
 dplyr::glimpse(MyData)
-utils::View(MyData)
+#utils::View(MyData) # Hashed out as it takes ages!
 
 ############# Replace species absences with zeros ###############
 MyData[is.na(MyData)] = 0
@@ -33,11 +32,10 @@ colnames(TempData) <- MyData[1,] # assign column names from original data
 ############# Convert from wide to long format  ###############
 MyWrangledData <- gather(TempData, Species, Count, -c(Cultivation, Block, Plot, Quadrat))
 
-MyWrangledData[, "Cultivation"] <- as.factor(MyWrangledData[, "Cultivation"])
-MyWrangledData[, "Block"] <- as.factor(MyWrangledData[, "Block"])
-MyWrangledData[, "Plot"] <- as.factor(MyWrangledData[, "Plot"])
-MyWrangledData[, "Quadrat"] <- as.factor(MyWrangledData[, "Quadrat"])
-MyWrangledData[, "Count"] <- as.integer(MyWrangledData[, "Count"])
+# Convert data back to factor/int type
+MyWrangledData <- mutate_at(MyWrangledData, vars(colnames(MyWrangledData)), factor)
+MyWrangledData <- mutate(MyWrangledData, Count = as.integer(Count))
 
+############# Exploring the data ###############
 dplyr::glimpse(MyWrangledData)
-utils::View(MyWrangledData)
+#utils::View(MyWrangledData) ## Hashed out as it takes ages!

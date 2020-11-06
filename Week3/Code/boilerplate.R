@@ -1,4 +1,6 @@
-# A boilerplate R script
+##############################
+### A boilerplate R script ###
+##############################
 
 MyFunction <- function(Arg1, Arg2){
 

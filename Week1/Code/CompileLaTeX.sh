@@ -43,12 +43,12 @@ pdflatex $1
 if [ -n "$3" ]; then
 	echo "\n\nRENAMING/OPENING FILE...\n\n"
 	mv ${TEX%.*}.pdf $3
-	#open $3 #Mac
-	evince $3 #Linux
+	open $3 #Mac
+	#evince $3 #Linux
 else
 	echo "\n\nOPENING FILE...\n\n"
-	#open ${TEX%.*}.pdf #Mac
-	evince ${TEX%.*}.pdf #Linux
+	open ${TEX%.*}.pdf #Mac
+	#evince ${TEX%.*}.pdf #Linux
 fi
 
 #Cleanup

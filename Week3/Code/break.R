@@ -1,4 +1,7 @@
-# Using break
+###################
+### Using break ###
+###################
+
 i <- 0 #Initialize i
 while(i < Inf) {
     if (i == 10) {

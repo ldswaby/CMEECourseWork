@@ -1,3 +1,7 @@
+###########################
+### The apply functions ###
+###########################
+
 # Create 10x10 matrix of normally distributed numbers
 # and multiply each element by 100 
 

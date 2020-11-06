@@ -1,6 +1,10 @@
+###############################################
+#### Investigating Body Mass Distributions ####
+###############################################
+
 # Imports
-require(plyr)
-require(tidyverse)
+#library(plyr)
+library(tidyverse)
 
 # Load data
 MyDF <- read.csv("../Data/EcolArchives-E089-51-D1.csv", header = TRUE)
@@ -13,47 +17,70 @@ MyDF <- MyDF[,c('Predator.mass', 'Prey.mass', 'Type.of.feeding.interaction')]
 
 # Add mass ratio column and rename Predator.mass column for pdf output name
 MyDF$SizeRatio <- MyDF$Prey.mass/MyDF$Predator.mass
-MyDF <- rename(MyDF, c('Predator.mass' = 'Pred.mass'))
-
-### TAPPLY ###
-#for (col in c('Predator.mass', 'Prey.mass', 'SizeRatio')){
-#  field = strsplit(x, split = '.', fixed = T)[[1]][1]
-#  pdf(sprintf('../Results/%s_Subplots.pdf', field), 11.7, 8.3)
-#  par(mfrow = c(2,3))
-#  par(mfg = c(1,1))
-#  tapply(log10(MyDF[,col]), MyDF$Type.of.feeding.interaction, FUN = hist)
-#  graphics.off()
-#}
-
-# Obtain list of feeding types
-Feeding.interactions <- unique(MyDF$Type.of.feeding.interaction)
+#MyDF <- rename(MyDF, c('Predator.mass' = 'Pred.mass'))
+names(MyDF)[names(MyDF) == 'Predator.mass'] <- 'Pred.mass'
 
 # Write subplots to pdfs
-for (x in c('Pred.mass', 'Prey.mass', 'SizeRatio')){
-  field <- strsplit(x, split = '.', fixed = T)[[1]][1]
+for (col in c('Pred.mass', 'Prey.mass', 'SizeRatio')){
+  field <- strsplit(col, split = '.', fixed = T)[[1]][1]
   pdf(sprintf('../Results/%s_Subplots.pdf', field), 11.7, 8.3)
-  par(mfcol = c(2,3))
-  par(mfg = c(1,1))
   
-  for (i in Feeding.interactions){
+  # Set titles/axis labels
+  if (col == 'SizeRatio'){
+    xlb <- 'log10(SizeRatio)'
+    titl <- 'Size Ratio Subplots by Feeding Type'
+  } else {
+    xlb <- sprintf('log10(%s Mass (g))', field)
+    titl <- sprintf('%s Mass Subplots by Feeding Type', field)
+  }
+  
+  # Set up page
+  par(mfcol = c(2,3), mfg = c(1,1), oma=c(1.5,2,1,1))
+  
+  # Plot
+  for (i in unique(MyDF$Type.of.feeding.interaction)){
     Sub <- subset(MyDF, Type.of.feeding.interaction == i)
-    if (x == 'SizeRatio'){
-      hist(log10(Sub[,x]), 
-           xlab = 'log10(SizeRatio)',
-           ylab = 'Count',
-           col = 'lightblue',
-           main = str_to_title(i))
-    } else {
-      hist(log10(Sub[,x]), 
-           xlab = sprintf('log10(%s Mass (g))', field),
-           ylab = 'Count',
-           col = 'lightblue',
-           main = str_to_title(i))
-    }
-    #mtext("Predator Subplots", side=3, outer=TRUE, line=-2)
+    hist(log10(Sub[,col]), 
+         xlab = xlb,
+         ylab = 'Count',
+         col = 'lightblue',
+         main = str_to_title(i))
+    mtext(titl, outer=TRUE,  cex=1, line=-0.5)
   }
   graphics.off()
 }
+
+##########################################################
+##################### Using ggplot #######################
+##########################################################
+# library(ggplot2)
+
+#for (col in c('Pred.mass', 'Prey.mass', 'SizeRatio')){
+#  field <- strsplit(col, split = '.', fixed = T)[[1]][1]
+#  
+#  if (col == 'SizeRatio'){
+#    xlb <- 'log10(SizeRatio)'
+#    titl <- 'Size Ratio Subplots by Feeding Type'
+#  } else {
+#    xlb <- sprintf('log10(%s Mass (g))', field)
+#    titl <- sprintf('%s Mass Subplots by Feeding Type', field)
+#  }
+#  
+#  p <- (ggplot(MyDF, aes(x = log10(MyDF[,col]), fill = Type.of.feeding.interaction)) + 
+#          geom_histogram(colour = 'black') + 
+#          facet_wrap(.~Type.of.feeding.interaction, scales = 'free') +
+#          theme(legend.position = 'none') + 
+#          labs(title = titl) + 
+#          ylab("Count") + 
+#          xlab(xlb)
+#        )
+#
+#  pdf(sprintf('../Results/%s_Subplots.pdf', field), 11.7, 8.3)
+#  print(p)
+#  graphics.off()
+#}
+##########################################################
+##########################################################
 
 ##### Write CSV #####
 
@@ -75,8 +102,8 @@ Log.SizeRatio.median <- tapply(log10(MyDF[,'SizeRatio']), MyDF$Type.of.feeding.i
 Stats <- matrix(1:35, nrow = 5, ncol = 7)
 
 # Load matrix
-Stats[,1] <- c('insectivorous','piscivorous','planktivorous','predacious',
-               'predacious/piscivorous')
+Stats[,1] <- c('Insectivorous','Piscivorous','Planktivorous','Predacious',
+               'Predacious/Piscivorous')
 #Stats[,1] <- Feeding.interactions  # not in right order!
 
 # Is there a way to do this in a single step? A function analogous to 'enumerate'?
@@ -91,9 +118,9 @@ Stats[,7] <- as.vector(Log.SizeRatio.median)
 Out <- as.data.frame(Stats)
 
 # Add header
-colnames(Out) <- c('Feeding.type', 'Log10.pred.mass.mean', 'Log10.pred.mass.median', 
-                   'Log10.prey.mass.mean', 'Log10.prey.mass.median', 
-                   'Log10.SizeRatio.mean', 'Log10.SizeRatio.median')
+colnames(Out) <- c('Feeding.Type', 'Log10.Pred.Mass.Mean', 'Log10.Pred.Mass.Median', 
+                   'Log10.Prey.Mass.Mean', 'Log10.Prey.Mass.Median', 
+                   'Log10.SizeRatio.Mean', 'Log10.SizeRatio.Median')
 
 # Write CSV output
 write.csv(Out, '../Results/PP_Results.csv', row.names = FALSE)

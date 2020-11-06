@@ -1,4 +1,6 @@
-# A simple script to illustrate R input-output. 
+#####################################################
+### A simple script to illustrate R input-output. ###
+#####################################################
 
 MyData <- read.csv('../Data/trees.csv', header = TRUE) # Import with headers
 write.csv(MyData, '../Results/MyData.csv') # Write to CSV

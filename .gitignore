@@ -450,7 +450,7 @@ cython_debug/
 
 ## R ##
 
-.RProj
+*.RProj
 
 # History files
 .Rhistory
