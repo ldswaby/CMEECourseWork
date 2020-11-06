@@ -37,8 +37,6 @@ graphics.off()
 ### Create DF ###
 feeding.int <- unique(MyDF$Type.of.feeding.interaction)
 
-Feeding_type <- Predator_lifestage <- Intercept <- Slope <- r_squared <- p_value <- f_statistics <- c(0)
-
 Feeding.interaction.type <- Predator_lifestage <- Intercept <- Gradient <- R_squared <- p_value <- f_stat <- c(0)
 
 count <- 0
