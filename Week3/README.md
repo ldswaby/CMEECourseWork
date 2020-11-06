@@ -1,6 +1,6 @@
 # My CMEE Coursework Repository
 
-This directory contains coursework for week 2 of the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) course at Imperial College London.
+This directory contains coursework for week 3 of the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) course at Imperial College London.
 
 Topics covered are:
 * [Biological Computing in R](https://mhasoba.github.io/TheMulQuaBio/notebooks/07-R.html)
