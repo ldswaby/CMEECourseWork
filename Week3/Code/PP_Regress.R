@@ -19,23 +19,27 @@ MyDF <- MyDF[,c('Predator.mass', 'Prey.mass', 'Predator.lifestage','Type.of.feed
 MyDF[MyDF=="larva / juvenile"] <- "larva/juvenile"
 
 # Plot
-p <- ggplot(MyDF, aes(x = log(Prey.mass), y = log(Predator.mass), 
+p <- ggplot(MyDF, aes(x = Prey.mass, y = Predator.mass, 
                       colour = Predator.lifestage)) + 
         facet_wrap(.~Type.of.feeding.interaction, scales = 'free') +
-        facet_grid(Type.of.feeding.interaction~.) +
-        geom_point(shape=I(3)) + theme_bw() +
-        theme(legend.position = 'bottom') + 
+        facet_grid(Type.of.feeding.interaction~.) + # Split plots by feeding interaction
+        geom_point(shape=I(3)) + theme_bw() + # Cross points + white background
+        theme(legend.position = 'bottom', legend.title = element_text(face="bold")) + 
         ylab("Predator Mass in grams") + 
         xlab('Prey Mass in grams') +
         theme(aspect.ratio = 0.5) +
-        geom_smooth(method = "lm", size = 0.5, fullrange = TRUE) 
-
+        geom_smooth(method = "lm", size = 0.5, fullrange = TRUE) + # Adds lm trendlines
+        guides(colour = guide_legend(nrow = 1)) +   # Places the legend all on one line
+        scale_x_log10() + scale_y_log10()  # Scale axes
+        
 # Write plot to pdf
 pdf('../Results/PP_Regress.pdf', 8.3, 11.7)
 print(p)
 graphics.off()
 
 ### Create DF ###
+
+# Define function to extract required statistics from a linear model
 returnStats <- function(x){
   summ <- summary(x)
   

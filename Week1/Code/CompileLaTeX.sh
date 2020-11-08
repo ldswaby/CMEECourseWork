@@ -12,10 +12,10 @@ if ! [[ $# == 1 || $# == 2 || $# == 3 ]]; then
   echo "ERROR: This script requires at least 1 argument (a .tex filepath) and \
 at most 3 (.tex filepath, .bib filepath, and .pdf output filepath, in that \
 order). You have provided $#. \n\nNOTE:\n * If the third argument is omitted, \
-the pdf output will be generated in the cwd.\n * If the second and third \
-arguments are omitted, the script will assume that your .bib file is in the \
-cwd (your output will lack a bibliography if not) and generate your output in \
-the cwd."
+the script will assume that your .bib file is in the cwd (your output will \
+lack a bibliography if not).\n * If the second and third arguments are \
+omitted, the script will assume that your .bib file is in the cwd and \
+generate your output in the cwd."
   exit
 fi
 	
@@ -23,10 +23,10 @@ fi
 TEX=${1##*/}
 
 #Check for .bib file and copy into cwd if not present
-if [ -n "$2" ]; then
-	BIB=${2##*/}
+if [ -n "$3" ]; then
+	BIB=${3##*/}
 	if ! [ -e "./$BIB" ]; then
-		cp $2 ./
+		cp $3 ./
 		copy=1
 	fi
 fi
@@ -40,10 +40,10 @@ pdflatex $1 > /dev/null 2>&1
 pdflatex $1
 
 #Open pdf (renaming if requested)
-if [ -n "$3" ]; then
+if [ -n "$2" ]; then
 	echo "\n\nRENAMING/OPENING FILE...\n\n"
-	mv ${TEX%.*}.pdf $3
-	open $3 #Mac
+	mv ${TEX%.*}.pdf $2
+	open $2 #Mac
 	#evince $3 #Linux
 else
 	echo "\n\nOPENING FILE...\n\n"
