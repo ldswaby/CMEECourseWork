@@ -1,5 +1,4 @@
-#install the sqlite package
-install.packages('sqldf')
+##### Databases and R ######
 
 # To load the packages
 library(sqldf)

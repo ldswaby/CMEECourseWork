@@ -1,27 +1,11 @@
 # My CMEE Coursework Repository
 
-This repository contains coursework for the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) at Imperial College London.
-
-## Prerequisites
-
-This project was developed on a Unix OS.
-
-The following packages (with versions) are used in the project:
-* LaTeX 
-* Python (3.7.7)
-* R (3.6.3)
-
-## Dependencies
-
-TBA
-
-## CMEECoursework Structure and Usage
+This repository contains computing coursework for the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) at Imperial College London.
 
 This repository is divided into weeks, with the directory for each week containing a combination of the following subdirectories:
 * Data - contains data files used during the week.
 * Code - contains all code scripts for the week.
-* Results - contains any results generated during the week's exercises.
-* Sandbox - contains any 'dummy' files/scripts used to experiment.
+* Results - empty directory for any results files to be pushed into if they exist.
 
 Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
 
@@ -30,6 +14,95 @@ E.g.
 ```
 $ sh Week1/Code/CountLines.sh Week1/Data/E.coli.fasta 
 ```
+Each week's directory contains it's own README.md file detailing it's dependencies and a brief description of of each script.
+
+## Table of Contents
+1. [Week 1: Computing Bootcamp](https://github.com/ldswaby/CMEECourseWork/tree/master/Week1)
+2. [Week 2: Python I](https://github.com/ldswaby/CMEECourseWork/tree/master/Week2)
+3. [Week 3: R](https://github.com/ldswaby/CMEECourseWork/tree/master/Week3)
+7. [Week 7: Python II](#7.Week-7-Python-II)
+
+### 1. Week 1: Computing Bootcamp
+
+Oreientation with basic hardware/software concepts in computing such as the UNIX environment and terminal,
+typesetting documents, and version control.
+
+Topics covered:
+* [UNIX/Linux](https://mhasoba.github.io/TheMulQuaBio/notebooks/01-Unix.html)
+* [Shell Scripting](https://mhasoba.github.io/TheMulQuaBio/notebooks/02-ShellScripting.html)
+* [Git](https://mhasoba.github.io/TheMulQuaBio/notebooks/03-Git.html)
+* [LaTeX](https://mhasoba.github.io/TheMulQuaBio/notebooks/04-LaTeX.html)
+
+### 2. Week 2: Python I
+
+Introduction to the Python programming language.
+
+Topics covered:
+* Basics of Python as a programming language.
+* Basic Python data types and structures.
+* How to write clean and well-annotated Python scripts for automating computing tasks. 
+* How to write Python functions and programs.
+
+Notes: [Biological Computing in Python I](https://mhasoba.github.io/TheMulQuaBio/notebooks/05-Python_I.html#)
+
+### 3. Week 3: R
+
+Introduction to the R programming language.
+
+Topics covered:
+* How to use R for data exploration
+* How to use R for data visualization and producing elegant, intuitive, and publication quality graphics.
+* R data types & structures and control flows.
+* How to write and debug efficient R scripts and functions.
+* How to use R packages and applications in certain areas (e.g., Genomics, Population biology).
+
+Notes: 
+* [Biological Computing in R](https://mhasoba.github.io/TheMulQuaBio/notebooks/07-R.html)
+* [Data Management and Visualization](https://mhasoba.github.io/TheMulQuaBio/notebooks/08-Data_R.html)
+
+### 7. Week 7: Python II
+
+More advanced Python topics.
+
+Topics covered:
+* Python program testing, debugging and documentation.
+* How to use Python for retrieving, managing, and analyzing data from local and remote databases. • to automate file handling, string manipulation, and run shell scripts.
+* How to use Python for efficient numerical analyses.
+* How to run analyses by patching together R or R + Python scripts and functions.
+
+Notes: 
+* [Biological Computing in Python II](https://mhasoba.github.io/TheMulQuaBio/notebooks/06-Python_II.html)
+
+## Prerequisites
+
+This project was developed on a Mac OS, but was developed to be platform-independent (across Unix OS).
+
+The following packages (with versions) are used in the project:
+* LaTeX 
+* Python (3.7.7)
+* R (4.0.3)
+
+## Dependencies
+
+### Python 3.7
+* `pickle` 
+* `numpy` 
+* `scipy` 
+* `pandas` 
+* `networkx` 
+* `matplotlib`
+ 
+### R 4.0.3
+* `tidyverse`
+* `reshape2` 
+* `dplyr` 
+* `tidyr` 
+* `ggplot2` 
+* `maps` 
+
+### LaTeX
+
+**TBC**
 
 ## Contact
 

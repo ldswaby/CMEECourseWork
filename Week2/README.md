@@ -18,10 +18,10 @@ NA
 
 ## Week 2 Structure and Usage
 
-This directory containins the following folders:
+This directory contains the following folders:
 * Data - contains data files used during the week.
 * Code - contains all code scripts for the week.
-* Results - contains any results generated during the week's exercises.
+* Results - empty directory for any results files to be pushed into if they exist.
 
 Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory. However, most (if not all) scripts can be run with no arguments.
 

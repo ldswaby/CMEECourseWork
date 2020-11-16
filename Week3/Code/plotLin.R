@@ -1,3 +1,4 @@
+library(ggplot2)
 library(ggthemes)
 
 x <- seq(0, 100, by = 0.1)

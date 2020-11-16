@@ -29,7 +29,7 @@ p <- ggplot(MyDF, aes(x = Prey.mass, y = Predator.mass,
         xlab('Prey Mass in grams') +
         theme(aspect.ratio = 0.5) +
         geom_smooth(method = "lm", size = 0.5, fullrange = TRUE) + # Adds lm trendlines
-        guides(colour = guide_legend(nrow = 1)) +   # Places the legend all on one line
+        guides(colour = guide_legend(nrow = 1)) +   # Places the legend on one line
         scale_x_log10() + scale_y_log10()  # Scale axes
         
 # Write plot to pdf
@@ -37,7 +37,9 @@ pdf('../Results/PP_Regress.pdf', 8.3, 11.7)
 print(p)
 graphics.off()
 
-### Create DF ###
+##################################
+### Create DF 
+##################################
 
 # Define function to extract required statistics from a linear model
 returnStats <- function(x){

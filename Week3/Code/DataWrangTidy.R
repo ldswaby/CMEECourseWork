@@ -7,10 +7,10 @@ library(tidyverse)
 
 ############# Load the dataset ###############
 # header = false because the raw data don't have real headers
-MyData <- as.matrix(read_csv("../data/PoundHillData.csv", col_names = F)) 
+MyData <- as.matrix(read_csv("../Data/PoundHillData.csv", col_names = F)) 
 
 # header = true because we do have metadata headers
-MyMetaData <- read_delim("../data/PoundHillMetaData.csv", col_names = T, delim = ';')
+MyMetaData <- read_delim("../Data/PoundHillMetaData.csv", col_names = T, delim = ';')
 
 ############# Inspect the dataset ###############
 dplyr::glimpse(MyData)
@@ -23,7 +23,7 @@ dplyr::glimpse(MyData)
 #utils::View(MyData) # Hashed out as it takes ages!
 
 ############# Replace species absences with zeros ###############
-MyData[is.na(MyData)] = 0
+MyData[is.na(MyData)] <- 0
 
 ############# Convert raw matrix to data frame ###############
 TempData <- tibble::as_tibble(MyData[-1,]) 
