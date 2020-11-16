@@ -13,7 +13,10 @@ Lectures/
 Miniproject/
 Week[4-6]/
 Groupwork/
+
+## Keep empty Results/ dir
 Results/*
+!Results/.gitkeep
 
 
 ## MAC FILES ##

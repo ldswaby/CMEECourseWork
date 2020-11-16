@@ -22,7 +22,7 @@ Each week's directory contains it's own README.md file detailing it's dependenci
 3. [Week 3: R](https://github.com/ldswaby/CMEECourseWork/tree/master/Week3)
 7. [Week 7: Python II](#7.Week-7-Python-II)
 
-### 1. Week 1: Computing Bootcamp
+### Week 1: Computing Bootcamp
 
 Oreientation with basic hardware/software concepts in computing such as the UNIX environment and terminal,
 typesetting documents, and version control.
@@ -33,7 +33,7 @@ Topics covered:
 * [Git](https://mhasoba.github.io/TheMulQuaBio/notebooks/03-Git.html)
 * [LaTeX](https://mhasoba.github.io/TheMulQuaBio/notebooks/04-LaTeX.html)
 
-### 2. Week 2: Python I
+### Week 2: Python I
 
 Introduction to the Python programming language.
 
@@ -45,7 +45,7 @@ Topics covered:
 
 Notes: [Biological Computing in Python I](https://mhasoba.github.io/TheMulQuaBio/notebooks/05-Python_I.html#)
 
-### 3. Week 3: R
+### Week 3: R
 
 Introduction to the R programming language.
 
@@ -60,7 +60,7 @@ Notes:
 * [Biological Computing in R](https://mhasoba.github.io/TheMulQuaBio/notebooks/07-R.html)
 * [Data Management and Visualization](https://mhasoba.github.io/TheMulQuaBio/notebooks/08-Data_R.html)
 
-### 7. Week 7: Python II
+### Week 7: Python II
 
 More advanced Python topics.
 
