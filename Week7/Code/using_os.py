@@ -23,7 +23,10 @@ import os
 # Type your code here:
 
 # Get the user's home directory.
-home = os.path.expanduser("~")
+
+#home = os.path.expanduser("~")  # took too long on local machine
+home = os.path.expanduser("../../")
+#home = os.path.expanduser("~")  # took too long on local machine
 
 # Create a list to store the results.
 FilesDirsStartingWithC = []
