@@ -14,7 +14,7 @@ Miniproject/
 Week[4-6]/
 Groupwork/
 
-## Keep empty Results/ dir
+## Keep empty Results dir
 Results/*
 !Results/.gitkeep
 
