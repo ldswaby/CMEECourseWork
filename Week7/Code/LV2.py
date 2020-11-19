@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-"""Playing with the Lotka-Volterra model"""
+"""Script that plots the Lotka-Volterra model, taking arguments for the four
+model parameters (r, a, z, e), the carrying capacity of the environment (K), and
+ an arbitrary upper bound for the output x-axis (tN) from the command line."""
 
 __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
@@ -51,7 +53,7 @@ def main(r=1., a=0.1, z=1.5, e=0.75, K=50, tN=35):
     p.xlabel('Time')
     p.ylabel('Population density')
     p.suptitle('Consumer-Resource population dynamics')
-    p.title("r = %.2f,  a = %.2f,  z = %.2f,  e = %.2f, K = %.2f"
+    p.title("r = %.2f,  a = %.2f,  z = %.2f,  e = %.2f, K = %d"
             % (r, a, z, e, K), fontsize=10)
     #p.show()  # To display the figure
 
@@ -67,8 +69,13 @@ def main(r=1., a=0.1, z=1.5, e=0.75, K=50, tN=35):
 if __name__ == '__main__':
 
     # Use argparse to provide info about individual args and force dtypes
-    parser = argparse.ArgumentParser(description="Parameters for Lotka-Volterra"
-                                                 " model")
+    parser = argparse.ArgumentParser(
+        description="Script that plots the Lotka-Volterra model, taking "
+                    "arguments for the four model parameters (r, a, z, e), "
+                    "the carrying capacity of the environment (K), and an "
+                    "arbitrary upper bound for the output x-axis (tN) from the "
+                    "command line. Note that if no/insufficicient args are "
+                    "provided then defaults will be used.")
 
     parser.add_argument('r', type=float, nargs='?',
                         help='Intrinsic (per-capita) growth rate of the '
@@ -84,7 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('K', type=float, nargs='?',
                         help='Carrying capacity.')
     parser.add_argument('tN', type=float, nargs='?',
-                        help='Time interval to span.')
+                        help='Time interval to display in output plot.')
 
     args = parser.parse_args()
 
@@ -93,7 +100,7 @@ if __name__ == '__main__':
         sys.exit(status)
     else:
         print("WARNING: Incorrect arguments provided. "
-              "(See help page — 'python3 LV2.py -h')\n"
+              "(For more information see help page — 'python3 LV2.py -h')\n"
               "Defaults will be used:\n"
               "r = 1.\na = 0.1\nz = 1.5\ne = 0.75\nK = 50\ntN = 35")
         status = main()

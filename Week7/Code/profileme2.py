@@ -7,14 +7,15 @@ __version__ = '0.0.1'
 
 ## Imports ##
 import numpy as np
-import timeit
+import sys
+#import timeit
 
 ## Functions ##
 def my_squares(iters):
     """Returns list of squares range of integers using list comprehension.
     """
     #out = [i ** 2 for i in range(iters)]  # using list comprehension
-    out = np.arange(iters)**2
+    out = np.arange(iters)**2   # using vectorization
     return out
 
 def my_join(iters, string):
@@ -33,4 +34,12 @@ def run_my_funcs(x,y):
     my_join(x,y)
     return 0
 
-run_my_funcs(10000000, "My string")
+def main():
+    """Run functions
+    """
+    run_my_funcs(10000000, "My string")
+    return 0
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)

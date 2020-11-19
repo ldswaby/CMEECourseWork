@@ -22,6 +22,7 @@ hypens and dots.
 ## Imports ##
 import re
 
+## Main ##
 valid1 = "niceandsimple@example.com"
 valid2 = "very.common@example.com"
 validbutterrible = "!#$%&'*+-/=?^_`{}|~@example.org"
@@ -34,5 +35,7 @@ emailpattern1 = r'^[a-zA-Z0-9\._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
 print(re.search(emailpattern1, valid1).group())
 
 #matching a nasty one:
-emailpattern = r'[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+emailpattern = r'[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!\#$%&\'*+/=?^_`' \
+               r'{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:' \
+               r'[a-z0-9-]*[a-z0-9])?'
 print(re.search(emailpattern, validbutterrible).group())

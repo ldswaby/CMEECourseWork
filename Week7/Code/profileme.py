@@ -5,6 +5,9 @@
 __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
+## Imports ##
+import sys
+
 ## Functions ##
 def my_squares(iters):
     """Returns list of squares of range of integers.
@@ -30,4 +33,12 @@ def run_my_funcs(x,y):
     my_join(x,y)
     return 0
 
-run_my_funcs(10000000,"My string")
+def main():
+    """Run functions
+    """
+    run_my_funcs(10000000,"My string")
+    return 0
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
