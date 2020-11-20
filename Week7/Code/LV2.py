@@ -19,6 +19,20 @@ import matplotlib.pylab as p
 def dCR_dt(pops, t, r, a, z, e, K):
     """Returns the growth rate of consumer and resource
     population at any given time step using the Lotka-Volterra model.
+
+    Arguments:
+     - RC0 (array) : the densities of both populations at time t
+     - t: time
+     - r: Intrinsic (per-capita) growth rate of the 'resource population
+          (/time).'
+     - a: Encounter and consumption rate of the consumer on the resource
+     - z: Mortality rate (/time).
+     - e: The consumer’s efficiency (a fraction) in converting resource to
+          consumer biomass.
+     - K: Environment carrying capacity
+
+    Output:
+     - A numpy array containing the growth rate of the two populations
     """
     R = pops[0]
     C = pops[1]
@@ -28,7 +42,7 @@ def dCR_dt(pops, t, r, a, z, e, K):
     return np.array([dRdt, dCdt])
 
 def main(r=1., a=0.1, z=1.5, e=0.75, K=50, tN=35):
-    """Run functions
+    """Plot the Lotka-Volterra model with prey density dependence.
     """
     # Define the time vector
     t = np.linspace(0, tN, 1000)

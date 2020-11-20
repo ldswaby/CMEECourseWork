@@ -6,11 +6,10 @@ __author__ = 'Luke Swaby (lds20@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## Imports ##
+import sys
 import numpy as np
 import scipy.integrate as integrate
 import matplotlib.pylab as p
-
-## Assign some parameter values ##
 
 ## Functions ##
 
@@ -20,9 +19,16 @@ def dCR_dt(pops, t=0, r=1., a=0.1, z=1.5, e=0.75):
 
     Arguments:
      - RC0 (array) : the densities of both populations at time t
+     - t: time
+     - r: Intrinsic (per-capita) growth rate of the 'resource population
+          (/time).'
+     - a: Encounter and consumption rate of the consumer on the resource
+     - z: Mortality rate (/time).
+     - e: The consumer’s efficiency (a fraction) in converting resource to
+          consumer biomass.
 
     Output:
-     - a numpy array containing the growth rate of the populations
+     - A numpy array containing the growth rate of the two populations
     """
     R = pops[0]
     C = pops[1]
@@ -32,7 +38,8 @@ def dCR_dt(pops, t=0, r=1., a=0.1, z=1.5, e=0.75):
     return np.array([dRdt, dCdt])
 
 def main():
-    """Run functions
+    """Plot Consumer-Resource population dynamics according to the
+    Lotka-Volterra model
     """
 
     # Define the time vector
@@ -73,5 +80,8 @@ def main():
     # Save figure
     f2.savefig('../Results/LV_model2.pdf')
 
+    return 0
+
 if __name__ == '__main__':
-    main()
+    status = main()
+    sys.exit(status)
