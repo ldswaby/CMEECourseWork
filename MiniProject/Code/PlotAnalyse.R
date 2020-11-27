@@ -10,15 +10,51 @@ library(plyr)
 library(tidyverse)
 
 frData <- read.csv('../Data/CRat_prepped.csv', stringsAsFactors = FALSE)
-frModStats <- read.csv('../Data/ModelStats.csv', stringsAsFactors = FALSE)
+frModStats <- read.csv('../Data/ModelStats2.csv', stringsAsFactors = FALSE)
 #mergedData <- dplyr::left_join(frData, frModStats, by = "ID")
+##################################################################################
+holling2 <- function(R, a, h){
+  num <- a*R
+  denom <- 1+a*h*R
+  return(num/denom)
+}
+
+holling3 <- function(R, a, h, q){
+  num <- a*R^(q+1)
+  denom <- 1+a*h*R^(q+1)
+  return(num/denom)
+}
+
+sub <- subset(frData, ID == 140)
+x <- sub$ResDensity
+y <- sub$N_TraitValue
+# Fit models
+Quad <- lm(y ~ poly(x, 2))
+Cube <- lm(y ~ poly(x, 3))
+# x axis
+xvals <- seq(from = min(x), to = max(x), by = ((max(x) - min(x))/100))
+# Predicted values
+y_quad <- predict.lm(Quad, data.frame(x = xvals))
+y_cube <- predict.lm(Cube, data.frame(x = xvals))
+y_holl2 <- holling2(xvals, 0.0022816705759893807, 3.325444244656122)
+y_holl3 <- holling3(xvals, 0.003566367009295135, 3.0860562867942845, -0.1112141747287729)
+
+
+plot(x, y)
+lines(xvals, y_quad, col = 'blue', lwd = 2.5)
+lines(xvals, y_cube, col = 'red', lwd = 2.5)
+lines(xvals, y_holl2, col = 'green', lwd = 2.5)
+lines(xvals, y_holl3, col = 'black', lwd = 2.5)
+
+
+##################################################################################
 
 ################################################################################
 ################################### ANALYSE ####################################
 ################################################################################
 # TODO:
 # 1. drop Rsqd rows. Should these be included at all?
-frModStats <- frModStats[,1:5]
+#frModStats <- frModStats[,1:5]
 # 2. When a model doesn't fit, should the whole curve be dismissed from
 #    the anaysis or just that particular model for that particular curve?
 # Drop rows with +/-Inf values (bad fits) and NAs
@@ -122,7 +158,7 @@ ggplot(data = fitdata, aes(x = factor(Model), y = Count, fill = Estimator)) +
   geom_bar(stat="identity", position = 'dodge') +
   labs(x = 'Model', y = 'Best fits') + 
   theme_bw() +
-  theme(legend.title = element_text(face="bold"), aspect.ratio = 1) +
+  theme(legend.title = element_text(face="bold")) +
   geom_text(aes(label=paste(Count, ' (', round((Count/n)*100, 1), '%)', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 2.5) +
   expand_limits(y = max(fitdata$Count)+5) +
   scale_fill_brewer(palette="Paired")

@@ -69,7 +69,7 @@ def fit_polynomial(df, n):
         model = np.polyfit(x, y, n, full=True)
         predict = np.poly1d(model[0])
         #r_sqd = 1 - (np.sum((y - predict(x))**2))/(np.sum((y - np.mean(y))**2))
-        r_sqd = r2_score(y, predict(x))
+        #r_sqd = r2_score(y, predict(x))
 
         stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)', data=df).fit()
 
@@ -82,14 +82,14 @@ def fit_polynomial(df, n):
         #bic = BIC(n, p, rss)
 
         # For plotting!
-        coef1, coef2, coef3, coef4 = model[0]
+        #coef1, coef2, coef3, coef4 = model[0]
 
     except IndexError:
-        #aic, bic, r_sqd = None, None, None
-        coef1, coef2, coef3, coef4, aic, bic, r_sqd = None, None, None, None, None, None, None
+        aic, bic = None, None
+        #coef1, coef2, coef3, coef4, aic, bic, r_sqd = None, None, None, None, None, None, None
 
-    #return aic, bic, r_sqd
-    return coef1, coef2, coef3, coef4, aic, bic, r_sqd
+    return aic, bic
+    #return coef1, coef2, coef3, coef4, aic, bic, r_sqd
 
 
 def startValues(df):
@@ -179,12 +179,12 @@ def fitHoll2(h, a, x, y, N):
             a_best = fit.params['a'].value
 
             #r_sqd = 1 - fit.redchi / np.var(y, ddof=2)
-            RSS = np.sum((y - holler_II(x, a_best, h_best)) ** 2)
-            TSS = np.sum((y - np.mean(y))**2)
-            r_sqd = 1 - RSS/TSS
+            #RSS = np.sum((y - holler_II(x, a_best, h_best)) ** 2)
+            #TSS = np.sum((y - np.mean(y))**2)
+            #r_sqd = 1 - RSS/TSS
             #print(r_sqd, r_sqd2)
             # Write stats to group tuple
-            group = (h_best, a_best, fit.aic, fit.bic, r_sqd)
+            group = (h_best, a_best, fit.aic, fit.bic)
             groups.append(group)
             i += 1
 
@@ -195,7 +195,6 @@ def fitHoll2(h, a, x, y, N):
     best_fit = min(groups, key=lambda t: t[2])  # take group with lowest AIC
 
     return best_fit if groups else None
-
 
 
 def residHoll3(params, x, y):
@@ -266,12 +265,12 @@ def fitHoll3(h, a, x, y, N):
             a_best = fit.params['a'].value
             q_best = fit.params['q'].value
 
-            RSS = np.sum((y - holler_III(x, a_best, h_best, q_best)) ** 2)
-            TSS = np.sum((y - np.mean(y)) ** 2)
-            r_sqd = 1 - RSS / TSS
+            #RSS = np.sum((y - holler_III(x, a_best, h_best, q_best)) ** 2)
+            #TSS = np.sum((y - np.mean(y)) ** 2)
+            #r_sqd = 1 - RSS / TSS
             # print(r_sqd, r_sqd2)
             # Write stats to group tuple
-            group = (h_best, a_best, q_best, fit.aic, fit.bic, r_sqd)
+            group = (h_best, a_best, q_best, fit.aic, fit.bic)
             groups.append(group)
             i += 1
 
@@ -312,9 +311,9 @@ def returnStats(id_):
         print(f'Insufficient data for R2 to fit {id_}')
         return [None] * 10
 
-    # Holing I
-    #holl1AIC, holl1BIC, holl1R2 = fit_polynomial(df, 1)
-    #if None in [holl1AIC, holl1BIC, holl1R2]:
+    ## Holing I
+    #holl1AIC, holl1BIC = fit_polynomial(df, 1)
+    #if None in [holl1AIC, holl1BIC]:
     #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
     # Quadratic Polynomial
@@ -323,9 +322,8 @@ def returnStats(id_):
     #    print(f"Insufficient data to plot quadratic polynomial for ID '{id_}'.")
 
     # Cubic Polynomial
-    #cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
-    coef1, coef2, coef3, coef4, cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
-    if None in [cubeAIC, cubeBIC, cubeR2]:
+    cubeAIC, cubeBIC = fit_polynomial(df, 3)
+    if None in [cubeAIC, cubeBIC]:
         print(f"Insufficient data to plot cubic polynomial for ID '{id_}'.")
 
     ######################### NON-LINEAR ###############################
@@ -336,152 +334,40 @@ def returnStats(id_):
             h, a = startValues(df)
         except RuntimeWarning:
             print(f"Insufficient data to fit for ID {id_}. Skipping.")
-            return [id_] + [None] * 9
+            return [id_] + [None] * 6
 
     # Holling II
     #h, a = optimizeParams(h, a, x, y, 30) # better values
     bestfit = fitHoll2(h, a, x, y, 1000)
     if bestfit:
-        h2, a2, holl2aic, holl2bic, holl2R2 = bestfit
+        h2, a2, holl2aic, holl2bic = bestfit
     else:
         print(f"Insufficient data to plot Holling II for ID '{id_}'.")
-        h2, a2, holl2aic, holl2bic, holl2R2 = [None] * 5
+        h2, a2, holl2aic, holl2bic = [None] * 4
 
     # Holling III
-    #h3, a3 = optimizeParams(h, a, x, y, 'hollingIII')
     bestfit = fitHoll3(h, a, x, y, 1000)
     if bestfit:
-        h3, a3, q3, holl3aic, holl3bic, holl3R2 = bestfit
+        h3, a3, q3, holl3aic, holl3bic = bestfit
     else:
         print(f"Insufficient data to plot Holling III for ID '{id_}'.")
-        h3, a3, q3, holl3aic, holl3bic, holl3R2 = [None] * 6
+        h3, a3, q3, holl3aic, holl3bic = [None] * 5
 
-    #statistics = [id_,
+    statistics = [id_,
                   #holl1AIC,
-                  #quadAIC,
-    #              cubeAIC,
-    #              holl2aic,
-                  #holl3aic,
-                  #holl1BIC,
-                  #quadBIC,
-    #              cubeBIC,
-    #              holl2bic,
-                  #holl3bic,
-                  #holl1R2,
-                  #quadR2,
-    #              cubeR2,
-    #              holl2R2,
-                  # holl3bic
-    #              ]
-
-    statistics = [id_,
-                  coef1, coef2, coef3, coef4, cubeAIC, cubeBIC, cubeR2,
-                  h2, a2, holl2aic, holl2bic, holl2R2,
-                  h3, a3, q3, holl3aic, holl3bic, holl3R2]
-
-    print(f'{id_} done!')
-
-    return statistics
-
-pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-# Filter out None rows
-rows = [row for row in pool.map(returnStats, ids) if None not in row]
-pool.close()
-pool.join()
-
-#ModelStats = ModelStats[~np.isnan(ModelStats).any(axis=1)]  # Remove NaN rows
-heads = ['ID',
-         'Cubic1', 'Cubic2', 'Cubic3', 'Cubic4', 'CubicAIC', 'CubicBIC', 'CubicR^2',
-         'h_Holl2', 'a_Holl2', 'HollingIIAIC', 'HollingIIBIC', 'HollingIIR^2',
-         'h_Holl3', 'a_Holl3', 'q_Holl3', 'HollingIIIAIC', 'HollingIIIBIC', 'HollingIIIR^2']
-ModelStats = pd.DataFrame(rows, columns=heads)
-ModelStats['ID'] = ModelStats['ID'].astype(int)  # Convert ID col from float
-ModelStats.sort_values('ID', inplace=True)  # Order by ID
-
-# Write to CSV
-ModelStats.to_csv('../Data/STATS.csv', index=False)
-
-
-
-
-
-
-
-"""
-def returnStats(id_):
-    #i, id_ = 279, 140
-    # id_ = 140
-    # id_ = 39840
-    # id_ = 39835
-    print(id_)
-    df = data[data['ID'] == id_]
-    # Extract exp/resp variables
-    x = df['ResDensity']
-    y = df['N_TraitValue']
-
-    if len(df) < 3:
-        print(f'Insufficient data for R2 to fit {id_}')
-        return [None] * 10
-
-    # Holing I
-    holl1AIC, holl1BIC, holl1R2 = fit_polynomial(df, 1)
-    if None in [holl1AIC, holl1BIC, holl1R2]:
-        print(f"Insufficient data to plot Holling II for ID '{id_}'.")
-
-    # Quadratic Polynomial
-    #quadAIC, quadBIC, quadR2 = fit_polynomial(x, y, 2)
-    #if None in [quadAIC, quadBIC, quadR2]:
-    #    print(f"Insufficient data to plot quadratic polynomial for ID '{id_}'.")
-
-    # Cubic Polynomial
-    cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
-    if None in [cubeAIC, cubeBIC, cubeR2]:
-        print(f"Insufficient data to plot cubic polynomial for ID '{id_}'.")
-
-    ######################### NON-LINEAR ###############################
-
-    with warnings.catch_warnings():
-        warnings.filterwarnings('error')
-        try:
-            h, a = startValues(df)
-        except RuntimeWarning:
-            print(f"Insufficient data to fit for ID {id_}. Skipping.")
-            return [id_] + [None] * 9
-
-    # Holling II
-    #h, a = optimizeParams(h, a, x, y, 30) # better values
-    bestfit = fitHoll2(h, a, x, y, 1000)
-    if bestfit:
-        h2, a2, holl2aic, holl2bic, holl2R2 = bestfit
-    else:
-        print(f"Insufficient data to plot Holling II for ID '{id_}'.")
-        h2, a2, holl2aic, holl2bic, holl2R2 = [None] * 5
-
-    # Holling III
-    #h3, a3 = optimizeParams(h, a, x, y, 'hollingIII')
-
-    #bestfit = fitHoll3(h, a, x, y, 1000)
-    #if bestfit:
-    #    holl3aic, holl3bic, h3, a3 = bestfit
-    #else:
-    #    print(f"Insufficient data to plot Holling III for ID '{id_}'.")
-    #    holl3aic, holl3bic, h3, a3 = None, None, None, None
-
-    statistics = [id_,
-                  holl1AIC,
                   #quadAIC,
                   cubeAIC,
                   holl2aic,
-                  #holl3aic,
-                  holl1BIC,
+                  holl3aic,
+                  #holl1BIC,
                   #quadBIC,
                   cubeBIC,
                   holl2bic,
-                  #holl3bic,
-                  holl1R2,
+                  holl3bic,
+                  #holl1R2,
                   #quadR2,
-                  cubeR2,
-                  holl2R2,
+                  #cubeR2,
+                  #holl2R2,
                   # holl3bic
                   ]
 
@@ -497,20 +383,20 @@ pool.join()
 
 #ModelStats = ModelStats[~np.isnan(ModelStats).any(axis=1)]  # Remove NaN rows
 heads = ['ID',
-         'HollingIAIC',
+         #'HollingIAIC',
          #'QuadraticAIC',
          'CubicAIC',
          'HollingIIAIC',
-         #'HollingIIIAIC',
-         'HollingIBIC',
+         'HollingIIIAIC',
+         #'HollingIBIC',
          #'QuadraticBIC',
          'CubicBIC',
          'HollingIIBIC',
-         #'HollingIIIBIC'
-         'HollingIR^2',
+         'HollingIIIBIC'
+         #'HollingIR^2',
          #'QuadraticR^2',
-         'CubicR^2',
-         'HollingIIR^2',
+         #'CubicR^2',
+         #'HollingIIR^2',
          #'HollingIIIR^2'
          ]
 ModelStats = pd.DataFrame(rows, columns=heads)
@@ -519,4 +405,3 @@ ModelStats.sort_values('ID', inplace=True)  # Order by ID
 
 # Write to CSV
 ModelStats.to_csv('../Data/ModelStats2.csv', index=False)
-"""

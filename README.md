@@ -72,6 +72,7 @@ Topics covered:
 
 Notes: 
 * [Biological Computing in Python II](https://mhasoba.github.io/TheMulQuaBio/notebooks/06-Python_II.html)
+* [Introduction to Jupyter](https://mhasoba.github.io/TheMulQuaBio/notebooks/Appendix-JupyIntro.html)
 
 ## Prerequisites
 
@@ -81,6 +82,7 @@ The following packages (with versions) are used in the project:
 * LaTeX 
 * Python (3.7.7)
 * R (4.0.3)
+* Jupyter-Notebook (6.1.4)
 
 ## Dependencies
 
@@ -89,7 +91,6 @@ The following packages (with versions) are used in the project:
 * `numpy` 
 * `scipy` 
 * `pandas` 
-* `networkx` 
 * `matplotlib`
  
 ### R 4.0.3

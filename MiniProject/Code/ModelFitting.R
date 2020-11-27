@@ -14,6 +14,8 @@ library(plyr)
 FRData <- read.csv("../Data/CRat_prepped.csv", stringsAsFactors = FALSE)
 #dplyr::glimpse(FRData)
 
+ids <- unique(FRData$ID)
+
 returnStats <- function(df){
   # df <- subset(FRData, ID == 721)
   x <- df$ResDensity
