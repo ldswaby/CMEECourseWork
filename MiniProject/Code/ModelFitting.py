@@ -9,6 +9,7 @@ from lmfit import Minimizer, Parameters, report_fit
 import lmfit
 import numpy as np
 import pandas as pd
+import sys
 import scipy as sc
 from scipy import stats
 import warnings
@@ -25,15 +26,20 @@ from sklearn.metrics import r2_score
 
 
 # TODO:
-#  1. Parameter optimization (and q start value estimation)
-#  2. Why is Holling II/III so much worse than cubic? (plot)
-#  3. Logging?
+#  1. Delete r_sqd stuff (and 'holler'/AIC/BIc funcs below thereafter)
+#  2. Why is BIC giving so many to Holling II
+
+## Variables ##
+data = pd.read_csv("../Data/CRat_prepped.csv")  # Load data
+
+##### FOR TESTING ########
+#data = data.head(100)
+# data = data[data['ID'] == 140]
+##########################
+
+ids = data['ID'].unique()
 
 ## Functions ##
-
-t1 = time.perf_counter()
-
-# Models
 
 def holler_II(x, a, h):
     """blabla"""
@@ -68,29 +74,18 @@ def fit_polynomial(df, n):
     try:
         model = np.polyfit(x, y, n, full=True)
         predict = np.poly1d(model[0])
-        #r_sqd = 1 - (np.sum((y - predict(x))**2))/(np.sum((y - np.mean(y))**2))
         r_sqd = r2_score(y, predict(x))
 
-        stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)', data=df).fit()
+        stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
+                        data=df).fit()
 
         aic = stats.aic
         bic = stats.bic
-        #n = len(x)
-        #rss = model[1][0]
-        #p = n - len(model[0])
-        #aic = AIC(n, p, rss)
-        #bic = BIC(n, p, rss)
-
-        # For plotting!
-        coef1, coef2, coef3, coef4 = model[0]
 
     except IndexError:
-        #aic, bic, r_sqd = None, None, None
-        coef1, coef2, coef3, coef4, aic, bic, r_sqd = None, None, None, None, None, None, None
+        aic = bic = r_sqd = None
 
-    #return aic, bic, r_sqd
-    return coef1, coef2, coef3, coef4, aic, bic, r_sqd
-
+    return aic, bic, r_sqd
 
 def startValues(df):
     """return sensible start values for params
@@ -130,7 +125,7 @@ def residHoll2(params, x, y):
     # Return residuals
     return model - y
 
-def fitHoll2(h, a, x, y, N):
+def fitHoll2(h, a, x, y, timeout):
     """Fit Holling II to data with start values  RANDOM UNIF DIST
 
     h: handling time
@@ -139,16 +134,16 @@ def fitHoll2(h, a, x, y, N):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
+    N = 1000  # Set max number of runs
+
     # Create ranges around params to test
-    hrange = 0.8 * min(abs(h - 1e6), h)   # range around h to test
-    arange = 0.8 * min(abs(a - 5e7), a)   # range around h to test
+    hrange = 0.8 * min(abs(h - 1e6), h)
+    arange = 0.8 * min(abs(a - 5e7), a)
 
-    # Set seed
+    # Generate random parameter samples
     np.random.seed(0)
-
-    #
-    h_vals = [h] + [x for x in list(np.random.uniform(h - hrange, h + hrange, N))]
-    a_vals = [a] + [x for x in list(np.random.uniform(a - arange, a + arange, N))]
+    h_vals = [h] + list(np.random.uniform(h - hrange, h + hrange, N))
+    a_vals = [a] + list(np.random.uniform(a - arange, a + arange, N))
 
     #h_vals = [h] + [np.exp(x) for x in list(np.random.uniform(np.log(1e-20), np.log(1e6), N))]
     #a_vals = [a] + [np.exp(x) for x in list(np.random.uniform(np.log(1e-20), np.log(5e7), N))]
@@ -157,21 +152,22 @@ def fitHoll2(h, a, x, y, N):
     paramsdf = pd.DataFrame(list(zip(h_vals, a_vals)), columns=['h', 'a'])
 
     # Initialize timer and counter
-    timeout = time.time() + 5  # Set fitting time limit FOR EACH ID (5 seconds from now)
+    t = time.time() + timeout  # Set fitting time limit
     groups = []
     i = 0
 
     # Fit until time runs out of all values have been tested
-    while time.time() < timeout and i < N:
+    while time.time() < t and i < N:
         params = paramsdf.loc[i]
-        hi = params[0]
-        ai = params[1]
+        hi = params['h']
+        ai = params['a']
 
-        # store paramteters
-        params_holl2 = Parameters()  # Create object for parameter storing
-        params_holl2.add('h', value=hi, min=0, max=1e6)  # Add h param   1 week
-        params_holl2.add('a', value=ai, min=0, max=5e7)  # Add a param   # Blue whale eats max 50 million krill per day # sett max just to outside bounds of possibility  e.g. whale eating how much and add 10%
+        # Store paramteters
+        params_holl2 = Parameters()
+        params_holl2.add('h', value=hi, min=0, max=1e6)  # Add h param
+        params_holl2.add('a', value=ai, min=0, max=5e7)  # Add a param
 
+        # Attempt fit
         try:
             fit = lmfit.minimize(residHoll2, params_holl2, args=(x, y))
 
@@ -184,7 +180,7 @@ def fitHoll2(h, a, x, y, N):
             r_sqd = 1 - RSS/TSS
             #print(r_sqd, r_sqd2)
             # Write stats to group tuple
-            group = (h_best, a_best, fit.aic, fit.bic, r_sqd)
+            group = (fit.aic, fit.bic, r_sqd, h_best, a_best)
             groups.append(group)
             i += 1
 
@@ -192,11 +188,9 @@ def fitHoll2(h, a, x, y, N):
             i += 1
             continue
 
-    best_fit = min(groups, key=lambda t: t[2])  # take group with lowest AIC
+    best_fit = min(groups, key=lambda t: t[0])  # take group with lowest AIC
 
     return best_fit if groups else None
-
-
 
 def residHoll3(params, x, y):
     """Returns residuals for Holling II functional response:
@@ -216,7 +210,7 @@ def residHoll3(params, x, y):
     return model - y
 
 
-def fitHoll3(h, a, x, y, N):
+def fitHoll3(h, a, x, y, timeout):
     """Fit Holling II to data with start values  RANDOM UNIF DIST
 
     h: handling time
@@ -225,16 +219,16 @@ def fitHoll3(h, a, x, y, N):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
+    N = 1000  # Set max number of runs
+
     # Create ranges around params to test
-    hrange = 0.8 * min(abs(h - 1e6), h)  # range around h to test
-    arange = 0.8 * min(abs(a - 5e7), a)  # range around h to test
+    hrange = 0.8 * min(abs(h - 1e6), h)
+    arange = 0.8 * min(abs(a - 5e7), a)
 
-    # Set seed
+    # Generate random parameter samples
     np.random.seed(0)
-
-    #
-    h_vals = [h] + [x for x in list(np.random.uniform(h - hrange, h + hrange, N))]
-    a_vals = [a] + [x for x in list(np.random.uniform(a - arange, a + arange, N))]
+    h_vals = [h] + list(np.random.uniform(h - hrange, h + hrange, N))
+    a_vals = [a] + list(np.random.uniform(a - arange, a + arange, N))
 
     #h_vals = [h] + [np.exp(x) for x in list(np.random.uniform(np.log(1e-20), np.log(1e6), N))]
     #a_vals = [a] + [np.exp(x) for x in list(np.random.uniform(np.log(1e-20), np.log(5e7), N))]
@@ -243,22 +237,23 @@ def fitHoll3(h, a, x, y, N):
     paramsdf = pd.DataFrame(list(zip(h_vals, a_vals)), columns=['h', 'a'])
 
     # Initialize timer and counter
-    timeout = time.time() + 5  # Set fitting time limit FOR EACH ID (5 seconds from now)
+    t = time.time() + timeout  # Set fitting time limit FOR EACH ID (5 seconds from now)
     groups = []
     i = 0
 
     # Fit until time runs out of all values have been tested
-    while time.time() < timeout and i < N:
+    while time.time() < t and i < N:
         params = paramsdf.loc[i]
-        hi = params[0]
-        ai = params[1]
+        hi = params['h']
+        ai = params['a']
 
         # store paramteters
         params_holl3 = Parameters()  # Create object for parameter storing
-        params_holl3.add('h', value=hi, min=0, max=1e6)  # Add h param   1 week
-        params_holl3.add('a', value=ai, min=0, max=5e7)  # Add a param   # Blue whale eats max 50 million krill per day # sett max just to outside bounds of possibility  e.g. whale eating how much and add 10%
-        params_holl3.add('q', value=0)
+        params_holl3.add('h', value=hi, min=0, max=1e6)  # Add h param
+        params_holl3.add('a', value=ai, min=0, max=5e7)  # Add a param
+        params_holl3.add('q', value=0)  # Add q param
 
+        # Attempt fit
         try:
             fit = lmfit.minimize(residHoll3, params_holl3, args=(x, y))
 
@@ -271,7 +266,7 @@ def fitHoll3(h, a, x, y, N):
             r_sqd = 1 - RSS / TSS
             # print(r_sqd, r_sqd2)
             # Write stats to group tuple
-            group = (h_best, a_best, q_best, fit.aic, fit.bic, r_sqd)
+            group = (fit.aic, fit.bic, r_sqd, h_best, a_best, q_best)
             groups.append(group)
             i += 1
 
@@ -279,38 +274,26 @@ def fitHoll3(h, a, x, y, N):
             i += 1
             continue
 
-    best_fit = min(groups, key=lambda t: t[3])  # take group with lowest AIC
+    best_fit = min(groups, key=lambda t: t[0])  # take group with lowest AIC
 
     return best_fit if groups else None
 
 
 ###############################################################################
-# Load data
-data = pd.read_csv("../Data/CRat_prepped.csv")
-#data.set_index('ID', inplace=True)
-
-##### FOR TESTING ########
-#data = data.head(500)
-#data = data[data['ID'] == 140]
-
-##########################
-
-ids = data['ID'].unique()
-
 def returnStats(id_):
     #i, id_ = 279, 140
     # id_ = 140
     # id_ = 39840
     # id_ = 39835
-    print(id_)
+    #print(id_)
     df = data[data['ID'] == id_]
     # Extract exp/resp variables
     x = df['ResDensity']
     y = df['N_TraitValue']
 
-    if len(df) < 3:
-        print(f'Insufficient data for R2 to fit {id_}')
-        return [None] * 10
+    #if len(df) < 3:
+    #    print(f'Insufficient data for R2 to fit {id_}')
+    #    return [None] * 10
 
     # Holing I
     #holl1AIC, holl1BIC, holl1R2 = fit_polynomial(df, 1)
@@ -324,82 +307,73 @@ def returnStats(id_):
 
     # Cubic Polynomial
     #cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
-    coef1, coef2, coef3, coef4, cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
+    cubeAIC, cubeBIC, cubeR2 = fit_polynomial(df, 3)
     if None in [cubeAIC, cubeBIC, cubeR2]:
         print(f"Insufficient data to plot cubic polynomial for ID '{id_}'.")
 
     ######################### NON-LINEAR ###############################
 
+    # Obtain sensible parameter starting values (catching any warnings thrown
+    # by stats.linregress())
     with warnings.catch_warnings():
         warnings.filterwarnings('error')
         try:
             h, a = startValues(df)
         except RuntimeWarning:
-            print(f"Insufficient data to fit for ID {id_}. Skipping.")
-            return [id_] + [None] * 9
+            print(f"startValues error at ID {id_}. Skipping.")
+            return [None] * 12
 
     # Holling II
-    #h, a = optimizeParams(h, a, x, y, 30) # better values
-    bestfit = fitHoll2(h, a, x, y, 1000)
+    bestfit = fitHoll2(h, a, x, y, 10)
     if bestfit:
-        h2, a2, holl2aic, holl2bic, holl2R2 = bestfit
+        holl2aic, holl2bic, holl2R2, h2, a2 = bestfit
     else:
         print(f"Insufficient data to plot Holling II for ID '{id_}'.")
-        h2, a2, holl2aic, holl2bic, holl2R2 = [None] * 5
+        h2 = a2 = holl2aic = holl2bic = holl2R2 = None
 
     # Holling III
-    #h3, a3 = optimizeParams(h, a, x, y, 'hollingIII')
-    bestfit = fitHoll3(h, a, x, y, 1000)
+    bestfit = fitHoll3(h, a, x, y, 10)
     if bestfit:
-        h3, a3, q3, holl3aic, holl3bic, holl3R2 = bestfit
+        holl3aic, holl3bic, holl3R2, h3, a3, q3 = bestfit
     else:
         print(f"Insufficient data to plot Holling III for ID '{id_}'.")
-        h3, a3, q3, holl3aic, holl3bic, holl3R2 = [None] * 6
-
-    #statistics = [id_,
-                  #holl1AIC,
-                  #quadAIC,
-    #              cubeAIC,
-    #              holl2aic,
-                  #holl3aic,
-                  #holl1BIC,
-                  #quadBIC,
-    #              cubeBIC,
-    #              holl2bic,
-                  #holl3bic,
-                  #holl1R2,
-                  #quadR2,
-    #              cubeR2,
-    #              holl2R2,
-                  # holl3bic
-    #              ]
+        holl3aic = holl3bic = holl3R2 = h3 = a3 = q3 = None
 
     statistics = [id_,
-                  coef1, coef2, coef3, coef4, cubeAIC, cubeBIC, cubeR2,
-                  h2, a2, holl2aic, holl2bic, holl2R2,
-                  h3, a3, q3, holl3aic, holl3bic, holl3R2]
+                  cubeAIC, holl2aic, holl3aic,
+                  cubeBIC, holl2bic, holl3bic,
+                  h2, a2,
+                  h3, a3, q3]
 
-    print(f'{id_} done!')
+    #print(f'{id_} done!')
 
     return statistics
 
-pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-# Filter out None rows
-rows = [row for row in pool.map(returnStats, ids) if None not in row]
-pool.close()
-pool.join()
+def main():
+    """Run analysis
+    """
+    # Apply function and filter out failed IDs
+    with multiprocessing.Pool() as pool:
+        rows = [row for row in pool.map(returnStats, ids) if None not in row]
 
-#ModelStats = ModelStats[~np.isnan(ModelStats).any(axis=1)]  # Remove NaN rows
-heads = ['ID',
-         'Cubic1', 'Cubic2', 'Cubic3', 'Cubic4', 'CubicAIC', 'CubicBIC', 'CubicR^2',
-         'h_Holl2', 'a_Holl2', 'HollingIIAIC', 'HollingIIBIC', 'HollingIIR^2',
-         'h_Holl3', 'a_Holl3', 'q_Holl3', 'HollingIIIAIC', 'HollingIIIBIC', 'HollingIIIR^2']
-ModelStats = pd.DataFrame(rows, columns=heads)
-ModelStats['ID'] = ModelStats['ID'].astype(int)  # Convert ID col from float
-ModelStats.sort_values('ID', inplace=True)  # Order by ID
+    heads = ['ID',
+             'Cubic_AIC', 'HollingII_AIC', 'HollingIII_AIC',
+             'Cubic_BIC', 'HollingII_BIC', 'HollingIII_BIC',
+             'h_Holl2', 'a_Holl2',
+             'h_Holl3', 'a_Holl3', 'q_Holl3']
+    ModelStats = pd.DataFrame(rows, columns=heads)
+    ModelStats['ID'] = ModelStats['ID'].astype(int)  # Convert ID col from float
+    ModelStats.sort_values('ID', inplace=True)  # Order by ID
 
-# Write to CSV
-ModelStats.to_csv('../Data/STATS.csv', index=False)
+    # Write to CSV
+    ModelStats.to_csv('../Data/STATS_test.csv', index=False)
+
+    return 0
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
+
 
 
 
