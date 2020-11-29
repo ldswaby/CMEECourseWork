@@ -45,30 +45,6 @@ ids = data['ID'].unique()
 
 ## Functions ##
 
-def holler_II(x, a, h):
-    """blabla"""
-    return (a*x)/(1+h*a*x)
-
-def holler_III(x, a, h, q):
-    """blabla"""
-    return (a*x**(q+1))/(1+h*a*x**(q+1))
-
-
-def AIC(n, p, rss):
-    """Calculate AIC value
-
-    n = sample size
-    p = number of free parameters
-    rss = residual sum of squares
-    """
-    return n + 2 + n*np.log((2*np.pi)/n) + n*np.log(rss) + 2*p
-
-def BIC(n, p, rss):
-    """Calculate BIC value
-    """
-    return n + 2 + n*np.log((2*np.pi)/n) + n*np.log(rss) + p*np.log(n)
-
-
 def fitPolynomial(df, n):
     """Fits polynomial of degree n to data x and y using numpy's polyfit
     """
@@ -87,11 +63,11 @@ def fitPolynomial(df, n):
     bic = stats.bic
 
     if r_sqd == 1:
-        print(f"ERROR: Insufficient data for ID {id_} to fit polynomial of "
+        print(f"WARNING: insufficient data for ID {id_} to fit polynomial of "
               f"degree {n}.")
-        aic = bic = r_sqd = None
+        aic = bic = None
 
-    return aic, bic, r_sqd
+    return aic, bic
 
 def startValues(df):
     """return sensible start values for params
@@ -119,6 +95,10 @@ def startValues(df):
 
     return h, a
 
+def HollingII(x, a, h):
+    """blabla"""
+    return (a*x)/(1+h*a*x)
+
 def residHoll2(params, x, y):
     """Returns residuals for Holling II functional response:
 
@@ -136,8 +116,11 @@ def residHoll2(params, x, y):
     # Return residuals
     return model - y
 
+def GFR(x, a, h, q):
+    """blabla"""
+    return (a*x**(q+1))/(1+h*a*x**(q+1))
 
-def residHoll3(params, x, y):
+def residGFR(params, x, y):
     """Returns residuals for Holling II functional response:
 
     Arguments:
@@ -219,13 +202,8 @@ def fitFuncResp(h, a, df, model, timeout):
             h_best = fit.params['h'].value
             a_best = fit.params['a'].value
 
-            # Calculate R-squared
-            RSS = np.sum((y - holler_II(x, a_best, h_best)) ** 2)
-            TSS = np.sum((y - np.mean(y)) ** 2)
-            r_sqd = 1 - RSS / TSS
-
             # Create tuple to return
-            group = (fit.aic, fit.bic, r_sqd, h_best, a_best)
+            group = (fit.aic, fit.bic, h_best, a_best)
 
         else:
 
@@ -233,7 +211,7 @@ def fitFuncResp(h, a, df, model, timeout):
 
             # Attempt fit
             try:
-                fit = lmfit.minimize(residHoll3, params, args=(x, y))
+                fit = lmfit.minimize(residGFR, params, args=(x, y))
             except ValueError:
                 i += 1
                 continue
@@ -243,13 +221,8 @@ def fitFuncResp(h, a, df, model, timeout):
             a_best = fit.params['a'].value
             q_best = fit.params['q'].value
 
-            # Calculate R-squared
-            RSS = np.sum((y - holler_III(x, a_best, h_best, q_best)) ** 2)
-            TSS = np.sum((y - np.mean(y)) ** 2)
-            r_sqd = 1 - RSS / TSS
-
             # Create tuple to return
-            group = (fit.aic, fit.bic, r_sqd, h_best, a_best, q_best)
+            group = (fit.aic, fit.bic, h_best, a_best, q_best)
 
         groups.append(group)
         i += 1
@@ -272,50 +245,41 @@ def returnStats(id_):
     #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
     # Quadratic Polynomial
-    quadAIC, quadBIC, quadR2 = fitPolynomial(df, 2)
-    if None in [quadAIC, quadBIC, quadR2]:
-        return [None] * 14
+    #quadAIC, quadBIC = fitPolynomial(df, 2)
+    #if None in [quadAIC, quadBIC]:
+    #    return [None] * 14
 
     # Cubic Polynomial
-    cubeAIC, cubeBIC, cubeR2 = fitPolynomial(df, 3)
-    if None in [cubeAIC, cubeBIC, cubeR2]:
-        return [None] * 14
+    cubeAIC, cubeBIC = fitPolynomial(df, 3)
+    if None in [cubeAIC, cubeBIC]:
+        return [None] * 12
 
     ######################### NON-LINEAR ###############################
 
-    # Obtain sensible parameter starting values (catching any warnings thrown
-    # by stats.linregress())
-    #with warnings.catch_warnings():
-    #    warnings.filterwarnings('error')
-    #    try:
-    #        h, a = startValues(df)
-    #    except RuntimeWarning:
-    #        print(f"startValues error at ID {id_}. Skipping.")
-    #        return [None] * 15
-
-    # Generate starting values
+    # Generate sensible starting values
     h, a = startValues(df)
 
     # Holling II
     bestfit = fitFuncResp(h, a, df, 'HollingII', 5)
     if bestfit:
-        holl2aic, holl2bic, holl2R2, h2, a2 = bestfit
+        holl2aic, holl2bic, h2, a2 = bestfit
     else:
-        print(f"ERROR: Insufficient data for ID {id_} to fit Holling II model.")
-        return [None] * 14
+        print(f"WARNING: insufficient data for ID {id_} to fit Holling II "
+              f"model.")
+        return [None] * 12
 
     # Generalised Functional Response
     bestfit = fitFuncResp(h, a, df, 'GFR', 5)
     if bestfit:
-        gfraic, gfrbic, gfrR2, h3, a3, q3 = bestfit
+        gfraic, gfrbic, h3, a3, q3 = bestfit
     else:
-        print(f"ERROR: Insufficient data for ID {id_} to fit Generalised "
+        print(f"WARNING: insufficient data for ID {id_} to fit Generalised "
               f"Functional Response model.")
-        return [None] * 14
+        return [None] * 12
 
     statistics = [id_,
-                  quadAIC, cubeAIC, holl2aic, gfraic,
-                  quadBIC, cubeBIC, holl2bic, gfrbic,
+                  cubeAIC, holl2aic, gfraic,
+                  cubeBIC, holl2bic, gfrbic,
                   #cubeR2, holl2R2, holl3R2, quadR2
                   h2, a2,
                   h3, a3, q3]
@@ -325,15 +289,15 @@ def returnStats(id_):
 def main():
     """Run analysis
     """
-    print('Fitting models to data...')
+    print('\nFitting models to data...\n')
 
     # Apply function and filter out failed IDs
     with multiprocessing.Pool() as pool:
         rows = [row for row in pool.map(returnStats, ids) if None not in row]
 
     heads = ['ID',
-             'Quadratic_AIC', 'Cubic_AIC', 'HollingII_AIC', 'GFR_AIC',
-             'Quadratic_BIC', 'Cubic_BIC', 'HollingII_BIC', 'GFR_BIC',
+             'Cubic_AIC', 'HollingII_AIC', 'GFR_AIC',
+             'Cubic_BIC', 'HollingII_BIC', 'GFR_BIC',
              #'Cubic_Rsqd', 'HollingII_Rsqd', 'HollingIII_Rsqd',
              'h_Holl2', 'a_Holl2',
              'h_GFR', 'a_GFR', 'q_GFR']
