@@ -33,7 +33,7 @@ from sklearn.metrics import r2_score  # because I'm lazy
 data = pd.read_csv("../Data/CRat_prepped.csv")  # Load data
 
 ##### FOR TESTING ########
-#data = data.head(250)
+#data = data.head(100)
 #data = data[data['ID'] == 3]
 
 #mask = data['ID'].isin([2, 3, 39949, 140, 351, 445])
@@ -63,11 +63,49 @@ def fitPolynomial(df, n):
     bic = stats.bic
 
     if r_sqd == 1:
-        print(f"WARNING: insufficient data for ID {id_} to fit polynomial of "
-              f"degree {n}.")
+        print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
+              f"order {n}.")
         aic = bic = None
 
     return aic, bic
+
+def aic(self):
+    r"""
+    Akaike's information criteria.
+
+    For a model with a constant :math:`-2llf + 2(df\_model + 1)`. For a
+    model without a constant :math:`-2llf + 2(df\_model)`.
+    """
+    return -2 * self.llf + 2 * (self.df_model + self.k_constant)
+
+
+def fitHollingI(df):
+    """Fits holling Type 1, returning a coefficient
+    """
+    id_ = df['ID'].unique()[0]
+    x = np.array(df['ResDensity'])
+    y = np.array(df['N_TraitValue'])
+
+    # x needs to be a column vector instead of a 1D vector
+    x = x[:, np.newaxis]
+
+    a, _, _, _ = np.linalg.lstsq(x, y, rcond=None)
+
+    predict = np.poly1d(np.append(a, 0))  # force y-intercept to 0
+    stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
+                    data=df).fit()
+
+    #plt.plot(x, y, 'bo')
+    #plt.plot(x, a * x, 'r-')
+    #plt.show()
+
+    #df['a'] = a[0]
+    ##predict = np.poly1d(np.append(a, 0))  # y-intercept = 0
+    #stats2 = smf.ols(formula='N_TraitValue ~ a*ResDensity',
+    #                data=df).fit()
+    #stats2.aic
+
+    return stats.aic, stats.bic, a[0]
 
 def startValues(df):
     """return sensible start values for params
@@ -116,11 +154,11 @@ def residHoll2(params, x, y):
     # Return residuals
     return model - y
 
-def GFR(x, a, h, q):
-    """blabla"""
-    return (a*x**(q+1))/(1+h*a*x**(q+1))
+#def GFR(x, a, h, q):
+#    """blabla"""
+#    return (a*x**(q+1))/(1+h*a*x**(q+1))
 
-def residGFR(params, x, y):
+def residHoll3(params, x, y):
     """Returns residuals for Holling II functional response:
 
     Arguments:
@@ -132,7 +170,7 @@ def residGFR(params, x, y):
     v = params.valuesdict()
 
     # Holling II model
-    model = (v['a'] * x**(v['q']+1)) / (1 + v['h'] * v['a'] * x**(v['q']+1))
+    model = (v['a'] * x**2) / (1 + v['h'] * v['a'] * x**2)
 
     # Return residuals
     return model - y
@@ -151,7 +189,7 @@ def fitFuncResp(h, a, df, model, timeout):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
-    valid = {'HollingII', 'GFR'}
+    valid = {'HollingII', 'HollingIII'}
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
@@ -194,39 +232,28 @@ def fitFuncResp(h, a, df, model, timeout):
         params.add('a', value=ai, min=0, max=5e7)  # Add a param
 
         if model == 'HollingII':
-
-            # Attempt fit
             try:
+                # Attempt fit
                 fit = lmfit.minimize(residHoll2, params, args=(x, y))
             except ValueError:
                 i += 1
                 continue
 
-            # Extract otimised parameters
-            h_best = fit.params['h'].value
-            a_best = fit.params['a'].value
-
-            # Create tuple to return
-            group = (fit.aic, fit.bic, h_best, a_best)
-
         else:
-
-            params.add('q', value=0)  # Add additional q param for GFR
-
-            # Attempt fit
+            # If model is Generalised Functional Response...
             try:
-                fit = lmfit.minimize(residGFR, params, args=(x, y))
+                # Attempt fit
+                fit = lmfit.minimize(residHoll3, params, args=(x, y))
             except ValueError:
                 i += 1
                 continue
 
-            # Extract otimised parameters
-            h_best = fit.params['h'].value
-            a_best = fit.params['a'].value
-            q_best = fit.params['q'].value
+        # Extract otimised parameters
+        h_best = fit.params['h'].value
+        a_best = fit.params['a'].value
 
-            # Create tuple to return
-            group = (fit.aic, fit.bic, h_best, a_best, q_best)
+        # Create tuple to return
+        group = (fit.aic, fit.bic, h_best, a_best)
 
         groups.append(group)
         i += 1
@@ -243,20 +270,21 @@ def returnStats(id_):
     # id_ = 39949
     df = data[data['ID'] == id_]
 
-    # Holing I
-    #holl1AIC, holl1BIC, holl1R2 = fitPolynomial(df, 1)
-    #if None in [holl1AIC, holl1BIC, holl1R2]:
-    #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
-
     # Quadratic Polynomial
     #quadAIC, quadBIC = fitPolynomial(df, 2)
     #if None in [quadAIC, quadBIC]:
     #    return [None] * 14
 
+    #
     # Cubic Polynomial
     cubeAIC, cubeBIC = fitPolynomial(df, 3)
     if None in [cubeAIC, cubeBIC]:
         return None
+
+    # Holing I
+    holl1aic, holl1bic, a1 = fitHollingI(df)
+    # if None in [holl1AIC, holl1BIC, holl1R2]:
+    #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
     ######################### NON-LINEAR ###############################
 
@@ -273,20 +301,21 @@ def returnStats(id_):
         return None
 
     # Generalised Functional Response
-    bestfit = fitFuncResp(h, a, df, 'GFR', 5)
+    bestfit = fitFuncResp(h, a, df, 'HollingIII', 5)
     if bestfit:
-        gfraic, gfrbic, h3, a3, q3 = bestfit
+        holl3aic, holl3bic, h3, a3 = bestfit
     else:
         print(f"WARNING: insufficient data for ID {id_} to fit Generalised "
               f"Functional Response model.")
         return None
 
     statistics = [id_,
-                  cubeAIC, holl2aic, gfraic,
-                  cubeBIC, holl2bic, gfrbic,
+                  cubeAIC, holl1aic, holl2aic, holl3aic,
+                  cubeBIC, holl1bic, holl2bic, holl3bic,
                   #cubeR2, holl2R2, holl3R2, quadR2
+                  a1,
                   h2, a2,
-                  h3, a3, q3]
+                  h3, a3]
 
     return statistics
 
@@ -298,14 +327,14 @@ def main():
     # Apply function and filter out failed IDs
     with multiprocessing.Pool() as pool:
         rows = list(filter(None, pool.map(returnStats, ids)))
-        #rows = [row for row in pool.map(returnStats, ids) if None not in row]
 
     heads = ['ID',
-             'Cubic_AIC', 'HollingII_AIC', 'GFR_AIC',
-             'Cubic_BIC', 'HollingII_BIC', 'GFR_BIC',
+             'Cubic_AIC', 'HollingI_AIC', 'HollingII_AIC', 'HollingIII_AIC',
+             'Cubic_BIC', 'HollingI_BIC', 'HollingII_BIC', 'HollingIII_BIC',
              #'Cubic_Rsqd', 'HollingII_Rsqd', 'HollingIII_Rsqd',
+             'a_Holl1',
              'h_Holl2', 'a_Holl2',
-             'h_GFR', 'a_GFR', 'q_GFR']
+             'h_Holl3', 'a_Holl3']
     ModelStats = pd.DataFrame(rows, columns=heads)
     ModelStats['ID'] = ModelStats['ID'].astype(int)  # Convert ID col from float
     ModelStats.sort_values('ID', inplace=True)  # Order by ID
@@ -313,7 +342,7 @@ def main():
     # Write to CSV
     ModelStats.to_csv('../Data/ModelStats.csv', index=False)
 
-    print('Done!')
+    print('\nDone!')
 
     return 0
 
