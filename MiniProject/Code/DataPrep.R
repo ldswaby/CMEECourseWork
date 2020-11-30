@@ -13,8 +13,8 @@
 #    (these are generally curves with low resource densities)
 
 ####################### Imports ###########################
-library(tidyverse)
-library(plyr)
+suppressMessages(library(tidyverse))
+suppressMessages(library(plyr))
 
 ################### Clear workspace #######################
 rm(list = ls())
@@ -22,7 +22,7 @@ graphics.off()
 
 ################## Load/Inspect Data ######################
 FuncRespData <- read.csv("../Data/CRat.csv", stringsAsFactors = FALSE)
-dplyr::glimpse(FuncRespData)
+#dplyr::glimpse(FuncRespData)
 
 # response variable: N_TraitValue: The number of resources consumed per consumer per unit time
 # explanatory variable: ResDensity: resource abundance
@@ -34,22 +34,24 @@ ReqCols <- c('ID', 'ResDensity', 'N_TraitValue', 'ResDensityUnit', 'TraitUnit', 
 FuncRespData <- FuncRespData[,ReqCols] 
 
 # Drop rows corresponding to IDs with discrepant/irreconsilable measurment units used
-DiscrepantUnits <- function(x){
+DiscrepantUnits <- function(df){
   # Homogenize string characteristics that do not affect units
   # (whitespace and case).
-  uniqueResUnits <- unique(tolower(gsub(" ", "", x$ResDensityUnit, fixed = TRUE)))
-  uniqueTraitUnits <- unique(tolower(gsub(" ", "", x$TraitUnit, fixed = TRUE)))
+  uniqueResUnits <- unique(tolower(gsub(" ", "", df$ResDensityUnit, fixed = TRUE)))
+  uniqueTraitUnits <- unique(tolower(gsub(" ", "", df$TraitUnit, fixed = TRUE)))
   # Return ID where discrepant units found
   if (length(uniqueResUnits) > 1 | length(uniqueTraitUnits) > 1){
-    return(unique(x$ID))
+    return(unique(df$ID))
   }
 }
 
-DiscrepantIDs <- unlist(dlply(FuncRespData, .(ID), DiscrepantUnits), use.names = FALSE)
+DiscrepantIDs <- dlply(FuncRespData, .(ID), DiscrepantUnits)
 FuncRespData <- FuncRespData[!(FuncRespData$ID %in% DiscrepantIDs),]
 
-# Subset cols
-#FuncRespData <- FuncRespData[,c('ID', 'ResDensity', 'N_TraitValue')] 
+# Standardise case/terminology
+FuncRespData$Con_ForagingMovement <- tolower(FuncRespData$Con_ForagingMovement)
+FuncRespData$Res_ForagingMovement <- tolower(FuncRespData$Res_ForagingMovement)
+FuncRespData[FuncRespData == "sessile"] <- "passive"
 
 # Drop rows containing NA values (just in case)
 FuncRespData <- na.omit(FuncRespData)

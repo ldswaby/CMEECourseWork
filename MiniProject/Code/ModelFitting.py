@@ -151,6 +151,10 @@ def fitFuncResp(h, a, df, model, timeout):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
+    valid = {'HollingII', 'GFR'}
+    if model not in valid:
+        raise ValueError(f"model must be one of: {', '.join(valid)}.")
+
     N = 1000  # Set max number of param combos/runs
 
     x = df['ResDensity']
@@ -252,7 +256,7 @@ def returnStats(id_):
     # Cubic Polynomial
     cubeAIC, cubeBIC = fitPolynomial(df, 3)
     if None in [cubeAIC, cubeBIC]:
-        return [None] * 12
+        return None
 
     ######################### NON-LINEAR ###############################
 
@@ -266,7 +270,7 @@ def returnStats(id_):
     else:
         print(f"WARNING: insufficient data for ID {id_} to fit Holling II "
               f"model.")
-        return [None] * 12
+        return None
 
     # Generalised Functional Response
     bestfit = fitFuncResp(h, a, df, 'GFR', 5)
@@ -275,7 +279,7 @@ def returnStats(id_):
     else:
         print(f"WARNING: insufficient data for ID {id_} to fit Generalised "
               f"Functional Response model.")
-        return [None] * 12
+        return None
 
     statistics = [id_,
                   cubeAIC, holl2aic, gfraic,
@@ -293,7 +297,8 @@ def main():
 
     # Apply function and filter out failed IDs
     with multiprocessing.Pool() as pool:
-        rows = [row for row in pool.map(returnStats, ids) if None not in row]
+        rows = list(filter(None, pool.map(returnStats, ids)))
+        #rows = [row for row in pool.map(returnStats, ids) if None not in row]
 
     heads = ['ID',
              'Cubic_AIC', 'HollingII_AIC', 'GFR_AIC',
@@ -307,6 +312,8 @@ def main():
 
     # Write to CSV
     ModelStats.to_csv('../Data/ModelStats.csv', index=False)
+
+    print('Done!')
 
     return 0
 
