@@ -22,7 +22,7 @@ from statistics import mean
 #from functools import partial
 #from smt.sampling_methods import LHS
 #import warnings
-from sklearn.metrics import r2_score  # because I'm lazy
+from sklearn.metrics import r2_score  # yeah, I'm lazy
 
 
 # TODO:
@@ -45,6 +45,12 @@ ids = data['ID'].unique()
 
 ## Functions ##
 
+def AIC(N, Nvarys, rss):
+    return N * np.log(rss/N) + 2*Nvarys
+
+def BIC(N, Nvarys, rss):
+    return N * np.log(rss/N) + np.log(N)*Nvarys
+
 def fitPolynomial(df, n):
     """Fits polynomial of degree n to data x and y using numpy's polyfit
     """
@@ -56,11 +62,15 @@ def fitPolynomial(df, n):
     predict = np.poly1d(model[0])
     r_sqd = r2_score(y, predict(x))
 
-    stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
-                    data=df).fit()
+    #stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
+    #                data=df).fit()
 
-    aic = stats.aic
-    bic = stats.bic
+    #aic = stats.aic
+    #bic = stats.bic
+
+    rss = model[1][0]
+    aic = AIC(len(x), len(model[0]), rss)
+    bic = BIC(len(x), len(model[0]), rss)
 
     if r_sqd == 1:
         print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
@@ -89,23 +99,19 @@ def fitHollingI(df):
     # x needs to be a column vector instead of a 1D vector
     x = x[:, np.newaxis]
 
-    a, _, _, _ = np.linalg.lstsq(x, y, rcond=None)
+    a, rss, _, _ = np.linalg.lstsq(x, y, rcond=None)
 
-    predict = np.poly1d(np.append(a, 0))  # force y-intercept to 0
-    stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
-                    data=df).fit()
-
-    #plt.plot(x, y, 'bo')
-    #plt.plot(x, a * x, 'r-')
-    #plt.show()
-
-    #df['a'] = a[0]
-    ##predict = np.poly1d(np.append(a, 0))  # y-intercept = 0
-    #stats2 = smf.ols(formula='N_TraitValue ~ a*ResDensity',
+    #predict = np.poly1d(np.append(a, 0))  # force y-intercept to 0
+    #stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
     #                data=df).fit()
-    #stats2.aic
 
-    return stats.aic, stats.bic, a[0]
+    #aic = stats.aic
+    #bic = stats.aic
+
+    aic = AIC(len(x), 1, rss[0])
+    bic = BIC(len(x), 1, rss[0])
+
+    return aic, bic, a[0]
 
 def startValues(df):
     """return sensible start values for params
@@ -133,9 +139,18 @@ def startValues(df):
 
     return h, a
 
-def HollingII(x, a, h):
-    """blabla"""
-    return (a*x)/(1+h*a*x)
+def residHoll1(params, x, y):
+    """Returns residuals for Holling III functional response:
+
+    Arguments:
+     - params: parameters
+     - x: Resource density data values
+     - y: Corresponding N_TraitValue data values
+    """
+    v = params.valuesdict()
+    model = v['a'] * x
+
+    return model - y
 
 def residHoll2(params, x, y):
     """Returns residuals for Holling II functional response:
@@ -189,7 +204,7 @@ def fitFuncResp(h, a, df, model, timeout):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
-    valid = {'HollingII', 'HollingIII'}
+    valid = {'HollingI', 'HollingII', 'HollingIII'}
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
@@ -199,8 +214,8 @@ def fitFuncResp(h, a, df, model, timeout):
     y = df['N_TraitValue']
 
     # Create ranges around params to test
-    hrange = 0.8 * min(abs(h - 1e6), h)
     arange = 0.8 * min(abs(a - 5e7), a)
+    hrange = 0.8 * min(abs(h - 1e6), h)
 
     # Generate random parameter samples
     # (uniform used over LHS as LHS unncessary here — runmax high so unlikely
@@ -223,37 +238,48 @@ def fitFuncResp(h, a, df, model, timeout):
 
         # Extract params to test
         testparams = paramsdf.loc[i]
-        hi = testparams['h']
         ai = testparams['a']
 
         # Store paramteters
         params = lmfit.Parameters()
-        params.add('h', value=hi, min=0, max=1e6)  # Add h param
         params.add('a', value=ai, min=0, max=5e7)  # Add a param
 
-        if model == 'HollingII':
+        if model == 'HollingI':
             try:
-                # Attempt fit
-                fit = lmfit.minimize(residHoll2, params, args=(x, y))
+                fit = lmfit.minimize(residHoll1, params, args=(x, y))
             except ValueError:
                 i += 1
                 continue
+
+            a_best = fit.params['a'].value  # Extract otimised parameter
+            group = (fit.aic, fit.bic, a_best)  # Create tuple to return
 
         else:
-            # If model is Generalised Functional Response...
-            try:
-                # Attempt fit
-                fit = lmfit.minimize(residHoll3, params, args=(x, y))
-            except ValueError:
-                i += 1
-                continue
+            hi = testparams['h']
+            params.add('h', value=hi, min=0, max=1e6)  # Add h param
 
-        # Extract otimised parameters
-        h_best = fit.params['h'].value
-        a_best = fit.params['a'].value
+            if model == 'HollingII':
+                try:
+                    # Attempt fit
+                    fit = lmfit.minimize(residHoll2, params, args=(x, y))
+                except ValueError:
+                    i += 1
+                    continue
+            else:
+                # If model is Generalised Functional Response...
+                try:
+                    # Attempt fit
+                    fit = lmfit.minimize(residHoll3, params, args=(x, y))
+                except ValueError:
+                    i += 1
+                    continue
 
-        # Create tuple to return
-        group = (fit.aic, fit.bic, h_best, a_best)
+            # Extract otimised parameters
+            h_best = fit.params['h'].value
+            a_best = fit.params['a'].value
+
+            # Create tuple to return
+            group = (fit.aic, fit.bic, h_best, a_best)
 
         groups.append(group)
         i += 1
@@ -282,7 +308,7 @@ def returnStats(id_):
         return None
 
     # Holing I
-    holl1aic, holl1bic, a1 = fitHollingI(df)
+    #holl1aic, holl1bic, a1 = fitHollingI(df)
     # if None in [holl1AIC, holl1BIC, holl1R2]:
     #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
@@ -290,6 +316,9 @@ def returnStats(id_):
 
     # Generate sensible starting values
     h, a = startValues(df)
+
+    # Holling I
+    holl1aic, holl1bic, a1 = fitFuncResp(h, a, df, 'HollingI', 1)
 
     # Holling II
     bestfit = fitFuncResp(h, a, df, 'HollingII', 5)
