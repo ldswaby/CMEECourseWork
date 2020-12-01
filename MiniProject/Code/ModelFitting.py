@@ -22,7 +22,7 @@ from statistics import mean
 #from functools import partial
 #from smt.sampling_methods import LHS
 #import warnings
-from sklearn.metrics import r2_score  # yeah, I'm lazy
+from sklearn.metrics import r2_score  # because I'm lazy
 
 
 # TODO:
@@ -33,7 +33,7 @@ from sklearn.metrics import r2_score  # yeah, I'm lazy
 data = pd.read_csv("../Data/CRat_prepped.csv")  # Load data
 
 ##### FOR TESTING ########
-#data = data.head(100)
+#data = data.head(500)
 #data = data[data['ID'] == 3]
 
 #mask = data['ID'].isin([2, 3, 39949, 140, 351, 445])
@@ -46,9 +46,13 @@ ids = data['ID'].unique()
 ## Functions ##
 
 def AIC(N, Nvarys, rss):
+    """Function to calc in same way as lmfit
+    """
     return N * np.log(rss/N) + 2*Nvarys
 
 def BIC(N, Nvarys, rss):
+    """Function to calc in same way as lmfit
+    """
     return N * np.log(rss/N) + np.log(N)*Nvarys
 
 def fitPolynomial(df, n):
@@ -58,36 +62,31 @@ def fitPolynomial(df, n):
     x = df['ResDensity']
     y = df['N_TraitValue']
 
+    #if len(df) < n:
+    #    print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
+    #          f"order {n}.")
+    #    return None, None
+
     model = np.polyfit(x, y, n, full=True)
     predict = np.poly1d(model[0])
     r_sqd = r2_score(y, predict(x))
 
-    #stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
-    #                data=df).fit()
-
-    #aic = stats.aic
-    #bic = stats.bic
-
-    rss = model[1][0]
-    aic = AIC(len(x), len(model[0]), rss)
-    bic = BIC(len(x), len(model[0]), rss)
-
     if r_sqd == 1:
         print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
               f"order {n}.")
-        aic = bic = None
+        return None, None
+
+    stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
+                    data=df).fit()
+
+    aic = stats.aic
+    bic = stats.bic
+
+    #rss = model[1][0] if len(model[1]) else 0
+    #aic = AIC(len(x), len(model[0]), rss)
+    #bic = BIC(len(x), len(model[0]), rss)
 
     return aic, bic
-
-def aic(self):
-    r"""
-    Akaike's information criteria.
-
-    For a model with a constant :math:`-2llf + 2(df\_model + 1)`. For a
-    model without a constant :math:`-2llf + 2(df\_model)`.
-    """
-    return -2 * self.llf + 2 * (self.df_model + self.k_constant)
-
 
 def fitHollingI(df):
     """Fits holling Type 1, returning a coefficient
@@ -104,9 +103,6 @@ def fitHollingI(df):
     #predict = np.poly1d(np.append(a, 0))  # force y-intercept to 0
     #stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
     #                data=df).fit()
-
-    #aic = stats.aic
-    #bic = stats.aic
 
     aic = AIC(len(x), 1, rss[0])
     bic = BIC(len(x), 1, rss[0])
@@ -139,22 +135,27 @@ def startValues(df):
 
     return h, a
 
-def residHoll1(params, x, y):
-    """Returns residuals for Holling III functional response:
+#def startValues2(df, model):
+#    """return sensible start values for params (Rodenbaum method)
+#    """
+#    Fmax = max(df['N_TraitValue'])
+#    Nhalf = min(df['ResDensity'], key=lambda x: abs(x - 0.5*Fmax))
 
-    Arguments:
-     - params: parameters
-     - x: Resource density data values
-     - y: Corresponding N_TraitValue data values
-    """
-    v = params.valuesdict()
-    model = v['a'] * x
+    # h
+#    h = 1/Fmax  # As curve tends to 1/h
 
-    return model - y
+    # a
+#    a2 = Fmax/Nhalf   # a value for Holling type II
+#    a3 = Fmax/Nhalf**2   # a value for Holling type III
+
+#    return h, a2, a3
+
+def HollingII(x, a, h):
+    """blabla"""
+    return (a*x)/(1+h*a*x)
 
 def residHoll2(params, x, y):
     """Returns residuals for Holling II functional response:
-
     Arguments:
      - params: parameters
      - x: Resource density data values
@@ -175,7 +176,6 @@ def residHoll2(params, x, y):
 
 def residHoll3(params, x, y):
     """Returns residuals for Holling II functional response:
-
     Arguments:
      - params: parameters
      - x: Resource density data values
@@ -192,11 +192,9 @@ def residHoll3(params, x, y):
 
 def fitFuncResp(h, a, df, model, timeout):
     """Fit functinal response curves to input data.
-
     using uniform distribution
     across range centred
     RANDOM UNIF DIST
-
     Arguments:
     h: handling time
     a: attack rate
@@ -204,18 +202,18 @@ def fitFuncResp(h, a, df, model, timeout):
     y: N_TraitValue (vec)
     N: no of parameter pairs to try
     """
-    valid = {'HollingI', 'HollingII', 'HollingIII'}
+    valid = {'HollingII', 'HollingIII'}
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
-    N = 1000  # Set max number of param combos/runs
+    N = 1000  # Fix max number of param combos/runs
 
     x = df['ResDensity']
     y = df['N_TraitValue']
 
     # Create ranges around params to test
-    arange = 0.8 * min(abs(a - 5e7), a)
     hrange = 0.8 * min(abs(h - 1e6), h)
+    arange = 0.8 * min(abs(a - 5e7), a)
 
     # Generate random parameter samples
     # (uniform used over LHS as LHS unncessary here — runmax high so unlikely
@@ -238,48 +236,37 @@ def fitFuncResp(h, a, df, model, timeout):
 
         # Extract params to test
         testparams = paramsdf.loc[i]
+        hi = testparams['h']
         ai = testparams['a']
 
         # Store paramteters
         params = lmfit.Parameters()
+        params.add('h', value=hi, min=0, max=1e6)  # Add h param
         params.add('a', value=ai, min=0, max=5e7)  # Add a param
 
-        if model == 'HollingI':
+        if model == 'HollingII':
             try:
-                fit = lmfit.minimize(residHoll1, params, args=(x, y))
+                # Attempt fit
+                fit = lmfit.minimize(residHoll2, params, args=(x, y))
             except ValueError:
                 i += 1
                 continue
 
-            a_best = fit.params['a'].value  # Extract otimised parameter
-            group = (fit.aic, fit.bic, a_best)  # Create tuple to return
-
         else:
-            hi = testparams['h']
-            params.add('h', value=hi, min=0, max=1e6)  # Add h param
+            # If model is Generalised Functional Response...
+            try:
+                # Attempt fit
+                fit = lmfit.minimize(residHoll3, params, args=(x, y))
+            except ValueError:
+                i += 1
+                continue
 
-            if model == 'HollingII':
-                try:
-                    # Attempt fit
-                    fit = lmfit.minimize(residHoll2, params, args=(x, y))
-                except ValueError:
-                    i += 1
-                    continue
-            else:
-                # If model is Generalised Functional Response...
-                try:
-                    # Attempt fit
-                    fit = lmfit.minimize(residHoll3, params, args=(x, y))
-                except ValueError:
-                    i += 1
-                    continue
+        # Extract otimised parameters
+        h_best = fit.params['h'].value
+        a_best = fit.params['a'].value
 
-            # Extract otimised parameters
-            h_best = fit.params['h'].value
-            a_best = fit.params['a'].value
-
-            # Create tuple to return
-            group = (fit.aic, fit.bic, h_best, a_best)
+        # Create tuple to return
+        group = (fit.aic, fit.bic, h_best, a_best)
 
         groups.append(group)
         i += 1
@@ -294,7 +281,9 @@ def returnStats(id_):
     # id_ = 140
     # id_ = 39840
     # id_ = 39949
+    #id_ = 39876
     df = data[data['ID'] == id_]
+    #print(f'starting {id_}')
 
     # Quadratic Polynomial
     #quadAIC, quadBIC = fitPolynomial(df, 2)
@@ -308,7 +297,7 @@ def returnStats(id_):
         return None
 
     # Holing I
-    #holl1aic, holl1bic, a1 = fitHollingI(df)
+    holl1aic, holl1bic, a1 = fitHollingI(df)
     # if None in [holl1AIC, holl1BIC, holl1R2]:
     #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
@@ -317,8 +306,8 @@ def returnStats(id_):
     # Generate sensible starting values
     h, a = startValues(df)
 
-    # Holling I
-    holl1aic, holl1bic, a1 = fitFuncResp(h, a, df, 'HollingI', 1)
+    # Holing I
+    #holl1aic, holl1bic, a1 = fitFuncResp(h, a, df, 'HollingI', 2)
 
     # Holling II
     bestfit = fitFuncResp(h, a, df, 'HollingII', 5)
@@ -371,7 +360,7 @@ def main():
     # Write to CSV
     ModelStats.to_csv('../Data/ModelStats.csv', index=False)
 
-    print('\nDone!')
+    #print('\nDone!')
 
     return 0
 
