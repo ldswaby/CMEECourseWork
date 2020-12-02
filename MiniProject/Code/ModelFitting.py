@@ -62,11 +62,6 @@ def fitPolynomial(df, n):
     x = df['ResDensity']
     y = df['N_TraitValue']
 
-    #if len(df) < n:
-    #    print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
-    #          f"order {n}.")
-    #    return None, None
-
     model = np.polyfit(x, y, n, full=True)
     predict = np.poly1d(model[0])
     r_sqd = r2_score(y, predict(x))
@@ -110,45 +105,19 @@ def fitHollingI(df):
     return aic, bic, a[0]
 
 def startValues(df):
-    """return sensible start values for params
+    """return sensible start values for params (Rodenbaum method)
     """
-    # h
-    h = 1/max(df['N_TraitValue'])  # As curve tends to 1/h
-
-    # a
-    BelowMean = df[df['N_TraitValue'] < mean(df['N_TraitValue'])]
-
-    if len(BelowMean) > 1:
-        # If there is more than one datapoint below the mean
-        slope1, _, r_val1, _, _ = sc.stats.linregress(BelowMean['ResDensity'],
-                                                      BelowMean['N_TraitValue'])
-        r_sqd1 = r_val1**2
-    else:
-        r_sqd1 = 0
-
-    BelowMax = df[df['N_TraitValue'] < max(df['N_TraitValue'])]
-    slope2, _, r_value2, _, _ = sc.stats.linregress(BelowMax['ResDensity'],
-                                                 BelowMax['N_TraitValue'])
-    r_sqd2 = r_value2**2
-
-    a = slope1 if r_sqd1 > r_sqd2 else slope2
-
-    return h, a
-
-#def startValues2(df, model):
-#    """return sensible start values for params (Rodenbaum method)
-#    """
-#    Fmax = max(df['N_TraitValue'])
-#    Nhalf = min(df['ResDensity'], key=lambda x: abs(x - 0.5*Fmax))
+    Fmax = max(df['N_TraitValue'])
+    Nhalf = min(df['ResDensity'], key=lambda x: abs(x - 0.5*Fmax))
 
     # h
-#    h = 1/Fmax  # As curve tends to 1/h
+    h = 1/Fmax  # As curve tends to 1/h
 
     # a
-#    a2 = Fmax/Nhalf   # a value for Holling type II
-#    a3 = Fmax/Nhalf**2   # a value for Holling type III
+    a2 = Fmax/Nhalf   # a value for Holling type II
+    a3 = Fmax/Nhalf**2   # a value for Holling type III
 
-#    return h, a2, a3
+    return h, a2, a3
 
 def HollingII(x, a, h):
     """blabla"""
@@ -206,7 +175,7 @@ def fitFuncResp(h, a, df, model, timeout):
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
-    N = 1000  # Fix max number of param combos/runs
+    N = 1000  # Fix max number of param combos/runs to try
 
     x = df['ResDensity']
     y = df['N_TraitValue']
@@ -253,7 +222,7 @@ def fitFuncResp(h, a, df, model, timeout):
                 continue
 
         else:
-            # If model is Generalised Functional Response...
+            # If model is Holling III...
             try:
                 # Attempt fit
                 fit = lmfit.minimize(residHoll3, params, args=(x, y))
@@ -277,11 +246,9 @@ def fitFuncResp(h, a, df, model, timeout):
 
 ###############################################################################
 def returnStats(id_):
-    #i, id_ = 279, 140
-    # id_ = 140
-    # id_ = 39840
-    # id_ = 39949
-    #id_ = 39876
+    """Fits models to curve and returns fit comparison stats and parameter
+    estimates.
+    """
     df = data[data['ID'] == id_]
     #print(f'starting {id_}')
 
@@ -290,27 +257,21 @@ def returnStats(id_):
     #if None in [quadAIC, quadBIC]:
     #    return [None] * 14
 
-    #
     # Cubic Polynomial
     cubeAIC, cubeBIC = fitPolynomial(df, 3)
     if None in [cubeAIC, cubeBIC]:
         return None
 
-    # Holing I
+    # Holling type I
     holl1aic, holl1bic, a1 = fitHollingI(df)
-    # if None in [holl1AIC, holl1BIC, holl1R2]:
-    #    print(f"Insufficient data to plot Holling II for ID '{id_}'.")
 
     ######################### NON-LINEAR ###############################
 
     # Generate sensible starting values
-    h, a = startValues(df)
-
-    # Holing I
-    #holl1aic, holl1bic, a1 = fitFuncResp(h, a, df, 'HollingI', 2)
+    h, ahol2, ahol3 = startValues(df)
 
     # Holling II
-    bestfit = fitFuncResp(h, a, df, 'HollingII', 5)
+    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', 5)
     if bestfit:
         holl2aic, holl2bic, h2, a2 = bestfit
     else:
@@ -319,7 +280,7 @@ def returnStats(id_):
         return None
 
     # Generalised Functional Response
-    bestfit = fitFuncResp(h, a, df, 'HollingIII', 5)
+    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', 5)
     if bestfit:
         holl3aic, holl3bic, h3, a3 = bestfit
     else:
@@ -358,7 +319,7 @@ def main():
     ModelStats.sort_values('ID', inplace=True)  # Order by ID
 
     # Write to CSV
-    ModelStats.to_csv('../Data/ModelStats.csv', index=False)
+    ModelStats.to_csv('../Data/ModelStats2.csv', index=False)
 
     #print('\nDone!')
 

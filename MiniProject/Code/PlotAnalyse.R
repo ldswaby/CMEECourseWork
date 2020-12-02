@@ -10,44 +10,9 @@ library(plyr)
 library(tidyverse)
 
 frData <- read.csv('../Data/CRat_prepped.csv', stringsAsFactors = FALSE)
-frModStats <- read.csv('../Data/ModelStats2.csv', stringsAsFactors = FALSE)
-#mergedData <- dplyr::left_join(frData, frModStats, by = "ID")
-##################################################################################
-holling2 <- function(R, a, h){
-  num <- a*R
-  denom <- 1+a*h*R
-  return(num/denom)
-}
-
-holling3 <- function(R, a, h, q){
-  num <- a*R^(q+1)
-  denom <- 1+a*h*R^(q+1)
-  return(num/denom)
-}
-
-sub <- subset(frData, ID == 140)
-x <- sub$ResDensity
-y <- sub$N_TraitValue
-# Fit models
-Quad <- lm(y ~ poly(x, 2))
-Cube <- lm(y ~ poly(x, 3))
-# x axis
-xvals <- seq(from = min(x), to = max(x), by = ((max(x) - min(x))/100))
-# Predicted values
-y_quad <- predict.lm(Quad, data.frame(x = xvals))
-y_cube <- predict.lm(Cube, data.frame(x = xvals))
-y_holl2 <- holling2(xvals, 0.0022816705759893807, 3.325444244656122)
-y_holl3 <- holling3(xvals, 0.003566367009295135, 3.0860562867942845, -0.1112141747287729)
+frModStats <- read.csv('../Data/ModelStats.csv', stringsAsFactors = FALSE)
 
 
-plot(x, y)
-lines(xvals, y_quad, col = 'blue', lwd = 2.5)
-lines(xvals, y_cube, col = 'red', lwd = 2.5)
-lines(xvals, y_holl2, col = 'green', lwd = 2.5)
-lines(xvals, y_holl3, col = 'black', lwd = 2.5)
-
-
-##################################################################################
 
 ################################################################################
 ################################### ANALYSE ####################################
@@ -58,23 +23,23 @@ lines(xvals, y_holl3, col = 'black', lwd = 2.5)
 # 2. When a model doesn't fit, should the whole curve be dismissed from
 #    the anaysis or just that particular model for that particular curve?
 # Drop rows with +/-Inf values (bad fits) and NAs
-frModStats <- frModStats[!is.infinite(rowSums(frModStats)),]
-frModStats <- na.omit(frModStats)
+#frModStats <- frModStats[!is.infinite(rowSums(frModStats)),]
+#frModStats <- na.omit(frModStats)
 ################################################################################
 
-model_count <- (length(frModStats)-1)/2 # assumes only other cols besides ID are aic/bic vals
-model_names <- substr(names(frModStats[2:(1+model_count)]), 1, nchar(names(frModStats[2:(1+model_count)]))-3) #Assumes full model names precede the last 3 chars of header
+model_count <- (length(frModStats)-6)/2 # assumes only other cols besides ID are aic/bic/rsqd vals and 5 coefficients (holl2 and 3)
+model_names <- substr(names(frModStats[2:(1+model_count)]), 1, nchar(names(frModStats[2:(1+model_count)]))-4) #Assumes full model names precede the last 3 chars of header
 
 compareModels <- function(row){
   id <- as.character(row[1])
   # Works for comparisons for any number of models
-  model_count <- (length(row)-1)/2 # assumes only other cols besides ID are aic/bic vals
+  #model_count <- (length(row)-6)/2 # assumes only other cols besides ID are aic/bic vals
   AICs <- sort(row[2:(1+model_count)])
   BICs <- sort(row[(2+model_count):(1+2*model_count)]) # or just until length(row) if no other cols are added
   
   # Extract model names (assumes the only charcters following the model names are 
   # 'AIC' or 'BIC' - as such only clips last 3)
-  mod_names <- substr(names(AICs), 1, nchar(names(AICs))-3)
+  mod_names <- substr(names(AICs), 1, nchar(names(AICs))-4)
   
   ##################### Find best fit ###########################
   # Initialise best fit charcter vectors (can't preallocate as final length unknown)
@@ -117,8 +82,14 @@ compareModels <- function(row){
   names(best_fits_aic) <- mod_names[1:length(best_fits_aic)]
   names(best_fits_bic) <- mod_names[1:length(best_fits_bic)]
   
-  AICBestFit <- paste(names(best_fits_aic), collapse = '/')
-  BICBestFit <- paste(names(best_fits_bic), collapse = '/')
+  # Standardise order (as ties don't matter)
+  order <- c('Quadratic', 'Cubic', 'HollingII', 'GFR')
+  aic <- names(best_fits_aic)[order(match(names(best_fits_aic), order))]
+  bic <- names(best_fits_bic)[order(match(names(best_fits_bic), order))]
+  
+  # Combine into strings
+  AICBestFit <- paste(aic, collapse = '/')
+  BICBestFit <- paste(bic, collapse = '/')
   
   return(c(id, AICBestFit, BICBestFit))
 }
@@ -128,41 +99,90 @@ compareModels <- function(row){
 bestFits <- as.data.frame(t(apply(frModStats, 1, compareModels)))
 colnames(bestFits) <- c('ID', 'AICBestFits', 'BICBestFits')
 bestFits$ID <- as.integer(bestFits$ID)
-frDataWithFits <- left_join(frModStats, bestFits, by = "ID")
+statsWithFits <- left_join(frModStats, bestFits, by = "ID")
 
-############ What percentage of the data is best fit by what model? ################
-aicBreakdown <- table(frDataWithFits$AICBestFits)
-bicBreakdown <- table(frDataWithFits$BICBestFits)
-
-# Preallocate dataframe containing no. of datapoints best explained by each model
-fitdata <- data.frame(Model = rep(model_names, times = 2), 
-                      Estimator = rep(c('AIC', 'BIC'), each = model_count),
-                      Count = rep(NA, times = 2*model_count))
-
-for (i in 1:nrow(fitdata)){
-  mod <- fitdata[i,'Model']
-  stat <- fitdata[i,'Estimator']
-  if (stat == 'AIC'){
-    fitdata[i,'Count'] <- ifelse(is.na(aicBreakdown[mod]), 0, aicBreakdown[[mod]])
+############### Add columns for winning model(s) type #############################
+addBestModelType <- function(x){
+  if (x %in% c('HollingII', 'GFR', 'HollingII/GFR')){
+    return('Mechanistic')
+  } else if (x %in% c('Quadratic', 'Cubic', 'Quadratic/Cubic')){
+    return('Phenomenological')
   } else {
-    fitdata[i,'Count'] <- ifelse(is.na(bicBreakdown[mod]), 0, bicBreakdown[[mod]])
+    return('TIE')
   }
 }
 
-#################################################################################
-##################################### PLOT ######################################
-#################################################################################
-n <- nrow(frDataWithFits) 
+BestModelTypeAIC <- sapply(statsWithFits$AICBestFits, addBestModelType, USE.NAMES = FALSE)
+statsWithFits$BestModelTypeAIC <- BestModelTypeAIC
 
-ggplot(data = fitdata, aes(x = factor(Model), y = Count, fill = Estimator)) + 
-  geom_bar(stat="identity", position = 'dodge') +
-  labs(x = 'Model', y = 'Best fits') + 
-  theme_bw() +
-  theme(legend.title = element_text(face="bold")) +
-  geom_text(aes(label=paste(Count, ' (', round((Count/n)*100, 1), '%)', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 2.5) +
-  expand_limits(y = max(fitdata$Count)+5) +
-  scale_fill_brewer(palette="Paired")
+BestModelTypeBIC <- sapply(statsWithFits$BICBestFits, addBestModelType, USE.NAMES = FALSE)
+statsWithFits$BestModelTypeBIC <- BestModelTypeBIC
 
+aicTypeBreakdown <- table(statsWithFits$BestModelTypeAIC)
+bicTypeBreakdown <- table(statsWithFits$BestModelTypeBIC)
+
+# Preallocate dataframe containing no. of datapoints best explained by each model
+typefitdata <- data.frame(ModelType = rep(c('Phenomenological', 'Mechanistic'), times = 2), 
+                      Estimator = rep(c('AIC', 'BIC'), each = 2),
+                      Count = rep(NA, times = 4))
+
+for (i in 1:nrow(typefitdata)){
+  modtype <- typefitdata[i,'ModelType']
+  stat <- typefitdata[i,'Estimator']
+  if (stat == 'AIC'){
+    typefitdata[i,'Count'] <- ifelse(is.na(aicTypeBreakdown[modtype]), 0, aicTypeBreakdown[[modtype]])
+  } else {
+    typefitdata[i,'Count'] <- ifelse(is.na(bicTypeBreakdown[modtype]), 0, bicTypeBreakdown[[modtype]])
+  }
+}
+
+
+############ What percentage of the data is best fit by what model? ################
+plotBestFits <- function(df, title){
+  n <- nrow(df) 
+  
+  aicBreakdown <- table(df$AICBestFits)
+  bicBreakdown <- table(df$BICBestFits)
+  
+  # Preallocate dataframe containing no. of datapoints best explained by each model
+  fitdata <- data.frame(Model = rep(model_names, times = 2), 
+                        Estimator = rep(c('AIC', 'BIC'), each = model_count),
+                        Count = rep(NA, times = 2*model_count))
+  
+  # Load count of how many IDs were definititvely best fit by each model (draws excluded)
+  for (i in 1:nrow(fitdata)){
+    mod <- fitdata[i,'Model']
+    stat <- fitdata[i,'Estimator']
+    if (stat == 'AIC'){
+      fitdata[i,'Count'] <- ifelse(is.na(aicBreakdown[mod]), 0, aicBreakdown[[mod]])
+    } else {
+      fitdata[i,'Count'] <- ifelse(is.na(bicBreakdown[mod]), 0, bicBreakdown[[mod]])
+    }
+  }
+  
+  # Plot
+  ggplot(data = fitdata, aes(x = factor(Model), y = Count, fill = Estimator)) + 
+    geom_bar(stat="identity", position = 'dodge') +
+    ggtitle(title) +
+    labs(x = 'Model', y = 'Best fits') + 
+    theme_bw() +
+    theme(legend.title = element_text(face="bold")) +
+    geom_text(aes(label=paste(Count, ' (', round((Count/n)*100, 1), '%)', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 2) +
+    expand_limits(y = max(fitdata$Count)*1.02) +
+    scale_fill_brewer(palette="Paired")
+}
+
+plotBestFits(statsWithFits, 'All Data')
+
+##################### PASSIVE CONSUMERS #############################
+pasvID <- unique(subset(frData, Con_ForagingMovement == "sessile")$ID)
+pasvCons <- statsWithFits[statsWithFits$ID %in% pasvID,]
+plotBestFits(pasvCons, "Passive Consumers")
+
+##################### ACTIIVE CONSUMERS #############################
+actvID <- unique(subset(frData, Con_ForagingMovement == "active")$ID)
+actvCons <- statsWithFits[statsWithFits$ID %in% actvID,]
+plotBestFits(actvCons, "Active Consumers")
 
 #plotFits <- function(df){
   # df <- subset(frData, ID == 39909)

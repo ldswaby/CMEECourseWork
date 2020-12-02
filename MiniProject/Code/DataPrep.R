@@ -30,15 +30,21 @@ FuncRespData <- read.csv("../Data/CRat.csv", stringsAsFactors = FALSE)
 ############## Trim problematic datasets ##################
 
 # Subset cols
-ReqCols <- c('ID', 'ResDensity', 'N_TraitValue', 'ResDensityUnit', 'TraitUnit', 'ConTaxa', 'ResTaxa', 'Habitat', 'Con_ForagingMovement', 'Res_ForagingMovement')
+ReqCols <- c('ID', 'ResDensity', 'N_TraitValue', 'ResDensityUnit', 'TraitUnit', 
+             'ConTaxa', 'ConCommon', 'ResTaxa', 'ResCommon', 'Habitat', 
+             'Con_ForagingMovement', "Con_MovementDimensionality",
+             'Con_RESDetectionDimensionality',
+             'Res_ForagingMovement', "Res_MovementDimensionality", 
+             'Res_CONDetectionDimensionality',
+             "LabField")
 FuncRespData <- FuncRespData[,ReqCols] 
 
-# Drop rows corresponding to IDs with discrepant/irreconsilable measurment units used
+# Drop rows corresponding to IDs with discrepant/irreconcilable measurment units used
 DiscrepantUnits <- function(df){
   # Homogenize string characteristics that do not affect units
   # (whitespace and case).
-  uniqueResUnits <- unique(tolower(gsub(" ", "", df$ResDensityUnit, fixed = TRUE)))
-  uniqueTraitUnits <- unique(tolower(gsub(" ", "", df$TraitUnit, fixed = TRUE)))
+  uniqueResUnits <- unique(tolower(gsub(' ', '', df$ResDensityUnit, fixed = TRUE)))
+  uniqueTraitUnits <- unique(tolower(gsub(' ', '', df$TraitUnit, fixed = TRUE)))
   # Return ID where discrepant units found
   if (length(uniqueResUnits) > 1 | length(uniqueTraitUnits) > 1){
     return(unique(df$ID))
@@ -48,10 +54,13 @@ DiscrepantUnits <- function(df){
 DiscrepantIDs <- dlply(FuncRespData, .(ID), DiscrepantUnits)
 FuncRespData <- FuncRespData[!(FuncRespData$ID %in% DiscrepantIDs),]
 
-# Standardise case/terminology
+# Standardise case/terminology where it is inconsistent
 FuncRespData$Con_ForagingMovement <- tolower(FuncRespData$Con_ForagingMovement)
 FuncRespData$Res_ForagingMovement <- tolower(FuncRespData$Res_ForagingMovement)
-FuncRespData[FuncRespData == "sessile"] <- "passive"
+FuncRespData$LabField <- tolower(FuncRespData$LabField)
+FuncRespData[FuncRespData == "lab"] <- "laboratory"
+
+#FuncRespData[FuncRespData == "sessile"] <- "passive"
 
 # Drop rows containing NA values (just in case)
 FuncRespData <- na.omit(FuncRespData)
