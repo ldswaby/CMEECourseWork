@@ -3,26 +3,15 @@
 """Script for model fitting"""
 
 ## Imports ##
-#from lmfit import Model
 import statsmodels.formula.api as smf
-#from lmfit import Minimizer, Parameters, report_fit
 import lmfit
 import numpy as np
 import pandas as pd
 import sys
-import scipy as sc
-#from scipy import stats
-#import warnings
 import time
-#import concurrent.futures
-#from multiprocessing import Process, Pool
 import multiprocessing
-from statistics import mean
-#from itertools import product
-#from functools import partial
-#from smt.sampling_methods import LHS
-#import warnings
 from sklearn.metrics import r2_score  # because I'm lazy
+from smt.sampling_methods import LHS
 
 
 # TODO:
@@ -175,7 +164,7 @@ def fitFuncResp(h, a, df, model, timeout):
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
-    N = 1000  # Fix max number of param combos/runs to try
+    N = 30  # Fix max number of param combos/runs to try
 
     x = df['ResDensity']
     y = df['N_TraitValue']
@@ -184,15 +173,28 @@ def fitFuncResp(h, a, df, model, timeout):
     hrange = 0.8 * min(abs(h - 1e6), h)
     arange = 0.8 * min(abs(a - 5e7), a)
 
-    # Generate random parameter samples
-    # (uniform used over LHS as LHS unncessary here — runmax high so unlikely
-    # to not cover the whole parameter space)
+    # Generate random parameter samples (using LHS to ensure entire parameter
+    # space is covered)
+    limits = np.array([[h-hrange, h+hrange], [a-arange, a+arange]])
     np.random.seed(0)
-    h_vals = [h] + list(np.random.uniform(h - hrange, h + hrange, N))
-    a_vals = [a] + list(np.random.uniform(a - arange, a + arange, N))
-    ##################
-    paramsdf = pd.DataFrame(list(zip(h_vals, a_vals)), columns=['h', 'a'])
-    ##################
+    sampling = LHS(xlimits=limits)
+
+    #plist = sampling(N)
+    #fig = plt.figure()
+    #ax = fig.gca()
+    #ax.set_xticks(np.arange(h-hrange, h+hrange, (2*hrange)/N))
+    #ax.set_yticks(np.arange(a-arange, a+arange, (2*arange)/N))
+    #plt.plot(plist[:, 0], plist[:, 1], 'o')
+    #plt.xlabel('h')
+    #plt.ylabel('a')
+    #plt.grid()
+    # Turn off tick labels
+    #ax.set_yticklabels([])
+    #ax.set_xticklabels([])
+    #plt.show()
+
+    # Create 2 column array out of param samples (try initial estimates first)
+    paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
 
     # Initialize timer, counter, and groups list
     i = 0
@@ -201,12 +203,12 @@ def fitFuncResp(h, a, df, model, timeout):
 
     # Fit until time runs out of all values have been tested
     # TODO: Cut if a lower aic hasn't been found in? no point, I'm using time constraints
-    while time.time() < t and i < N:
+    while time.time() < t and i <= N:
 
         # Extract params to test
-        testparams = paramsdf.loc[i]
-        hi = testparams['h']
-        ai = testparams['a']
+        testparams = paramslist[i]
+        hi = testparams[0]
+        ai = testparams[1]
 
         # Store paramteters
         params = lmfit.Parameters()
@@ -240,6 +242,8 @@ def fitFuncResp(h, a, df, model, timeout):
         groups.append(group)
         i += 1
 
+    print(f'max runs = {i}')
+
     best_fit = min(groups, key=lambda grp: grp[0])  # take group with lowest AIC
 
     return best_fit if groups else None
@@ -271,7 +275,7 @@ def returnStats(id_):
     h, ahol2, ahol3 = startValues(df)
 
     # Holling II
-    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', 5)
+    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', 3)
     if bestfit:
         holl2aic, holl2bic, h2, a2 = bestfit
     else:
@@ -319,7 +323,7 @@ def main():
     ModelStats.sort_values('ID', inplace=True)  # Order by ID
 
     # Write to CSV
-    ModelStats.to_csv('../Data/ModelStats2.csv', index=False)
+    ModelStats.to_csv('../Data/ModelStats.csv', index=False)
 
     #print('\nDone!')
 
