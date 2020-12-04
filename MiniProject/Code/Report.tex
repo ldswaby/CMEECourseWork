@@ -1,35 +1,217 @@
 \documentclass[11pt]{article}
-
-\newcommand{\reporttitle}{How well do different mathematical models fit to functional responses data across species?}
-\newcommand{\reportauthor}{Luke Swaby}
-\newcommand{\reporttype}{Computing Mini-Project}
-\newcommand{\cid}{}
-
 \usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[style=authoryear,dashed=false,backend=bibtex]{biblatex}
 \usepackage{graphicx}
 \usepackage{gensymb}
 \usepackage{amsmath}
 \usepackage{lineno}
+\usepackage{csvsimple, booktabs}
 \usepackage{setspace}
+\usepackage{float}
 \usepackage{diagbox}
-\graphicspath{ {../Results/} }
+\usepackage{datatool}
+\graphicspath{{../Results/}}
+
+\newcommand{\reporttitle}{How well do different mathematical models fit to functional responses data across species?}
+\newcommand{\reportauthor}{Luke Swaby}
+\newcommand{\reporttype}{Computing Mini-Project}
+\newcommand{\cid}{01980806}
 
 % Harvard-style referencing
-\usepackage[comma]{natbib}
+%\bibliography{Biblio}
+%\usepackage[backend=biber, style=numeric]{biblatex}
+\addbibresource{Biblio}
+%\setcitestyle{authoryear,open={(},close={)}}
 
 
 
 \begin{document}
-\bibliographystyle{agsm}
-\setcitestyle{authoryear,open={(},close={)}}
+    
+    % front page
+    \input{Frontpage}
+    
+    
+    \doublespacing
+    \linenumbers 
+    \section{Abstract}
+    Need a point first
+    
+    \newpage
+    
+    %%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%
+    
+    \section{Introduction}
+    The term ‘functional response’ refers to an ecological model describing the consumption rate of a single biological consumer as a function of the population density of its target resource. These models are generally classified into three types — type I, type II, and type III — each carrying different assumptions about the behaviours at play in the interaction. A type I functional response assumes that per capita consumption rates are directly proportional to resource density \parencite{holling1959a}. In biological terms, this means that the time taken by the consumer to pursue, process and ingest the resource is negligible (that is, the 'handling time', or $h\approx0$), and the consumption rate is simply equal to the rate at which the consumer encounters its prey:
+    $$
+        F(R) = \alpha R
+    $$
+    where $R$ is the consumption rate and $\alpha$ is the rate at which the consumer searches for its prey, or the 'search rate'. Such relationships are often observed for passive predators, such as hydromedusae, web-building spiders, and filter feeders. \parencite{jeschke2004consumer}.
+    
+    Most common is the  type II functional response (Add Holling reference) \parencite{hassell1976components} \parencite{begon1996ecology} \parencite{jeschke2004consumer}. It is assumed here that consumption rates are bounded by significant handling times — imposed by, for instance, difficulties subduing large prey \parencite{holling1959b} \parencite{jeschke2002predator} \parencite{okuyama2015egg} or digestive constraints \parencite{jeschke2002predator} \parencite{van2004digestively} — and as such take a hyperbolic shape with an asymptote where the consumption rate reaches its maximum capacity at high resource densities ($R\rightarrow1/h$):
+    $$
+        F(R) = \frac{\alpha R}{1+\alpha hR}
+    $$
+    A type III functional response carries all the same assumptions as its type II counterpart, except that its graphical representation features a slight inflection of the curve at lower densities before reaching its saturation point. This is caused by the exponentiation of the resource density in both the numerator and denominator of the equation, causing the curve to resemble a sigmoid:
+    $$
+        F(R) = \frac{\alpha R^2}{1+\alpha hR^2}
+    $$
+    This exponent is largely phenomenological, though it has been suggested that its consumption-accelerating effect has a mechanistic basis in, for example, 'learning behaviour' \parencite{real1977kinetics} \parencite{holling1965functional} or prey switching \parencite{murdoch1977stabilizing}.
+    
+    Here ...
+    \begin{itemize}
+      \item Get to the point of the paper... (WHAT IS THE POINT OF THE PAPER?!)
+    \end{itemize}
+    %%%%%%%%%%%%%%%% METHODS %%%%%%%%%%%%%%%%
+    
+    \section{Methods}
+    
+    \subsection{Data}
+    The data set contains functional response data collected for 308 consumer-resource interactions from field and laboratory experiments around the world, covering over 240 species from both terrestrial and aquatic habitats. Of the 50+ metadata fields, only a small subset are of special interest to this paper: habitat, experiment type (laboratory or field), taxonomy, foraging movement, and dimensionality (of both movement and pairwise detection).
+    
+    The data was analysed for trends in the performances of Holling's type I, II, and III models (as well as a control phenomenological cubic polynomial) across these fields in a number of computational steps.
+    
+    \subsection{Computing Tools}
+    
+    \subsubsection{Data Preparation}
+    The data was prepared for model fitting in R 4.0.3 on account of its convenient data wrangling and exploration packages. Most notably, \texttt{tidyverse} and \texttt{plyr} — which provide intuitive frameworks for efficient data manipulation — were used to identify and filter out irrelevant fields and problematic data values. In particular, any rows with zero values in either the explanatory (resource density) or response (consumption rate) fields were dropped, along with any data sets for which multiple irreconcilable measurement units were used within either field. Terminology was also standardised in the relevant metadata fields to enable efficient comparative analysis down the line. The modified data was then saved to a csv file named \emph{CRatprepped.csv} for model fitting.
+    
+    \subsubsection{Model Fitting}
+    The computationally intensive task of model fitting itself was delegated to Python 3 primarily for its simple debugging and parallel processing capacities. In the \emph{ModelFitting.py} script, a number of functions are defined to facilitate mathematical model fitting by least squares minimization using Python's \texttt{numpy} and \texttt{lmfit} modules, which are then systematically applied to each functional response in the data set. 
+    
+    Both the cubic polynomial and Holling's type I model were fitted using ordinary least squares regression (OLS), with any curves lacking sufficient data points dropped (identified by checking for perfect fits; $R^2=1$). For the non-linear type II and III models, approximate values for their parameters — $h$ and $\alpha$ — were estimated before undergoing optimization by non-linear least squares regression (NLLS) applied over a Latin Hypercube sample of 30 parameter combinations taken from the space around these initial estimates, taking the combination with the lowest AIC score as the optimal fit for each run (ref?). (For a given functional response, $h$ is taken to be approximate to $1/F_{max}$ and $\alpha$ to $F_{max}/R_{half}^{q+1}$, where $F_{max}$ is the maximum consumption rate,  $R_{half}$ is the resource density at half the maximum consumption rate, $q=0$ for type II and $q=1$ for type III. For more information on this parameterization method see \textcite{rosenbaum2018fitting} and \textcite{real1977kinetics}). With the help of Python's native \texttt{multiprocessing} module, the task is distributed across the running machine's CPUs to significantly decrease total execution time, thereby maximizing the number of parameter combinations that can be tested. The \texttt{time} module is used to set an upper limit of 5 seconds to this process for each non-linear model, fixing the total time spent on each functional response to a maximum of $\sim10$ seconds (plus marginal OLS overhead).
+    
+    Once optimized, the parameter values for each fit as well as their AIC and BIC values are extracted and written to a csv file for plotting and analysis.
+    
+    \subsubsection{Plotting and Analysis}
+    
+    Having been designed with statistical analysis in mind, R's field-specific features make it a prime candidate for the job. After importing the data, the fit statistics generated in the fitting step are used to conduct a model comparison to determine the most successful model for each data set according to \emph{both} AIC and BIC. The general 'rule of thumb' for such a comparison is that if $AIC_i-AIC_{min}<2$ (where $AIC_i$ is the AIC of the $i^{th}$ model and $AIC_{min}$ is the lowest AIC scored among the set of examined models) then there is no significant difference between model $i$ and the 'winner', and one may conclude that it is supported by the data. In probabilistic terms, this means that there is a $0.368\%$ probability that model $i$ is in fact a better description of the data then the calculated minimum. (This rule — outlined in \textcite{anderson2004model} — is hereafter denoted as the 'Rule of Two'.)
+    \begin{itemize}
+      \item Still unsure of where to go with this rule of 2 stuff...
+      \item When the Rule of Two \emph{is} applied and you are trying to compare the performance of models, what do you do about IDs for which there was a 'tie'? Do you give a 'point' to each of the tied models or to none (i.e. ignoring ties)? Neither seem right...
+      \item I've currently analysed in both for comparison, but am not sure there's much to say about the result. Would it make more sense just to use model averaging for the params?
+    \end{itemize}
 
-% front page
-\input{Frontpage}
-
-
-\doublespacing
-\linenumbers 
-\section{Abstract}
-
-\bibliography{Report}
+    %%%%%%%%%%%%%%%% RESULTS %%%%%%%%%%%%%%%%
+    
+    \section{Results}
+    The data demonstrate a strong preference for mechanistic models (Fig. 1). 
+    \begin{figure}[H]
+	    \centering\includegraphics[width=1\textwidth]{p2.pdf}
+	    \caption{IDs by best fit model type}
+    \end{figure}
+    According to both estimators,  approximately 95\% of functional responses were best fit by a mechanistic model, regardless of whether or not the Rule of Two was applied (in the case where it was, IDs for which the fits between the two model types could be considered a statistical 'tie' — i.e. $|\Delta{AIC}|<2$ or $|\Delta{BIC}|<2$ — were ignored).
+    
+    \begin{figure}[H]
+	    \centering\includegraphics[width=1\textwidth]{p1.pdf}
+	    \caption{IDs by best fit model}
+    \end{figure}
+    
+    Consistent with general consensus \parencite{hassell1976components} \parencite{begon1996ecology}, we observe that a type II functional response was most prevalent in the data, fitting approximately half of all curves for which there was a definitive best model (Fig. 2). This trend remained consistent between both tests, however the relative performance of the type III model improved slightly when the conservative Rule of Two was abandoned (+?\%), indicating a significant (t-test?) number of fits for which $\Delta{AIC}<2$ between the type II and type III models. Furthermore, the type I model outperformed the cubic model when the rule was dropped, suggesting a significant number of ties. (Makes sense, as for linear data sets all 3 models are flexible enough to provide almost identical fits, with very little but the parameter difference to adjudicate between between — Holling I wins this on account of having only one param) (WHY IS THIS EVEN RELEVANT THOUGH? WHERE'S THE BIOLOGICAL NARRATIVE?!)
+    
+    \begin{figure}[H]
+	    \centering\includegraphics[width=1\textwidth]{ModelFits.pdf}
+	    \caption{Performance of the four models for a sample of IDs.}
+    \end{figure}
+    
+    \subsection{Habitat}
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{Habitat.csv}
+        \caption{Model performance by habitat.}
+    \end{table}
+   
+    % Notes
+    \begin{itemize}
+      \item Significantly more type I in marine habitats (marine ecosystems have more filter feeders?)
+      \item Marine habitats mostly type III
+      \item Freshwater and terrestrial habitats similar
+    \end{itemize}
+    
+    \subsection{Experiment Type}
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{LabField.csv}
+        \caption{Model performance by experiment type.}
+    \end{table}
+    
+    % Notes
+     \begin{itemize}
+      \item Holling II substantially outperforms the others in an enclosure environment.
+      \item Minimal difference between lab/field besides slightly better Holling III performance in lab
+    \end{itemize}
+   
+    \subsection{Foraging Movement}
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{Consumer_Movement.csv}
+        \caption{Model performance by consumer foraging movement.}
+    \end{table}
+    
+    % Notes
+     \begin{itemize}
+      \item type II most prevalent for both movement types (however more significantly for active)
+      \item For passive consumers, the type I drops (but aren't many filter feeders passive?) and gap between type II and III shrinks
+    \end{itemize}
+    
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{Resource_Movement.csv}
+        \caption{Model performance by resource foraging movement.}
+    \end{table}
+    
+    \subsection{Movement Dimensionality}
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{ConMvmtDim.csv}
+        \caption{Model performance by consumer movement dimensionality.}
+    \end{table}
+    
+    % Notes
+     \begin{itemize}
+      \item Differences between 2D and 3D negligible 
+    \end{itemize}
+    
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{ResMvmtDim.csv}
+        \caption{Model performance by resource movement dimensionality.}
+    \end{table}
+    
+    \subsection{Detection Dimensionality}
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{ConResDetectDim.csv}
+        \caption{Model performance by consumer-resource detection dimensionality.}
+    \end{table}
+    
+    Not sure if I've interpreted these correctly, but if so then:
+    % Notes
+     \begin{itemize}
+      \item Type II generally for 360° detection
+      \item Type III for 180° detection
+      \item Type II for 'surface' (?)
+    \end{itemize}
+    
+    % Table
+    \begin{table}[ht!]
+        \centering
+        \csvautobooktabular[respect all]{ResConDetectDim.csv}
+        \caption{Model performance by resource-consumer detection dimensionality.}
+    \end{table}
+    
+    %%%%%%%%%%%%%%%% DISCUSSION %%%%%%%%%%%%%%%%
+    
+    \section{Discussion}
+    
+    It would be interesting to see if the performance of Holling III exceeds the others in the field of \emph{habitat structural complexity} \parencite{pawar2012dimensionality}
+    
+\newpage
+\printbibliography
 \end{document}
