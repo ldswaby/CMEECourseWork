@@ -57,7 +57,7 @@ def fitPolynomial(df, n):
 
     if r_sqd == 1:
         print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
-              f"order {n}.")
+              f"order {n}")
         return None, None
 
     stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
@@ -164,7 +164,7 @@ def fitFuncResp(h, a, df, model, timeout):
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
-    N = 30  # Fix max number of param combos/runs to try
+    N = 20  # Fix max number of param combos/runs to try
 
     x = df['ResDensity']
     y = df['N_TraitValue']
@@ -176,7 +176,6 @@ def fitFuncResp(h, a, df, model, timeout):
     # Generate random parameter samples (using LHS to ensure entire parameter
     # space is covered)
     limits = np.array([[h-hrange, h+hrange], [a-arange, a+arange]])
-    np.random.seed(0)
     sampling = LHS(xlimits=limits)
 
     #plist = sampling(N)
@@ -242,7 +241,7 @@ def fitFuncResp(h, a, df, model, timeout):
         groups.append(group)
         i += 1
 
-    print(f'max runs = {i}')
+    #print(f'max runs = {i}')
 
     best_fit = min(groups, key=lambda grp: grp[0])  # take group with lowest AIC
 
@@ -284,7 +283,7 @@ def returnStats(id_):
         return None
 
     # Generalised Functional Response
-    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', 5)
+    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', 3)
     if bestfit:
         holl3aic, holl3bic, h3, a3 = bestfit
     else:
@@ -305,7 +304,7 @@ def returnStats(id_):
 def main():
     """Run analysis
     """
-    print('\nFitting models to data...\n')
+    print('\033[FFitting models to data...')  # Overwrite previous line (R)
 
     # Apply function and filter out failed IDs
     with multiprocessing.Pool() as pool:

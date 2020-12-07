@@ -20,6 +20,8 @@ suppressMessages(library(plyr))
 rm(list = ls())
 graphics.off()
 
+cat('Cleaning data...\n')
+
 ################## Load/Inspect Data ######################
 FuncRespData <- read.csv("../Data/CRat.csv", stringsAsFactors = FALSE)
 #dplyr::glimpse(FuncRespData)

@@ -10,6 +10,9 @@ rm(list = ls())
 suppressMessages(library(tidyverse))
 suppressMessages(library(plyr))
 suppressMessages(library(janitor))
+suppressMessages(library(gridExtra))
+suppressMessages(library(grid))
+suppressMessages(library(scales))
 
 # Load data
 frData <- read.csv('../Data/CRat_prepped.csv', stringsAsFactors = FALSE)
@@ -24,6 +27,7 @@ model_names <- model_names[order(match(model_names, ord))] # Order
 ##############################################################################
 ######################### Overlayed plots ###################################
 #############################################################################
+cat('\nPlotting fits...')
 
 ## Functions ##
 holling2 <- function(R, a, h){
@@ -124,11 +128,12 @@ demplots <- grid.arrange(
   widths=c(9,1.5)
 )
 
-ggsave("../Results/ModelFits.pdf", demplots)
+ggsave("../Results/ModelFits.pdf", demplots, width = 6.12, height = 5.42)
 
 ##################################################################################
 ######################### Prepare/Combine Data ###################################
 ##################################################################################
+cat('\rCombining data...')
 
 # Function for comparing model fits for each ID by both AIC and BIC.
 compareModels <- function(row){
@@ -249,9 +254,27 @@ BestModelTypeBIC_NoRule2 <- sapply(ALLDATA$BestModelBIC_NoRule2, addBestModelTyp
 ALLDATA$BestModelTypeBIC <- BestModelTypeBIC
 ALLDATA$BestModelTypeBIC_NoRule2 <- BestModelTypeBIC_NoRule2
 
+
+################## Add FeedType metadata col ##########################
+# Function for adding a column specifying whether the organism is a filter feeder
+filterFeed <- function(vec){
+  # Strip spaces and convert to lowercase
+  stnd <- tolower(gsub(' ', '', vec, fixed = TRUE))
+  filtfeeders <- c('rotifer', 'shrimp', 'copepod', 'daphnia', 'amphipod', 'krill', 
+                   'euphasiid', 'amphipod', 'larva', 'larvae', 'maggot', 'bivalve', 
+                   'appendicularian', 'polychaete', 'bladderwort', 'seastar', 
+                   'webbuilder')
+  pattern <- paste(filtfeeders, collapse = '|')
+  result <- grepl(pattern, stnd)
+  return(sapply(result, function(x) ifelse(isTRUE(x), 'Filter feeder', 'Non-filter feeder')))
+}
+
+ALLDATA$FilterFeeder <- filterFeed(ALLDATA$ConCommon)
+
 ######################################################################
 ######################### Plotting ###################################
 ######################################################################
+cat('\rBar plots...')
 
 # Function for plotting the breakdown of best fits according to both AIC and BIC, 
 # and with and withut the Rule of Two applied...
@@ -334,7 +357,7 @@ ggsave("../Results/TypeComparisonBar.pdf", p2, width=11, height=5)
 ###################################################################################
 ############################# Trend Exploration ###################################
 ###################################################################################
-
+cat('\Tabulations...')
 ############################# Foraging Movement ###################################
 # Consumer 
 con_mvmt <- ALLDATA %>%
@@ -343,7 +366,7 @@ con_mvmt <- ALLDATA %>%
             adorn_percentages("row") %>% # add percentages
             adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
             adorn_ns() %>% # add counts
-            rename("Consumer Foraging Movement" = "Con_ForagingMovement") # rename columns
+            dplyr::rename("Consumer Foraging Movement" = "Con_ForagingMovement") # rename columns
 
 write.csv(con_mvmt, file = '../Results/Consumer_Movement.csv', quote = FALSE, row.names = FALSE)
 
@@ -354,7 +377,7 @@ res_mvmt <- ALLDATA %>%
             adorn_percentages("row") %>% # add percentages
             adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
             adorn_ns() %>% # add counts
-            rename("Resource Foraging Movement" = "Res_ForagingMovement") # rename columns
+            dplyr::rename("Resource Foraging Movement" = "Res_ForagingMovement") # rename columns
 
 write.csv(res_mvmt, file = '../Results/Resource_Movement.csv', quote = FALSE, row.names = FALSE)
 
@@ -375,7 +398,7 @@ labfield <- ALLDATA %>%
             adorn_percentages("row") %>% # add percentages
             adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
             adorn_ns()  %>% # add counts
-            rename("Experiment Type" = 'LabField')
+            dplyr::rename("Experiment Type" = 'LabField')
 
 write.csv(labfield, file = '../Results/LabField.csv', quote = FALSE, row.names = FALSE)
 
@@ -387,7 +410,7 @@ con_mvmt_dim <- ALLDATA %>%
                 adorn_percentages("row") %>% # add percentages
                 adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
                 adorn_ns() %>% # add counts
-                rename("Consumer Movement Dimensionality" = 'Con_MovementDimensionality')
+                dplyr::rename("Consumer Movement Dimensionality" = 'Con_MovementDimensionality')
 
 write.csv(con_mvmt_dim, file = '../Results/ConMvmtDim.csv', quote = FALSE, row.names = FALSE)
 
@@ -398,7 +421,7 @@ res_mvmt_dim <- ALLDATA %>%
                 adorn_percentages("row") %>% # add percentages
                 adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
                 adorn_ns() %>% # add counts
-                rename("Resource Movement Dimensionality" = 'Res_MovementDimensionality')
+                dplyr::rename("Resource Movement Dimensionality" = 'Res_MovementDimensionality')
   
 write.csv(res_mvmt_dim, file = '../Results/ResMvmtDim.csv', quote = FALSE, row.names = FALSE)
 
@@ -409,7 +432,7 @@ con_res_detect <- ALLDATA %>%
                   adorn_percentages("row") %>% # add percentages
                   adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
                   adorn_ns() %>% # add counts
-                  rename("Consumer-Resource Detection Dimensionality" = 'Con_RESDetectionDimensionality')
+                  dplyr::rename("Consumer-Resource Detection Dimensionality" = 'Con_RESDetectionDimensionality')
   
 write.csv(con_res_detect, file = '../Results/ConResDetectDim.csv', quote = FALSE, row.names = FALSE)
 
@@ -420,6 +443,143 @@ res_con_detect <- ALLDATA %>%
                   adorn_percentages("row") %>% # add percentages
                   adorn_pct_formatting(rounding = "half up", digits = 0) %>% # round to 2dp
                   adorn_ns() %>% # add counts
-                  rename("Resource-Consumer Detection Dimensionality" = 'Res_CONDetectionDimensionality')
+                  dplyr::rename("Resource-Consumer Detection Dimensionality" = 'Res_CONDetectionDimensionality')
 
 write.csv(res_con_detect, file = '../Results/ResCosDetectDim.csv', quote = FALSE, row.names = FALSE)
+
+######################### FILTER FEEDERS #########################
+
+plotBestFits <- function(df, fac){
+  # Evaluate args
+  if(!fac %in% c('Model', 'Model Type')) return("fac must be one of: 'Model', 'Type'")
+  
+  # no of levels
+  no <- ifelse(fac=='Model Type', 2, model_count)
+  
+  # define levels
+  if (fac == 'Model Type'){
+    lvls <- c('Phenomenological', 'Mechanistic')
+    aicBreakdown <- table(ALLDATA$BestModelTypeAIC_NoRule2, ALLDATA$FilterFeeder)
+    bicBreakdown <- table(ALLDATA$BestModelTypeBIC_NoRule2, ALLDATA$FilterFeeder)
+  } else { # if fac == 'Model'
+    lvls <- model_names
+    aicBreakdown <- table(ALLDATA$BestModelAIC_NoRule2, ALLDATA$FilterFeeder)
+    bicBreakdown <- table(ALLDATA$BestModelBIC_NoRule2, ALLDATA$FilterFeeder)
+  }
+  
+  fitdata <- data.frame(Level = rep(lvls, times = 4), 
+                        Estimator = rep(c('AIC', 'BIC'), each = 2*no),
+                        FeedType = rep(c('Filter feeder', 'Non-filter feeder'), times = 2, each=no),
+                        Count = rep(NA, times = 4*no))
+  
+  # Load count of how many IDs were definititvely best fit by each model (draws excluded)
+  for (i in 1:nrow(fitdata)){
+    lvl <- fitdata[i,'Level']
+    stat <- fitdata[i,'Estimator']
+    feedtype <- fitdata[i,'FeedType']
+    if (stat == 'AIC'){
+      fitdata[i,'Count'] <- ifelse(is.na(aicBreakdown[lvl, feedtype]), 0, aicBreakdown[[lvl, feedtype]])
+    } else {
+      fitdata[i,'Count'] <- ifelse(is.na(bicBreakdown[lvl, feedtype]), 0, bicBreakdown[[lvl, feedtype]])
+    }
+  }
+  
+  nfilt <- sum(fitdata$Count[1:no])
+  nnonfilt <- sum(fitdata$Count[(no+1):(2*no)])
+  fitdata$Total <- rep(c(nfilt, nnonfilt), each = no) # Add total
+  fitdata$Percentage <- round((fitdata$Count/fitdata$Total)*100) # Add percentage of IDs best fit
+  # when the rule of 2 is applied there will be different totals (as ties are ignored)
+  
+  # Plot
+  p <- ggplot(data = fitdata, aes(x = factor(Level, levels = lvls), y = Percentage, fill = Estimator)) + 
+    facet_wrap(~FeedType) +
+    geom_bar(stat="identity", position = 'dodge2') +
+    labs(x = fac, y = 'Best Fits (%)') + 
+    theme_bw() +  theme(aspect.ratio=1) +
+    theme(legend.title = element_text(face="bold")) +
+    geom_text(aes(label=paste(round(Percentage), '% (', Count, ')', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 6-no) +
+    scale_fill_brewer(palette="Paired") +
+    scale_y_continuous(limits=c(0,max(fitdata$Percentage)*1.02))
+  
+  return(p)
+}
+
+
+
+
+
+
+
+
+
+plotBestFits <- function(df, fac){
+  # Evaluate args
+  if(!fac %in% c('Model', 'Model Type')) return("fac must be one of: 'Model', 'Type'")
+  if(!rule2 %in% c('Y', 'N')) return("rule2 must be one of: 'Y', 'N'")
+  
+  # no of levels
+  no <- ifelse(fac=='Model Type', 2, model_count)
+  
+  # define levels
+  if (fac == 'Model Type'){
+    lvls <- c('Phenomenological', 'Mechanistic')
+    aicBreakdown <- table(ALLDATA[,'BestModelTypeAIC_NoRule2'], ALLDATA$FilterFeeder)
+    bicBreakdown <- table(ALLDATA[,'BestModelTypeBIC_NoRule2'], ALLDATA$FilterFeeder)
+    aicBreakdownRO2 <- table(ALLDATA[,'BestModelTypeAIC'], ALLDATA$FilterFeeder)
+    bicBreakdownRO2 <- table(ALLDATA[,'BestModelTypeBIC'], ALLDATA$FilterFeeder)
+  } else { # if fac == 'Model'
+    lvls <- model_names
+    aicBreakdown <- table(ALLDATA[,'BestModelAIC_NoRule2'], ALLDATA$FilterFeeder)
+    bicBreakdown <- table(ALLDATA[,'BestModelBIC_NoRule2'], ALLDATA$FilterFeeder)
+    aicBreakdownRO2 <- table(ALLDATA[,'BestModelAIC'], ALLDATA$FilterFeeder)
+    bicBreakdownRO2 <- table(ALLDATA[,'BestModelBIC'], ALLDATA$FilterFeeder)
+  }
+  
+  fitdata <- data.frame(Level = rep(lvls, times = 8), 
+                        Estimator = rep(c('AIC', 'BIC'), each = 2*no, times = 2),
+                        FeedType = rep(c('Filter feeder', 'Non-filter feeder'), times = 4, each=no),
+                        RO2 = rep(c('Rule of Two', 'No Rule of Two'), each = 4*no),
+                        Count = rep(NA, times = 8*no))
+  
+  # Load count of how many IDs were definititvely best fit by each model (draws excluded)
+  for (i in 1:nrow(fitdata)){
+    lvl <- fitdata[i,'Level']
+    stat <- fitdata[i,'Estimator']
+    ro2 <- fitdata[i,'RO2']
+    feedtype <- fitdata[i,'FeedType']
+    if (ro2 == 'No Rule of Two'){
+      if (stat == 'AIC'){
+        fitdata[i,'Count'] <- ifelse(is.na(aicBreakdown[lvl, feedtype]), 0, aicBreakdown[[lvl, feedtype]])
+      } else {
+        fitdata[i,'Count'] <- ifelse(is.na(bicBreakdown[lvl, feedtype]), 0, bicBreakdown[[lvl, feedtype]])
+      }
+    } else {
+      if (stat == 'AIC'){
+        fitdata[i,'Count'] <- ifelse(is.na(aicBreakdownRO2[lvl, feedtype]), 0, aicBreakdownRO2[[lvl, feedtype]])
+      } else {
+        fitdata[i,'Count'] <- ifelse(is.na(bicBreakdownRO2[lvl, feedtype]), 0, bicBreakdownRO2[[lvl, feedtype]])
+      }
+    }
+  }
+  
+  n <- as.vector(sapply(split(fitdata$Count, ceiling(seq_along(fitdata$Count)/4)), sum)) # Split count col into 4s and add each to get relative total
+  fitdata$Total <- rep(n, each = 4)
+  fitdata$Percentage <- round((fitdata$Count/fitdata$Total)*100) # Add percentage of IDs best fit
+  # when the rule of 2 is applied there will be different totals (as ties are ignored)
+  
+  # Plot
+  p <- ggplot(data = fitdata, aes(x = factor(Level, levels = lvls), y = Percentage, fill = Estimator)) + 
+    facet_grid(RO2 ~ FeedType) +
+    geom_bar(stat="identity", position = 'dodge2') +
+    labs(x = fac, y = 'Best Fits (%)') + 
+    theme_bw() +
+    theme(legend.title = element_text(face="bold")) +
+    geom_text(aes(label=paste(round(Percentage), '% (', Count, ')', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 3.5-0.5*no) +
+    scale_fill_brewer(palette="Paired") +
+    scale_y_continuous(limits=c(0,max(fitdata$Percentage)*1.02))
+  
+  return(p)
+}
+
+ggsave('../Results/LALA2.pdf', p, width=7.5, height=7.5)
+
