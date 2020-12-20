@@ -34,7 +34,7 @@ Or:
 
 ```$ sh Code/CountLines.sh```
 
-## List of scripts
+## Scripts
 1. [UnixPrac1.txt](https://github.com/ldswaby/CMEECourseWork/blob/master/Week1/Code/UnixPrac1.txt)
 2. [boilerplate.sh](https://github.com/ldswaby/CMEECourseWork/blob/master/Week1/Code/boilerplate.sh)
 3. [tabtocsv.sh](https://github.com/ldswaby/CMEECourseWork/blob/master/Week1/Code/tabtocsv.sh)

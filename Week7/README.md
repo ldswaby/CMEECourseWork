@@ -1,4 +1,4 @@
-# My CMEE Coursework Repository
+# Week 7
 
 This directory contains coursework for week 7 of the [MSc Computational Methods in Ecology and Evolution](https://www.imperial.ac.uk/study/pg/life-sciences/computational-methods-ecology-evolution/) course at Imperial College London.
 

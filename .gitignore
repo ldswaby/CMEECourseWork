@@ -18,6 +18,14 @@ Groupwork/
 Results/*
 !Results/.gitkeep
 
+## MINIPROJECT ##
+
+Writeup/*
+!Writeup/.gitkeep
+
+Miniproject/Data/*
+!Miniproject/Data/CRat.csv
+
 
 ## MAC FILES ##
 
