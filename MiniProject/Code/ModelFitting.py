@@ -1,51 +1,60 @@
 #!/urs/bin/env python3
 
-"""Script for model fitting"""
+"""Script for fitting a polynomial of degree n and Holling's type I, II,
+and III models to the functional response dataset"""
 
 ## Imports ##
-import statsmodels.formula.api as smf
-import lmfit
-import numpy as np
-import pandas as pd
+
 import sys
 import time
+import lmfit
+import argparse
+import numpy as np
+import pandas as pd
 import multiprocessing
-from sklearn.metrics import r2_score  # because I'm lazy
+import matplotlib.pyplot as plt
 from smt.sampling_methods import LHS
-
-
-# TODO:
-#  1. Delete r_sqd stuff (and 'holler'/AIC/BIc funcs below thereafter)
-#  2. Why is BIC giving so many to Holling II
+import statsmodels.formula.api as smf
 
 ## Variables ##
+
 data = pd.read_csv("../Data/CRat_prepped.csv")  # Load data
-
-##### FOR TESTING ########
-#data = data.head(500)
-#data = data[data['ID'] == 3]
-
-#mask = data['ID'].isin([2, 3, 39949, 140, 351, 445])
-#data = data.loc[mask]
-
-##########################
-
 ids = data['ID'].unique()
 
 ## Functions ##
 
 def AIC(N, Nvarys, rss):
-    """Function to calc in same way as lmfit
+    """Function to calculate AIC using same formula as the lmfit module.
+
+    Arguments:
+        N: Number of data points
+        Nvarys: Number of free parameters
+        rss: Residual sum of squares
     """
     return N * np.log(rss/N) + 2*Nvarys
 
 def BIC(N, Nvarys, rss):
-    """Function to calc in same way as lmfit
+    """Function to calculate BIC using same formula as the lmfit module.
+
+    Arguments:
+        N: Number of data points
+        Nvarys: Number of free parameters
+        rss: Residual sum of squares
     """
     return N * np.log(rss/N) + np.log(N)*Nvarys
 
 def fitPolynomial(df, n):
-    """Fits polynomial of degree n to data x and y using numpy's polyfit
+    """Fits polynomial of degree n to functional response data using numpy's
+    polyfit.
+
+    Arguments:
+        df: dataframe containing functional response data in 'ResDensity' and
+            'N_TraitValue' columns
+        n: degree of polynomial to fit
+
+    Output:
+        aic: fit AIC value
+        bic: fit BIC value
     """
     id_ = df['ID'].unique()[0]
     x = df['ResDensity']
@@ -53,29 +62,39 @@ def fitPolynomial(df, n):
 
     model = np.polyfit(x, y, n, full=True)
     predict = np.poly1d(model[0])
-    r_sqd = r2_score(y, predict(x))
+
+    # Calculate R-squared
+    RSS = np.sum((y - predict(x))**2)
+    TSS = np.sum((y - np.mean(y))**2)
+    r_sqd = 1 - RSS/TSS
 
     if r_sqd == 1:
+        # Drop ID due to insufficient data points
         print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
               f"order {n}")
         return None, None
 
+    # Obtain OLS stats
     stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
                     data=df).fit()
 
     aic = stats.aic
     bic = stats.bic
 
-    #rss = model[1][0] if len(model[1]) else 0
-    #aic = AIC(len(x), len(model[0]), rss)
-    #bic = BIC(len(x), len(model[0]), rss)
-
     return aic, bic
 
 def fitHollingI(df):
-    """Fits holling Type 1, returning a coefficient
+    """Fits C. S. Holling's type I functional response model to data.
+
+    Arguments:
+        df: dataframe containing functional response data in 'ResDensity' and
+            'N_TraitValue' columns
+
+    Output:
+        aic: fit AIC value
+        bic: fit BIC value
+        a: estimate for attack rate parameter
     """
-    id_ = df['ID'].unique()[0]
     x = np.array(df['ResDensity'])
     y = np.array(df['N_TraitValue'])
 
@@ -84,87 +103,128 @@ def fitHollingI(df):
 
     a, rss, _, _ = np.linalg.lstsq(x, y, rcond=None)
 
-    #predict = np.poly1d(np.append(a, 0))  # force y-intercept to 0
-    #stats = smf.ols(formula='N_TraitValue ~ predict(ResDensity)',
-    #                data=df).fit()
-
     aic = AIC(len(x), 1, rss[0])
     bic = BIC(len(x), 1, rss[0])
 
     return aic, bic, a[0]
 
 def startValues(df):
-    """return sensible start values for params (Rodenbaum method)
+    """Return sensible start values for parameters a (attack rate) and h
+    (handling time) for C. S. Holling's type II and III functional response
+    models.
+
+    Arguments:
+        df: dataframe containing functional response data in 'ResDensity' and
+            'N_TraitValue' columns
+
+    Outputs:
+        h: an initial value estimate for the handling time
+        a2: an initial value estimate for the attack rate in the type II model
+        a3: an initial value estimate for the attack rate in the type III model
     """
     Fmax = max(df['N_TraitValue'])
     Nhalf = min(df['ResDensity'], key=lambda x: abs(x - 0.5*Fmax))
 
-    # h
+    # Handling time
     h = 1/Fmax  # As curve tends to 1/h
 
-    # a
+    # Attack rate
     a2 = Fmax/Nhalf   # a value for Holling type II
     a3 = Fmax/Nhalf**2   # a value for Holling type III
 
     return h, a2, a3
 
-def HollingII(x, a, h):
-    """blabla"""
-    return (a*x)/(1+h*a*x)
-
 def residHoll2(params, x, y):
-    """Returns residuals for Holling II functional response:
-    Arguments:
-     - params: parameters
-     - x: Resource density data values
-     - y: Corresponding N_TraitValue data values
-    """
-    # Get an ordered dictionary of parameter values
-    v = params.valuesdict()
+    """Returns residuals between observed data and predicted values on C. S.
+    Holling's type II functional response model.
 
-    # Holling II model
-    model = (v['a'] * x) / (1 + v['h'] * v['a'] * x)
+    Arguments:
+        params: a parameters object storing initial value estimates for the
+                attack rate and handling time.
+        x: Resource density data values
+        y: Corresponding N_TraitValue data values
+    """
+    v = params.valuesdict()  # Get an ordered dictionary of parameter values
+
+    model = (v['a'] * x) / (1 + v['h'] * v['a'] * x)  # Holling II model
 
     # Return residuals
     return model - y
-
-#def GFR(x, a, h, q):
-#    """blabla"""
-#    return (a*x**(q+1))/(1+h*a*x**(q+1))
 
 def residHoll3(params, x, y):
-    """Returns residuals for Holling II functional response:
-    Arguments:
-     - params: parameters
-     - x: Resource density data values
-     - y: Corresponding N_TraitValue data values
-    """
-    # Get an ordered dictionary of parameter values
-    v = params.valuesdict()
+    """Returns residuals between observed data and predicted values on C. S.
+    Holling's type III functional response model.
 
-    # Holling II model
-    model = (v['a'] * x**2) / (1 + v['h'] * v['a'] * x**2)
+    Arguments:
+        params: A parameters object storing initial value estimates for the
+                attack rate and handling time.
+        x: Resource density data values
+        y: Corresponding N_TraitValue data values
+    """
+    v = params.valuesdict()  # Get an ordered dictionary of parameter values
+
+    model = (v['a'] * x**2) / (1 + v['h'] * v['a'] * x**2)  # Holling II model
 
     # Return residuals
     return model - y
 
-def fitFuncResp(h, a, df, model, timeout):
-    """Fit functinal response curves to input data.
-    using uniform distribution
-    across range centred
-    RANDOM UNIF DIST
+def samplingMethods(N=20):
+    """Plots coverage of parameter space by the random uniform and
+    latin hypercube sampling methods
+    """
+    np.random.seed(1)
+    h_vals = list(np.random.uniform(0, N, N))
+    a_vals = list(np.random.uniform(0, N, N))
+
+    # Create 2 column array out of params
+    paramsdf = pd.DataFrame(list(zip(h_vals, a_vals)), columns=['h', 'a'])
+
+    limits = np.array([[0, N], [0, N]])
+    sampling = LHS(xlimits=limits)
+    #np.random.seed(1)
+    plist = sampling(N)
+
+    # Plot
+    fig = plt.figure()
+
+    ax1 = fig.add_subplot(211)
+    ax1.plot(paramsdf['a'], paramsdf['h'], 'o', markersize=3)
+    ax1.set_title('Random Uniform Sample')
+    ax1.set_xticks(np.arange(0, N))
+    ax1.set_yticks(np.arange(0, N))
+    ax1.grid()
+
+    ax2 = fig.add_subplot(212)
+    ax2.plot(plist[:, 0], plist[:, 1], 'o', markersize=3)
+    ax2.set_title('Latin Hypercube Sample')
+    ax2.set_xticks(np.arange(0, N))
+    ax2.set_yticks(np.arange(0, N))
+    ax2.grid()
+
+    plt.savefig('../Results/SamplingMethods.pdf')
+
+    plt.show()
+
+    return
+
+def fitFuncResp(h, a, df, model, timeout, N):
+    """Fits Holling's type II and III functinal response models to input data.
+
     Arguments:
-    h: handling time
-    a: attack rate
-    x: ResDensity (vec)
-    y: N_TraitValue (vec)
-    N: no of parameter pairs to try
+        h: Handling time initial value estimate
+        a: Attack rate initial value estimate
+        df: dataframe containing functional response data in 'ResDensity' and
+            'N_TraitValue' columns
+        timeout: Maximum time to spend fitting
+        N: Maximum number of parameter combinations to try
+
+    Outputs:
+        best_fits: tuple of fit statistics and parameter estimates for the best
+        fit (i.e. with the lowest AIC score)
     """
     valid = {'HollingII', 'HollingIII'}
     if model not in valid:
         raise ValueError(f"model must be one of: {', '.join(valid)}.")
-
-    N = 20  # Fix max number of param combos/runs to try
 
     x = df['ResDensity']
     y = df['N_TraitValue']
@@ -173,24 +233,10 @@ def fitFuncResp(h, a, df, model, timeout):
     hrange = 0.8 * min(abs(h - 1e6), h)
     arange = 0.8 * min(abs(a - 5e7), a)
 
-    # Generate random parameter samples (using LHS to ensure entire parameter
-    # space is covered)
+    # Generate random parameter samples using LHS to ensure maximal coverage
+    # of the parameter space
     limits = np.array([[h-hrange, h+hrange], [a-arange, a+arange]])
     sampling = LHS(xlimits=limits)
-
-    #plist = sampling(N)
-    #fig = plt.figure()
-    #ax = fig.gca()
-    #ax.set_xticks(np.arange(h-hrange, h+hrange, (2*hrange)/N))
-    #ax.set_yticks(np.arange(a-arange, a+arange, (2*arange)/N))
-    #plt.plot(plist[:, 0], plist[:, 1], 'o')
-    #plt.xlabel('h')
-    #plt.ylabel('a')
-    #plt.grid()
-    # Turn off tick labels
-    #ax.set_yticklabels([])
-    #ax.set_xticklabels([])
-    #plt.show()
 
     # Create 2 column array out of param samples (try initial estimates first)
     paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
@@ -201,7 +247,6 @@ def fitFuncResp(h, a, df, model, timeout):
     t = time.time() + timeout  # Set fitting time limit for each ID
 
     # Fit until time runs out of all values have been tested
-    # TODO: Cut if a lower aic hasn't been found in? no point, I'm using time constraints
     while time.time() < t and i <= N:
 
         # Extract params to test
@@ -241,24 +286,25 @@ def fitFuncResp(h, a, df, model, timeout):
         groups.append(group)
         i += 1
 
-    #print(f'max runs = {i}')
-
     best_fit = min(groups, key=lambda grp: grp[0])  # take group with lowest AIC
 
     return best_fit if groups else None
 
-###############################################################################
 def returnStats(id_):
-    """Fits models to curve and returns fit comparison stats and parameter
+    """Fits cubic polynomial and C. S. Holling's type I, II, and III functional
+    response models to data and returns row list of fit statistics and parameter
     estimates.
+
+    Arguments:
+        id_: ID of data set to fit to
+
+    Output:
+        statistics: row list of the id_, the AIC and BIC values for the fitted
+                        models, and estimates for their parameters.
     """
     df = data[data['ID'] == id_]
-    #print(f'starting {id_}')
 
-    # Quadratic Polynomial
-    #quadAIC, quadBIC = fitPolynomial(df, 2)
-    #if None in [quadAIC, quadBIC]:
-    #    return [None] * 14
+    ### LINEAR ###
 
     # Cubic Polynomial
     cubeAIC, cubeBIC = fitPolynomial(df, 3)
@@ -268,13 +314,13 @@ def returnStats(id_):
     # Holling type I
     holl1aic, holl1bic, a1 = fitHollingI(df)
 
-    ######################### NON-LINEAR ###############################
+    ### NON-LINEAR ###
 
-    # Generate sensible starting values
+    # Generate sensible starting values for C. S. Holling higher order models
     h, ahol2, ahol3 = startValues(df)
 
     # Holling II
-    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', 3)
+    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', timeout=3, N=30)
     if bestfit:
         holl2aic, holl2bic, h2, a2 = bestfit
     else:
@@ -283,7 +329,7 @@ def returnStats(id_):
         return None
 
     # Generalised Functional Response
-    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', 3)
+    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', timeout=3, N=30)
     if bestfit:
         holl3aic, holl3bic, h3, a3 = bestfit
     else:
@@ -294,15 +340,17 @@ def returnStats(id_):
     statistics = [id_,
                   cubeAIC, holl1aic, holl2aic, holl3aic,
                   cubeBIC, holl1bic, holl2bic, holl3bic,
-                  #cubeR2, holl2R2, holl3R2, quadR2
                   a1,
                   h2, a2,
                   h3, a3]
 
     return statistics
 
-def main():
+def main(outpath):
     """Run analysis
+
+    Arguments:
+        outpath: CSV file path string to write output statistics
     """
     print('\033[FFitting models to data...')  # Overwrite previous line (R)
 
@@ -313,7 +361,6 @@ def main():
     heads = ['ID',
              'Cubic_AIC', 'HollingI_AIC', 'HollingII_AIC', 'HollingIII_AIC',
              'Cubic_BIC', 'HollingI_BIC', 'HollingII_BIC', 'HollingIII_BIC',
-             #'Cubic_Rsqd', 'HollingII_Rsqd', 'HollingIII_Rsqd',
              'a_Holl1',
              'h_Holl2', 'a_Holl2',
              'h_Holl3', 'a_Holl3']
@@ -322,12 +369,21 @@ def main():
     ModelStats.sort_values('ID', inplace=True)  # Order by ID
 
     # Write to CSV
-    ModelStats.to_csv('../Data/ModelStats.csv', index=False)
-
-    #print('\nDone!')
+    ModelStats.to_csv(outpath, index=False)
 
     return 0
 
 if __name__ == '__main__':
-    status = main()
+
+    ## Parse Arguments ##
+    parser = argparse.ArgumentParser(
+        description="Script for fitting a polynomial of degree n and Holling's "
+                    "type I, II, and III models to the functional response "
+                    "dataset")
+    parser.add_argument("-o", "--outpath", default="../Data/ModelStats.csv",
+                        help="CSV file path string to write output "
+                             "statistics.")
+    args = parser.parse_args()
+
+    status = main(args.outpath)  # run functions
     sys.exit(status)

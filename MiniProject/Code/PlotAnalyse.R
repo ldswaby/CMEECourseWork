@@ -48,8 +48,6 @@ plotFits <- function(id){
   stats <- subset(frModStats, ID == id)
   
   try({
-    id <- unique(df$ID)
-    
     ResDensity <- df$ResDensity
     N_TraitValue <- df$N_TraitValue
     x_units <- unique(df$ResDensityUnit)
@@ -101,10 +99,21 @@ plotFits <- function(id){
   }, silent = TRUE)
 }
 
-#cub <- plotFits(39951) + theme(axis.text.x = element_blank(), axis.text.y = element_blank()) + xlab(NULL)
-#t1 <- plotFits(39896) + theme(axis.text.x = element_blank(), axis.text.y = element_blank()) + ylab(NULL) + xlab(NULL)
-#t2 <- plotFits(39894) + theme(axis.text.x = element_blank(), axis.text.y = element_blank())
-#t3 <- plotFits(39904) + theme(axis.text.x = element_blank(), axis.text.y = element_blank()) + ylab(NULL)
+###### PRINT ALL FITS ########
+#ids <- unique(frModStats$ID)
+#pdf('../Results/ALLFITS.pdf')
+#for (id in ids){
+#  print(plotFits(id))
+#}
+#dev.off()
+##############################
+
+#pdf('../Results/typeIIIfilterfeeders.pdf')
+#ids <- c(39883, 39899, 39901, 39904, 39949, 39973, 39987, 39993, 39997, 39999, 40006, 40017, 40035, 40061, 40064, 40099, 40105)
+#for (id in ids){
+#  print(plotFits(id))
+#}
+#dev.off()
 
 pl <- lapply(c(39951, 39896, 39894, 39904), FUN = plotFits)
 
@@ -515,8 +524,7 @@ plotBestFits <- function(df, fac){
 plotBestFits <- function(df, fac){
   # Evaluate args
   if(!fac %in% c('Model', 'Model Type')) return("fac must be one of: 'Model', 'Type'")
-  if(!rule2 %in% c('Y', 'N')) return("rule2 must be one of: 'Y', 'N'")
-  
+
   # no of levels
   no <- ifelse(fac=='Model Type', 2, model_count)
   
@@ -562,24 +570,38 @@ plotBestFits <- function(df, fac){
     }
   }
   
-  n <- as.vector(sapply(split(fitdata$Count, ceiling(seq_along(fitdata$Count)/4)), sum)) # Split count col into 4s and add each to get relative total
-  fitdata$Total <- rep(n, each = 4)
+  n <- as.vector(sapply(split(fitdata$Count, ceiling(seq_along(fitdata$Count)/no)), sum)) # Split count col into 4s and add each to get relative total
+  fitdata$Total <- rep(n, each = no)
   fitdata$Percentage <- round((fitdata$Count/fitdata$Total)*100) # Add percentage of IDs best fit
   # when the rule of 2 is applied there will be different totals (as ties are ignored)
   
   # Plot
   p <- ggplot(data = fitdata, aes(x = factor(Level, levels = lvls), y = Percentage, fill = Estimator)) + 
-    facet_grid(RO2 ~ FeedType) +
-    geom_bar(stat="identity", position = 'dodge2') +
     labs(x = fac, y = 'Best Fits (%)') + 
     theme_bw() +
     theme(legend.title = element_text(face="bold")) +
-    geom_text(aes(label=paste(round(Percentage), '% (', Count, ')', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 3.5-0.5*no) +
     scale_fill_brewer(palette="Paired") +
     scale_y_continuous(limits=c(0,max(fitdata$Percentage)*1.02))
+  
+  # Facet wrap depending on plot required
+  if (fac == 'Model Type'){ 
+    fitdatanew <- subset(fitdata, RO2 == 'Rule of Two')
+    p <- p + facet_wrap(~FeedType) + geom_bar(stat="identity", position = 'dodge') +
+      geom_text(data = fitdatanew, aes(label=paste(round(Percentage), '% (', Count, ')', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 3.5-0.5*no)
+  } else {
+    p <- p + facet_grid(RO2 ~ FeedType) + geom_bar(stat="identity", position = 'dodge2') +
+      geom_text(aes(label=paste(round(Percentage), '% (', Count, ')', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 3.5-0.5*no) 
+  }
   
   return(p)
 }
 
-ggsave('../Results/LALA2.pdf', p, width=7.5, height=7.5)
+mod <- plotBestFits(ALLDATA, 'Model')
+
+type <- plotBestFits(ALLDATA, 'Model Type')
+
+
+ggsave('../Results/TYPE.pdf', type, width=7.5, height=4)
+ggsave('../Results/MOD.pdf', mod, width=7.5, height=7.5)
+
 
