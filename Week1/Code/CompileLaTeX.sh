@@ -10,7 +10,7 @@
 #Check inputs
 if ! [[ $# == 1 || $# == 2 || $# == 3 ]]; then
   echo "ERROR: This script requires at least 1 argument (a .tex filepath) and \
-at most 3 (.tex filepath, .bib filepath, and .pdf output filepath, in that \
+at most 3 (.tex filepath, .pdf output filepath, and a .bib filepath, in that \
 order). You have provided $#. \n\nNOTE:\n * If the third argument is omitted, \
 the script will assume that your .bib file is in the cwd (your output will \
 lack a bibliography if not).\n * If the second and third arguments are \
