@@ -6,7 +6,7 @@
 # filepath.
 # Date: Dec 2020
 
-echo '\nCOMPILING PROJECT...\n'
+echo '\n%%%%%%%%%%%%%%%%%%%%%% COMPUTING MINI-PROJECT %%%%%%%%%%%%%%%%%%%%%%\n'
 
 Rscript DataPrep.R
 
@@ -18,6 +18,11 @@ Rscript PlotAnalyse.R
 #bibtex Report > /dev/null 2>&1
 #pdflatex Report.tex > /dev/null 2>&1
 #pdflatex Report.tex > /dev/null 2>&1
+
+pdflatex Report.tex > /dev/null 2>&1
+bibtex Report > /dev/null 2>&1
+pdflatex Report.tex > /dev/null 2>&1
+pdflatex Report.tex > /dev/null 2>&1
 
 echo "\rCLEANING UP..."
 
@@ -32,4 +37,6 @@ rm *.toc > /dev/null 2>&1
 rm *.bbl > /dev/null 2>&1
 rm *.blg > /dev/null 2>&1
 
-echo '\rSUCCESS!'
+echo "\rOPENING REPORT..."
+mv Report.pdf ../Writeup/
+open ../Writeup/Report.pdf

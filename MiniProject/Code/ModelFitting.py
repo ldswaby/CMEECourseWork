@@ -168,45 +168,6 @@ def residHoll3(params, x, y):
     # Return residuals
     return model - y
 
-def samplingMethods(N=20):
-    """Plots coverage of parameter space by the random uniform and
-    latin hypercube sampling methods
-    """
-    np.random.seed(1)
-    h_vals = list(np.random.uniform(0, N, N))
-    a_vals = list(np.random.uniform(0, N, N))
-
-    # Create 2 column array out of params
-    paramsdf = pd.DataFrame(list(zip(h_vals, a_vals)), columns=['h', 'a'])
-
-    limits = np.array([[0, N], [0, N]])
-    sampling = LHS(xlimits=limits)
-    #np.random.seed(1)
-    plist = sampling(N)
-
-    # Plot
-    fig = plt.figure()
-
-    ax1 = fig.add_subplot(211)
-    ax1.plot(paramsdf['a'], paramsdf['h'], 'o', markersize=3)
-    ax1.set_title('Random Uniform Sample')
-    ax1.set_xticks(np.arange(0, N))
-    ax1.set_yticks(np.arange(0, N))
-    ax1.grid()
-
-    ax2 = fig.add_subplot(212)
-    ax2.plot(plist[:, 0], plist[:, 1], 'o', markersize=3)
-    ax2.set_title('Latin Hypercube Sample')
-    ax2.set_xticks(np.arange(0, N))
-    ax2.set_yticks(np.arange(0, N))
-    ax2.grid()
-
-    plt.savefig('../Results/SamplingMethods.pdf')
-
-    plt.show()
-
-    return
-
 def fitFuncResp(h, a, df, model, timeout, N):
     """Fits Holling's type II and III functinal response models to input data.
 
