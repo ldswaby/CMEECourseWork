@@ -36,10 +36,11 @@ The following packages (with versions) are used in the project:
 ## Structure and Usage
 
 This directory contains the following folders:
-* Data - contains CSV file containing the functional response data set. 
-(Modified versions of this file will also be placed here.)
-* Code - contains all code scripts for the project (see below for details).
-* Results - empty directory for plots and results files to be pushed into.
+* **Data**: contains CSV file containing the functional response data set — 
+*CRat.csv*. (Modified versions of this file will also be placed here.)
+* **Code**: contains all code scripts for the project (see below for details).
+* **Results**: empty directory for plots and results files to be pushed into.
+* **Writeup**: directory for the written report out file.
 
 ## Scripts
 1. [DataPrep.R](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/DataPrep.R)
@@ -52,7 +53,7 @@ This directory contains the following folders:
 
 ### 1. DataPrep.R
 
-A script for preparing the data for model fitting, filtering out unnecessary columns and problematic rows.
+A script for preparing the *CRat.csv* data for model fitting, filtering out unnecessary columns and problematic rows.
 
 ### 2. ModelFitting.py
 

@@ -5,7 +5,7 @@
 %\usepackage{pgfplotstable}
 
 %\usepackage{blindtext}
-\usepackage{natbib}
+%\usepackage{natbib}
 \usepackage{afterpage}
 \usepackage{graphicx}
 %\usepackage{gensymb}
@@ -19,26 +19,34 @@
 \graphicspath{{../Results/}}
 
 \newcommand{\reporttitle}{Strictly linear type I functional responses underrepresented among filter feeders}
-
 \newcommand{\reportauthor}{Luke Swaby}
-\newcommand{\reporttype}{Computing Mini-Project}
-\newcommand{\cid}{01980806}
+\newcommand{\reportcid}{01980806}
+\newcommand{\words}{1234}
+\newcommand{\degreetype}{Master of Science}
+
+\usepackage[comma]{natbib}
+
+
 
 \begin{document}
-    
+	\bibliographystyle{agsm}
+	\setcitestyle{authoryear,open={(},close={)}}
+
     % front page
-    \doublespacing
+    \onehalfspacing
     \input{Frontpage}
     
-    \section{Abstract}
-     A functional response describes the response of a single predator's consumption rate to changes in the population density of its prey. It is thought generally that a relationship exists between functional response type and feeding strategy, a prominent example of which is the conventional association of filter feeders with the type I functional response. Here I test the validity of this association by evaluating the performances of C. S. Holling's type I, II, and III models (as well as a control phenomenological cubic polynomial) across a data set of 308 functional responses spanning a range of feeding types. Multivariate analysis of the model fitting results shows that the proportions of strictly linear type I functional responses found among filter feeders and non-filter feeders in the data set differ insignificantly, and that a type III functional response is in fact the most prevalent among the filter feeders. While ostensibly at odds with the widespread assumption that type I functional responses are exclusive to filter feeders, these results can be partially explained in terms of anomalies in the data set and the limitations imposed by the strict linearity of the type I model used, leaving grounds to doubt their generalisability without further investigation.
+    \renewcommand{\abstractname}{Abstract}
+    \begin{abstract}
+     A functional response describes the response of a single predator's consumption rate to changes in the population density of its prey. It is thought generally that a relationship exists between functional response type and feeding strategy, a prominent example of which is the conventional association of filter feeders with the type I functional response. Here I test the validity of this association by evaluating the performances of C. S. Holling's type I, II, and III models (as well as a control phenomenological cubic polynomial) across a data set of 308 functional responses spanning a range of feeding types. Multivariate analysis of the model fitting results shows that the proportions of strictly linear type I functional responses found among filter feeders and non-filter feeders in the data set differ insignificantly, and that a type III functional response is in fact the most prevalent among the filter feeders. While ostensibly at odds with the widespread assumption that type I functional responses are exclusive to filter feeders, these results can be partially explained in terms of anomalies in the data set and limitations of the type I model used, leaving grounds to doubt their generalisability without further investigation.
+    \end{abstract}
     
-    \newpage
     \linenumbers
     
     %%%%%%%%%%%%%%%% INTRODUCTION %%%%%%%%%%%%%%%%
+    
     \section{Introduction}
-    The term ‘functional response’ refers to a ecological (trophodynamic) model describing the consumption rate of a single biological consumer as a function of the population density of its target resource \citep{solomon1949natural}, with 'consumers' and 'resources' defined broadly to encompass interactions spanning all trophic levels. Functional responses encode important behavioural and physiological information about individual organisms and the food webs to which they belong, and have accordingly played an important roll in a broad range of biological fields, ranging from population biology to ethology. Numerous functional response models have been defined in the literature (see \citet{jeschke2002predator} for a review), but since C. S. Holling's seminal 1959 studies \citep{holling1959a, holling1959b} these models have been traditionally classified into three types — type I, type II, and type III — each carrying different assumptions about the behaviours at play in the interaction. 
+    The term ‘functional response’ refers to a ecological model describing the consumption rate of a single biological consumer as a function of the population density of its target resource \citep{solomon1949natural}, with 'consumers' and 'resources' defined broadly to encompass interactions spanning all trophic levels. Functional responses encode important behavioural and physiological information about individual organisms and the food webs to which they belong, and have accordingly played an important roll in a wide range of biological fields, ranging from population biology to ethology. Numerous functional response models have been defined in the literature (see \citet{jeschke2002predator} for a review), but since C. S. Holling's seminal 1959 studies \citep{holling1959a, holling1959b} these models have been traditionally classified into three types — type I, type II, and type III — each carrying different assumptions about the behaviours at play in the interaction. 
     
     Most common are type II functional responses  \citep{hassell1976components, begon1996ecology,jeschke2004consumer}. It is assumed here that per capita consumption rates are bounded by the time spent by the consumer to pursue, process and ingest the resource — or, as it's commonly known, the 'handling time'. As such, these curves take a hyperbolic shape with an asymptote where the consumption rate reaches its maximum capacity at high resource densities:
     
@@ -49,15 +57,19 @@
     where $R$ is the consumption rate, $h$ is the handling time, and $\alpha$ is the rate at which the consumer searches for its prey, or the 'search rate'. These delays can be imposed by, for instance, difficulties subduing large prey \citep{holling1959b,jeschke2002predator,okuyama2015egg} or digestive constraints \citep{jeschke2002predator,van2004digestively}. 
     
     A type III functional response carries all the same assumptions as its type II counterpart, except that its graphical representation features a slight inflection of the curve at lower densities before reaching its saturation point (Fig. 3A). This is caused by the exponentiation of the resource density in both the numerator and denominator of the equation, causing the curve to resemble a sigmoid:
+    
     $$
         F(R) = \frac{\alpha R^2}{1+\alpha hR^2}
     $$
+    
     This exponent is largely phenomenological, though it has been suggested by some that its consumption-accelerating effect has a mechanistic basis in, for example, 'learning behaviour' \citep{real1977kinetics, holling1965functional} or prey switching \citep{murdoch1977stabilizing}.
     
     Perhaps most specialized of the three is the type I functional response. It is assumed in this model that per capita consumption rates are directly proportional to resource density \citep{holling1959a}. In biological terms, this means that the time taken by the consumer to handle its prey is negligible ($h\approx0$), and the consumption rate is simply equivalent to the rate at which the consumer encounters its prey:
+    
     $$
         F(R) = \alpha R
     $$
+    
     Since factors like prey size and resistance usually preclude instantaneous capture and consumption, functional responses of this kind are thought to be exclusive to trophic interactions satisfying stringent criteria. More specifically, it has been argued by some that the conditions required to elicit such a response are fulfilled only by passive predators such as suspension feeders, trap-builders, and filter feeders \citep{jeschke2004consumer}.
     
     By reviewing 308 functional responses compiled from the literature, I test the hypothesis that type I functional responses are significantly more prevalent among filter feeders than non-filter feeders, and examine the extent to which this evaluation is influenced by the model comparison approach adopted. I additionally evaluate the performance of a phenomenological model against Holling's functional response models and, subsequently, the performances of all four models accross the data set to examine the relationship between feeding type and functional response more generally.
@@ -73,7 +85,7 @@
     
     \subsection{Model Fitting}
     
-    Both the cubic polynomial and Holling's type I model were fitted using ordinary least squares regression (OLS), with any responses lacking sufficient data points dropped (identified by checking for perfect fits; $R^2=1$). For the non-linear type II and III models, approximate values for their parameters — $h$ and $\alpha$ — were first estimated. Following \citet{rosenbaum2018fitting, real1977kinetics}, $h$ is assumed to be approximate to $1/F_{max}$ (as $\lim_{R\to\infty}F=1/h$) and $\alpha$ to $F_{max}/R_{half}^{q+1}$ for a given functional response, where $F_{max}$ is the maximum consumption rate,  $R_{half}$ is the resource density at half the maximum consumption rate, $q=0$ for type II and $q=1$ for type III. A Latin Hypercube sample of 30 parameter combinations was then taken from the spaces around these initial estimates, which were then individually plugged into the models and fitted to the data by non-linear least squares regression (NLLS) with an upper time limit of 3 seconds for each ID, after which the fitting ceased (if all combinations had not already been tested) and the parameter combination with the lowest AIC score was taken as the optimal fit.
+    Both the cubic polynomial and Holling's type I model were fitted using ordinary least squares regression (OLS), with any responses lacking sufficient data points dropped (identified by checking for perfect fits; $R^2=1$). For the non-linear type II and III models, approximate values for their parameters — $h$ and $\alpha$ — were first estimated. Following \citet{real1977kinetics}, $h$ is assumed to be approximate to $1/F_{max}$ (as $\lim_{R\to\infty}F=1/h$) and $\alpha$ to $F_{max}/R_{half}^{q+1}$ for a given functional response, where $F_{max}$ is the maximum consumption rate,  $R_{half}$ is the resource density at half the maximum consumption rate, $q=0$ for type II and $q=1$ for type III. A Latin Hypercube sample of 30 parameter combinations was then taken from the spaces around these initial estimates, which were then individually plugged into the models and fitted to the data by non-linear least squares regression (NLLS) with an upper time limit of 3 seconds for each ID, after which the fitting ceased (if all combinations had not already been tested) and the parameter combination with the lowest AIC score was taken as the optimal fit.
     
     \subsection{Analysis}
     
@@ -83,10 +95,11 @@
     
     \subsection{Computing Tools}
     
-    The data was prepared for model fitting in R 4.0.3 on account of its convenient data wrangling and exploration packages. The computationally intensive task of model fitting itself was then performed in Python 3 using the \texttt{lmfit} and \texttt{numpy} modules. Python was chosen for this step primarily due its versatility over a broader range of tasks, as well as its simple debugging and parallel processing capacities. For the parameter sampling method, Latin Hypercube sampling was chosen over random uniform sampling in order to ensure broader coverage of each parameter space and maximize the probability of finding the global optimum. 
+    The data was prepared for model fitting in R 4.0.3 on account of its convenient data wrangling and exploration packages. The computationally intensive task of model fitting itself was then performed in Python 3 using the \texttt{lmfit} and \texttt{numpy} modules. Python was chosen for this step primarily due its versatility over a broader range of tasks than R, as well as its simple debugging and parallel processing capacities. For the parameter sampling method, Latin Hypercube sampling was chosen over random uniform sampling in order to ensure broader coverage of each parameter space and maximize the probability of finding the global optimum. 
     R was then used once more for plotting and analysis due to its field-specific features in this area.
 
     %%%%%%%%%%%%%%%% RESULTS %%%%%%%%%%%%%%%%
+    
     \section{Results}
     \subsection{Mechanistic vs. Phenomenological Models}
     
@@ -95,7 +108,7 @@
     \afterpage{
     \begin{figure}[t!]
 	    \centering\includegraphics[width=1\textwidth]{TypeComparisonBar.pdf}
-	    \caption{Percentage of functional responses best fit by each model type.}
+	    \caption{Percentage of functional responses best fit by model type.}
     \end{figure}
     }
     
@@ -115,9 +128,8 @@
         
     \begin{figure}[t!]
 	    \centering\includegraphics[width=1\textwidth]{ModelComparisonBar.pdf}
-	    \caption{IDs by best fit model}
+	    \caption{Percentage of functional responses best fit by model.}
     \end{figure}
-
    
     %%%%%%%%%%%%%%%% DISCUSSION %%%%%%%%%%%%%%%%
     
@@ -147,6 +159,6 @@
 
     \newpage
     
-    \bibliographystyle{abbrvnat}
+    %\bibliographystyle{abbrvnat}
     \bibliography{Biblio}
 \end{document}
