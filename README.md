@@ -20,7 +20,8 @@ Each week's directory contains it's own README.md file detailing it's dependenci
 1. [Week 1: Computing Bootcamp](https://github.com/ldswaby/CMEECourseWork/tree/master/Week1)
 2. [Week 2: Python I](https://github.com/ldswaby/CMEECourseWork/tree/master/Week2)
 3. [Week 3: R](https://github.com/ldswaby/CMEECourseWork/tree/master/Week3)
-7. [Week 7: Python II](#7.Week-7-Python-II)
+4. [Week 7: Python II](#7.Week-7-Python-II)
+5. [Computing Mini-Project](https://github.com/ldswaby/CMEECourseWork/tree/master/MiniProject)
 
 ### Week 1: Computing Bootcamp
 
@@ -92,6 +93,9 @@ The following packages (with versions) are used in the project:
 * `scipy` 
 * `pandas` 
 * `matplotlib`
+* `lmfit`
+* `smt`
+* `statsmodels`
  
 ### R 4.0.3
 * `tidyverse`
@@ -99,11 +103,18 @@ The following packages (with versions) are used in the project:
 * `dplyr` 
 * `tidyr` 
 * `ggplot2` 
-* `maps` 
+* `maps`
+* `plyr` 
+* `gridExtra`
+* `grid`
+* `scales`
 
 ### LaTeX
+* `agsm.bst` (bibliography style to be stored in Code directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
 
-**TBC**
+### Jupyter Notebook
+* IPython kernel
+* R kernel (see [here](https://github.com/IRkernel/IRkernel))
 
 ## Contact
 

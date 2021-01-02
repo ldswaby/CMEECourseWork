@@ -28,13 +28,12 @@ The following packages (with versions) are used in the project:
 * `smt`
 * `statsmodels`
 
-### LATEX
+### LaTeX
 * `agsm.bst` (bibliography style to be stored in Code directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
 
 ### Jupyter Notebook
 * IPython kernel
 * R kernel (see [here](https://github.com/IRkernel/IRkernel))
-
 
 ## Structure and Usage
 
@@ -43,7 +42,7 @@ This directory contains the following folders:
 *CRat.csv*. (Modified versions of this file will also be placed here.)
 * **Code**: contains all code scripts for the project (see below for details).
 * **Results**: empty directory for plots and results files to be pushed into.
-* **Writeup**: directory for the written report out file.
+* **Writeup**: directory for the written report pdf and front page graphics.
 
 ## Scripts
 1. [DataPrep.R](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/DataPrep.R)
