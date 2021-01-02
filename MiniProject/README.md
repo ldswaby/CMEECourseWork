@@ -28,6 +28,9 @@ The following packages (with versions) are used in the project:
 * `smt`
 * `statsmodels`
 
+### LATEX
+* `agsm.bst` (bibliography style to be stored in Code directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
+
 ### Jupyter Notebook
 * IPython kernel
 * R kernel (see [here](https://github.com/IRkernel/IRkernel))

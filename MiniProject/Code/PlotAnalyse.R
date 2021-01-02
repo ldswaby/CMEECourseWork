@@ -43,77 +43,69 @@ holling3 <- function(R, a, h){
   return(num/denom)
 }
 
-
 plotFits <- function(id){
   df <- subset(frData, ID == id)
   stats <- subset(frModStats, ID == id)
   
-  try({
-    ResDensity <- df$ResDensity
-    N_TraitValue <- df$N_TraitValue
-    x_units <- unique(df$ResDensityUnit)
-    y_units <- unique(df$TraitUnit)
-    
-    # Fit models
-    #Quad <- lm(y ~ poly(x, 2))
-    Cube <- lm(N_TraitValue ~ poly(ResDensity, 3))
-    
-    # Generate a vector of the the x-axis variable
-    x <- seq(from = min(ResDensity), to = max(ResDensity), by = ((max(ResDensity) - min(ResDensity))/100))
-    
-    
-    # Calculate predicted lines and write points to dataframe
-    y_cube <- predict.lm(Cube, data.frame(ResDensity = x))
-    y_holl1 <- stats$a_Holl1 * x
-    y_holl2 <- holling2(x, stats$a_Holl2, stats$h_Holl2)
-    y_holl3 <- holling3(x, stats$a_Holl3, stats$h_Holl3)
-    
-    data_to_fit <- data.frame(x = x, y_cube = y_cube, y_holl1 = y_holl1, y_holl2 = y_holl2, y_holl3 = y_holl3)
-    
-    # Plot
-    p <- ggplot(aes(x = ResDensity, y = N_TraitValue), data = df) +
-          geom_point(shape=I(4)) + theme_bw() +
-          ggtitle(paste("ID:", id)) +
-          theme(plot.title = element_text(size=8, hjust = 1)) +
-          theme(legend.position = 'right', legend.title = element_text(face="bold")) + 
-          xlab(NULL) +
-          ylab(NULL) +
-          geom_line(aes(x = x, y = y_cube, colour = "Cubic"), data = data_to_fit, size = 0.4) +
-          geom_line(aes(x = x, y = y_holl1, colour = "Type I"), data = data_to_fit, size = 0.4) + 
-          geom_line(aes(x = x, y = y_holl2, colour = "Type II"), data = data_to_fit, size = 0.4) +
-          geom_line(aes(x = x, y = y_holl3, colour = "Type III"), data = data_to_fit, size = 0.4) +
-          scale_colour_manual("Model", breaks = c("Cubic", "Type I", "Type II", "Type III"), values = c("green4", "blue", "red", "purple")) 
-
-    if (id == 39993){
-      p <- p + annotate(geom = 'text', label = 'A', x = -Inf, y = Inf, hjust = -1, vjust = 2)
-    } else if (id == 39999){
-      p <- p + annotate(geom = 'text', label = 'B', x = -Inf, y = Inf, hjust = -1, vjust = 2)
-    } else if (id == 40099){
-      p <- p + annotate(geom = 'text', label = 'C', x = -Inf, y = Inf, hjust = -1, vjust = 2)
-    } else if (id == 39973){
-      p <- p + annotate(geom = 'text', label = 'D', x = -Inf, y = Inf, hjust = -1, vjust = 2)
-    } else {
-      return(p)
-    }
-    
-    return(p)
-  }, silent = TRUE)
+  ResDensity <- df$ResDensity
+  N_TraitValue <- df$N_TraitValue
+  x_units <- unique(df$ResDensityUnit)
+  y_units <- unique(df$TraitUnit)
+  
+  # Fit models
+  skip_to_next <- FALSE
+  tryCatch(Cube <- lm(N_TraitValue ~ poly(ResDensity, 3)), error = function(e){skip_to_next <<- TRUE})
+  
+  if (skip_to_next){ # skip ID if insufficient data
+    return()
+  }
+  
+  # Generate a vector of the the x-axis variable
+  x <- seq(from = min(ResDensity), to = max(ResDensity), by = ((max(ResDensity) - min(ResDensity))/100))
+  
+  # Calculate predicted lines and write points to dataframe
+  y_cube <- predict.lm(Cube, data.frame(ResDensity = x))
+  y_holl1 <- stats$a_Holl1 * x
+  y_holl2 <- holling2(x, stats$a_Holl2, stats$h_Holl2)
+  y_holl3 <- holling3(x, stats$a_Holl3, stats$h_Holl3)
+  
+  data_to_fit <- data.frame(x = x, y_cube = y_cube, y_holl1 = y_holl1, y_holl2 = y_holl2, y_holl3 = y_holl3)
+  
+  # Plot
+  p <- ggplot(aes(x = ResDensity, y = N_TraitValue), data = df) +
+        geom_point(shape=I(4)) + theme_bw() +
+        ggtitle(paste("ID:", id)) +
+        theme(plot.title = element_text(size=8, hjust = 1)) +
+        theme(legend.position = 'right', legend.title = element_text(face="bold")) + 
+        xlab(NULL) +
+        ylab(NULL) +
+        geom_line(aes(x = x, y = y_cube, colour = "Cubic"), data = data_to_fit, size = 0.4) +
+        geom_line(aes(x = x, y = y_holl1, colour = "Type I"), data = data_to_fit, size = 0.4) + 
+        geom_line(aes(x = x, y = y_holl2, colour = "Type II"), data = data_to_fit, size = 0.4) +
+        geom_line(aes(x = x, y = y_holl3, colour = "Type III"), data = data_to_fit, size = 0.4) +
+        scale_colour_manual("Model", breaks = c("Cubic", "Type I", "Type II", "Type III"), values = c("green4", "blue", "red", "purple")) 
+  
+  if (id == 39993){
+    p <- p + annotate(geom = 'text', label = 'A', x = -Inf, y = Inf, hjust = -1, vjust = 2)
+  } else if (id == 39999){
+    p <- p + annotate(geom = 'text', label = 'B', x = -Inf, y = Inf, hjust = -1, vjust = 2)
+  } else if (id == 40099){
+    p <- p + annotate(geom = 'text', label = 'C', x = -Inf, y = Inf, hjust = -1, vjust = 2)
+  } else if (id == 39973){
+    p <- p + annotate(geom = 'text', label = 'D', x = -Inf, y = Inf, hjust = -1, vjust = 2)
+  } else {
+    p <- p + xlab(paste('Resource Density (', x_units, ')', sep = '')) + ylab(paste('Consumption Rate (', y_units, ')', sep = ''))
+  }
+  return(p)
 }
 
 ###### PRINT ALL FITS ########
-#pdf('../Results/AllFits.pdf')
-#for (id in ids){
-#  print(plotFits(id))
-#}
-#dev.off()
+pdf('../Results/AllFits.pdf')
+for (id in ids){
+  invisible(capture.output(print(plotFits(id))))
+}
+invisible(dev.off())
 ##############################
-
-#pdf('../Results/typeIIIfilterfeeders.pdf')
-#ids <- c(39883, 39899, 39901, 39904, 39949, 39973, 39987, 39993, 39997, 39999, 40006, 40017, 40035, 40061, 40064, 40099, 40105)
-#for (id in ids){
-#  print(plotFits(id))
-#}
-#dev.off()
 
 pl <- lapply(c(39993, 39999, 40099, 39973), FUN = plotFits)
 
@@ -157,11 +149,11 @@ compareModels <- function(row){
   mod_names <- substr(names(AICs), 1, nchar(names(AICs))-4)
   
   # For each model, compute the differences in AIC with respect to the AIC of the best candidate model
-  deltaAICs <- AICs - min(AICs)
-  deltaBICs <- BICs - min(BICs)
+  #deltaAICs <- AICs - min(AICs)
+  #deltaBICs <- BICs - min(BICs)
   
-  wAIC <- exp(-0.5*deltaAICs)/sum(exp(-0.5*deltaAICs)) # Calculate Akaike weights
-  wBIC <- exp(-0.5*deltaBICs)/sum(exp(-0.5*deltaBICs)) # Calculate Schwarz weights 
+  #wAIC <- exp(-0.5*deltaAICs)/sum(exp(-0.5*deltaAICs)) # Calculate Akaike weights
+  #wBIC <- exp(-0.5*deltaBICs)/sum(exp(-0.5*deltaBICs)) # Calculate Schwarz weights 
   
   ## Find best fit(s) 
   # Initialise best fit charcter vectors (can't preallocate as final length unknown)
@@ -206,13 +198,13 @@ compareModels <- function(row){
   names(best_fits_bic) <- mod_names[1:length(best_fits_bic)]
   
   # Adjudicate 'ties' with Akaike and Schwarz weights
-  while (wAIC[[1]] > 2*wAIC[[length(best_fits_aic)]]){ # if Akaike weights differ by more than a factor of 2 between first and last elements
-    best_fits_aic <- head(best_fits_aic, -1) # then remove last element 
-  }
+  #while (wAIC[[1]] > 2*wAIC[[length(best_fits_aic)]]){ # if Akaike weights differ by more than a factor of 2 between first and last elements
+  #  best_fits_aic <- head(best_fits_aic, -1) # then remove last element 
+  #}
   
-  while (wBIC[[1]] > 2*wBIC[[length(best_fits_bic)]]){ # if Schwarz weights differ by more than a factor of 2 between first and last elements
-    best_fits_bic <- head(best_fits_bic, -1) # then remove last element 
-  }
+  #while (wBIC[[1]] > 2*wBIC[[length(best_fits_bic)]]){ # if Schwarz weights differ by more than a factor of 2 between first and last elements
+  #  best_fits_bic <- head(best_fits_bic, -1) # then remove last element 
+  #}
   
   # Combine into strings
   AICBestFit <- paste(names(best_fits_aic), collapse = '/')
@@ -299,7 +291,7 @@ ALLDATA$FilterFeeder <- filterFeed(ALLDATA$ConCommon)
 ######################################################################
 ######################### Plotting ###################################
 ######################################################################
-cat('\rBar plots...')
+cat('\rPlotting bar plots...')
 
 # Function for plotting the breakdown of best fits according to both AIC and BIC, 
 # and with and withut the Rule of Two applied...
@@ -365,6 +357,7 @@ plotBestFits <- function(df, fac){
   } else {
     p <- ggplot(data = fitdata, aes(x = factor(Level, levels = lvls), y = Percentage, fill = Estimator)) + 
       facet_grid(RO2 ~ FeedType) + geom_bar(stat="identity", position = 'dodge2') +
+      scale_x_discrete(labels=c("Cubic","Type I","Type II","Type III")) +
       geom_text(aes(label=paste(round(Percentage), '%', sep = '')), position=position_dodge(width=0.9), vjust=-0.5, cex = 4) +
       geom_text(aes(label=Count), position=position_dodge(width=0.9), vjust=1.5, cex = 3, color='white')
   }

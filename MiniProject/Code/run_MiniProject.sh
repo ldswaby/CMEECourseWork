@@ -14,11 +14,7 @@ python3 ModelFitting.py
 
 Rscript PlotAnalyse.R
 
-#pdflatex Report.tex > /dev/null 2>&1
-#bibtex Report > /dev/null 2>&1
-#pdflatex Report.tex > /dev/null 2>&1
-#pdflatex Report.tex > /dev/null 2>&1
-
+# Compile project report
 pdflatex Report.tex > /dev/null 2>&1
 bibtex Report > /dev/null 2>&1
 pdflatex Report.tex > /dev/null 2>&1
