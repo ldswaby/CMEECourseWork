@@ -9,7 +9,6 @@ rm(list = ls())
 # Imports
 suppressMessages(library(tidyverse))
 suppressMessages(library(plyr))
-#suppressMessages(library(janitor))
 suppressMessages(library(gridExtra))
 suppressMessages(library(grid))
 suppressMessages(library(scales))
@@ -100,11 +99,11 @@ plotFits <- function(id){
 }
 
 ###### PRINT ALL FITS ########
-pdf('../Results/AllFits.pdf')
-for (id in ids){
-  invisible(capture.output(print(plotFits(id))))
-}
-invisible(dev.off())
+#pdf('../Results/AllFits.pdf')
+#for (id in ids){
+#  invisible(capture.output(print(plotFits(id))))
+#}
+#invisible(dev.off())
 ##############################
 
 pl <- lapply(c(39993, 39999, 40099, 39973), FUN = plotFits)
@@ -148,6 +147,7 @@ compareModels <- function(row){
   # 'AIC' or 'BIC' - as such only clips last 3)
   mod_names <- substr(names(AICs), 1, nchar(names(AICs))-4)
   
+  #### AKAIKE WEIGHTS PART ####
   # For each model, compute the differences in AIC with respect to the AIC of the best candidate model
   #deltaAICs <- AICs - min(AICs)
   #deltaBICs <- BICs - min(BICs)

@@ -35,4 +35,5 @@ rm *.blg > /dev/null 2>&1
 
 echo "\rOPENING REPORT..."
 mv Report.pdf ../Writeup/
-open ../Writeup/Report.pdf
+#open ../Writeup/Report.pdf # Mac
+evince ../Writeup/Report.pdf # Linux
