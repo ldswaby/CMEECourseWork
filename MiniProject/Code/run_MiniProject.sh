@@ -1,9 +1,7 @@
 # Author: Luke Swaby (lds20@ic.ac.uk)
-# Script: CompileLaTex.sh
-# Desc: Compiles LaTeX with bibtex. Note that pdf output will be generated
-# in your cwd.
-# Arguments: 3 -> .tex filepath (required), .bib filepath, and .pdf output 
-# filepath.
+# Script: run_MiniProject.sh
+# Desc: Compiles Computing Mini-Project
+# Arguments: 0
 # Date: Dec 2020
 
 echo '\n%%%%%%%%%%%%%%%%%%%%%% COMPUTING MINI-PROJECT %%%%%%%%%%%%%%%%%%%%%%\n'
