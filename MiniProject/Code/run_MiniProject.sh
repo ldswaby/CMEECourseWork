@@ -32,6 +32,7 @@ rm *.bbl > /dev/null 2>&1
 rm *.blg > /dev/null 2>&1
 
 echo "\rOPENING REPORT..."
+mv Report.pdf ../Writeup/
 if [ "$(uname)" == "Darwin" ]
 then
     open ../Writeup/Report.pdf # Mac
@@ -39,5 +40,3 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]
 then
     evince ../Writeup/Report.pdf # Linux
 fi
-
-mv Report.pdf ../Writeup/
