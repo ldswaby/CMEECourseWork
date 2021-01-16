@@ -28,7 +28,7 @@ The following packages (with versions) are used in the project:
 * `statsmodels`
 
 ### LaTeX
-* `agsm.bst` - bibliography style file (stored in Code/ directory) - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
+* `agsm.bst` - bibliography style file (already stored in Code/ directory) - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst)
 
 ### Jupyter Notebook
 * IPython kernel
