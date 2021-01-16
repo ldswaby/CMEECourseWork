@@ -12,13 +12,9 @@ import argparse
 import numpy as np
 import pandas as pd
 import multiprocessing
+from functools import partial
 from smt.sampling_methods import LHS
 import statsmodels.formula.api as smf
-
-## Variables ##
-
-data = pd.read_csv("../Data/CRat_prepped.csv")  # Load data
-ids = data['ID'].unique()
 
 ## Functions ##
 
@@ -255,12 +251,13 @@ def fitFuncResp(h, a, df, model, timeout, N):
 
     return best_fit if groups else None
 
-def returnStats(id_):
+def returnStats(data, id_):
     """Fits cubic polynomial and C. S. Holling's type I, II, and III functional
     response models to data and returns row list of fit statistics and parameter
     estimates.
 
     Arguments:
+        data: DataFrame containig all functional response data
         id_: ID of data set to fit to
 
     Output:
@@ -311,17 +308,22 @@ def returnStats(id_):
 
     return statistics
 
-def main(outpath):
+def main(datapath, outpath):
     """Run analysis
 
     Arguments:
+        datapath: CSV file path string to input function response data
         outpath: CSV file path string to write output statistics
     """
     print('\033[FFitting models to data...')  # Overwrite previous line (R)
 
+    data = pd.read_csv(datapath)  # Load data
+    ids = data['ID'].unique()
+
     # Apply function and filter out failed IDs
     with multiprocessing.Pool() as pool:
-        rows = list(filter(None, pool.map(returnStats, ids)))
+        pstats = partial(returnStats, data)
+        rows = list(filter(None, pool.map(pstats, ids)))
 
     heads = ['ID',
              'Cubic_AIC', 'HollingI_AIC', 'HollingII_AIC', 'HollingIII_AIC',
@@ -348,7 +350,9 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--outpath", default="../Data/ModelStats.csv",
                         help="CSV file path string to write output "
                              "statistics.")
+    parser.add_argument("-d", "--data", default="../Data/CRat_prepped.csv",
+                        help="Path to intput CSV data file.")
     args = parser.parse_args()
 
-    status = main(args.outpath)  # run functions
+    status = main(args.data, args.outpath)  # run functions
     sys.exit(status)

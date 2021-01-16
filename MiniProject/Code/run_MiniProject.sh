@@ -38,5 +38,5 @@ then
     open ../Writeup/Report.pdf # Mac
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]
 then
-    evince ../Writeup/Report.pdf # Linux
+    xdg-open ../Writeup/Report.pdf # Linux
 fi
