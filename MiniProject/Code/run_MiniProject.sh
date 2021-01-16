@@ -4,7 +4,7 @@
 # Arguments: 0
 # Date: Dec 2020
 
-echo '\n%%%%%%%%%%%%%%%%%%%%%% COMPUTING MINI-PROJECT %%%%%%%%%%%%%%%%%%%%%%\n'
+echo '\n%%%%%%%%%%%%%%%%%%%%%% COMPUTING MINI-PROJECT %%%%%%%%%%%%%%%%%%%%%%%\n'
 
 Rscript DataPrep.R
 

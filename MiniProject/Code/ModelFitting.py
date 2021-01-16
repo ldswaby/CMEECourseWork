@@ -70,7 +70,7 @@ def fitPolynomial(df, n):
     if r_sqd == 1:
         # Drop ID due to insufficient data points
         print(f"WARNING: insufficient data for ID {id_}\tto fit polynomial of "
-              f"order {n}")
+              f"degree {n}")
         return None, None
 
     # Obtain OLS stats
