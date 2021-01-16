@@ -23,13 +23,12 @@ The following packages (with versions) are used in the project:
 ### Python
 * `numpy`
 * `pandas`  
-* `matplotlib`
 * `lmfit`
 * `smt`
 * `statsmodels`
 
 ### LaTeX
-* `agsm.bst` (bibliography style to be stored in Code directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
+* `agsm.bst` - bibliography style file (stored in Code/ directory) - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
 
 ### Jupyter Notebook
 * IPython kernel
@@ -44,14 +43,18 @@ This directory contains the following folders:
 * **Results**: empty directory for plots and results files to be pushed into.
 * **Writeup**: directory for the written report pdf and front page graphics.
 
-## Scripts
+## Data
+1. [CRat.csv](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Data/CRat.csv) - CSV file containing functional response data collected for 308 consumer-resource interactions from field and laboratory experiments around the world.
+
+## Code
 1. [DataPrep.R](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/DataPrep.R)
 2. [ModelFitting.py](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/ModelFitting.py)
 3. [PlotAnalyse.R](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/PlotAnalyse.R)
 4. [Report.tex](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/Report.tex)
 5. [Frontpage.tex](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/Frontpage.tex)
 6. [Biblio.bib](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/Biblio.bib)
-7. [run_MiniProject.sh](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/run_MiniProject.sh)
+7. [agsm.bst](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/agsm.bst)
+8. [run_MiniProject.sh](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/run_MiniProject.sh)
 
 ### 1. DataPrep.R
 
@@ -78,7 +81,11 @@ The written report, written in LATEX.
 
 Bibliography file for the written report.
 
-### 7. run_MiniProject.sh
+### 7. agsm.bst
+
+Bibliography style file, downloaded from the [bibtex website](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst).
+
+### 8. run_MiniProject.sh
 
 Runs/compiles the whole project. 
 

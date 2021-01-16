@@ -12,7 +12,6 @@ import argparse
 import numpy as np
 import pandas as pd
 import multiprocessing
-import matplotlib.pyplot as plt
 from smt.sampling_methods import LHS
 import statsmodels.formula.api as smf
 
