@@ -168,14 +168,18 @@ def residHoll3(params, x, y):
     # Return residuals
     return model - y
 
-def fitFuncResp(h, a, df, model, timeout, N):
-    """Fits Holling's type II and III functinal response models to input data.
+def fitFuncResp(h, a, df, resfunc, timeout, N):
+    """Fits Holling's type II and III functinal response models to input data
+    (or any functional response model containing the 'handling time' and
+    'attack rate' parameters).
 
     Arguments:
         h: Handling time initial value estimate
         a: Attack rate initial value estimate
-        df: dataframe containing functional response data in 'ResDensity' and
+        df: Dataframe containing functional response data in 'ResDensity' and
             'N_TraitValue' columns
+        resfunc: function that returns residuals between observed data and
+                 predicted values of a particular functional response model.
         timeout: Maximum time to spend fitting
         N: Maximum number of parameter combinations to try
 
@@ -183,9 +187,9 @@ def fitFuncResp(h, a, df, model, timeout, N):
         best_fits: tuple of fit statistics and parameter estimates for the best
         fit (i.e. with the lowest AIC score)
     """
-    valid = {'HollingII', 'HollingIII'}
-    if model not in valid:
-        raise ValueError(f"model must be one of: {', '.join(valid)}.")
+    #valid = {'HollingII', 'HollingIII'}
+    #if model not in valid:
+    #    raise ValueError(f"model must be one of: {', '.join(valid)}.")
 
     x = df['ResDensity']
     y = df['N_TraitValue']
@@ -220,22 +224,12 @@ def fitFuncResp(h, a, df, model, timeout, N):
         params.add('h', value=hi, min=0, max=1e6)  # Add h param
         params.add('a', value=ai, min=0, max=5e7)  # Add a param
 
-        if model == 'HollingII':
-            try:
-                # Attempt fit
-                fit = lmfit.minimize(residHoll2, params, args=(x, y))
-            except ValueError:
-                i += 1
-                continue
-
-        else:
-            # If model is Holling III...
-            try:
-                # Attempt fit
-                fit = lmfit.minimize(residHoll3, params, args=(x, y))
-            except ValueError:
-                i += 1
-                continue
+        try:
+            # Attempt fit
+            fit = lmfit.minimize(resfunc, params, args=(x, y))
+        except ValueError:
+            i += 1
+            continue
 
         # Extract otimised parameters
         h_best = fit.params['h'].value
@@ -282,7 +276,7 @@ def returnStats(data, id_):
     h, ahol2, ahol3 = startValues(df)
 
     # Holling II
-    bestfit = fitFuncResp(h, ahol2, df, 'HollingII', timeout=3, N=30)
+    bestfit = fitFuncResp(h, ahol2, df, residHoll2, timeout=3, N=30)
     if bestfit:
         holl2aic, holl2bic, h2, a2 = bestfit
     else:
@@ -291,7 +285,7 @@ def returnStats(data, id_):
         return None
 
     # Generalised Functional Response
-    bestfit = fitFuncResp(h, ahol3, df, 'HollingIII', timeout=3, N=30)
+    bestfit = fitFuncResp(h, ahol3, df, residHoll3, timeout=3, N=30)
     if bestfit:
         holl3aic, holl3bic, h3, a3 = bestfit
     else:
