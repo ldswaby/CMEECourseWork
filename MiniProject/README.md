@@ -44,7 +44,7 @@ This directory contains the following folders:
 * **Writeup**: directory for the written report pdf and front page graphics.
 
 ## Data
-1. [CRat.csv](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Data/CRat.csv) - CSV file containing functional response data collected for 308 consumer-resource interactions from field and laboratory experiments around the world.
+1. [CRat.csv](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Data/CRat.csv) - CSV file containing functional response data collected for 308 consumer-resource interactions from numerous experiments around the world.
 
 ## Code
 1. [DataPrep.R](https://github.com/ldswaby/CMEECourseWork/blob/master/MiniProject/Code/DataPrep.R)
