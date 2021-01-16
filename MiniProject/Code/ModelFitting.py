@@ -29,6 +29,9 @@ def AIC(N, Nvarys, rss):
         N: Number of data points
         Nvarys: Number of free parameters
         rss: Residual sum of squares
+
+    Output:
+        The AIC score of the fit (float)
     """
     return N * np.log(rss/N) + 2*Nvarys
 
@@ -39,6 +42,8 @@ def BIC(N, Nvarys, rss):
         N: Number of data points
         Nvarys: Number of free parameters
         rss: Residual sum of squares
+    Output:
+        The AIC score of the fit (float)
     """
     return N * np.log(rss/N) + np.log(N)*Nvarys
 
@@ -52,8 +57,8 @@ def fitPolynomial(df, n):
         n: degree of polynomial to fit
 
     Output:
-        aic: fit AIC value
-        bic: fit BIC value
+        aic: fit AIC score
+        bic: fit BIC score
     """
     id_ = df['ID'].unique()[0]
     x = df['ResDensity']
@@ -90,8 +95,8 @@ def fitHollingI(df):
             'N_TraitValue' columns
 
     Output:
-        aic: fit AIC value
-        bic: fit BIC value
+        aic: fit AIC score
+        bic: fit BIC score
         a: estimate for attack rate parameter
     """
     x = np.array(df['ResDensity'])
@@ -259,7 +264,7 @@ def returnStats(id_):
         id_: ID of data set to fit to
 
     Output:
-        statistics: row list of the id_, the AIC and BIC values for the fitted
+        statistics: row list of the id_, the AIC and BIC scores for the fitted
                         models, and estimates for their parameters.
     """
     df = data[data['ID'] == id_]
