@@ -134,6 +134,33 @@ def startValues(df):
 
     return h, a2, a3
 
+def paramSample(h, a, N):
+    """Takes an N-sized Latin Hypercube sample from the spaces around the h
+    (handling time) and a (attack) rate parameters of C. S. Holling's type II
+    and III functional response models.
+
+    Arguments:
+        h: Handling time initial value estimate
+        a: Attack rate initial value estimate
+        N: Number of samples
+
+    Outputs:
+        paramslist: array of 1x2 arrays each of the form: [hi, ai]
+    """
+    # Create ranges around params to test
+    hrange = 0.8 * min(abs(h - 1e6), h)
+    arange = 0.8 * min(abs(a - 5e7), a)
+
+    # Generate random parameter samples using LHS to ensure maximal coverage
+    # of the parameter space
+    limits = np.array([[h - hrange, h + hrange], [a - arange, a + arange]])
+    sampling = LHS(xlimits=limits)
+
+    # Create 2 column array out of param samples (try initial estimates first)
+    paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
+
+    return paramslist
+
 def residHoll2(params, x, y):
     """Returns residuals between observed data and predicted values on C. S.
     Holling's type II functional response model.
@@ -167,33 +194,6 @@ def residHoll3(params, x, y):
 
     # Return residuals
     return model - y
-
-def paramSample(h, a, N):
-    """Takes an N-sized Latin Hypercube sample from the spaces around the h
-    (handling time) and a (attack) rate parameters of C. S. Holling's type II
-    and III functional response models.
-
-    Arguments:
-        h: Handling time initial value estimate
-        a: Attack rate initial value estimate
-        N: Number of samples
-
-    Outputs:
-        paramslist: array of 1x2 arrays each of the form: [hi, ai]
-    """
-    # Create ranges around params to test
-    hrange = 0.8 * min(abs(h - 1e6), h)
-    arange = 0.8 * min(abs(a - 5e7), a)
-
-    # Generate random parameter samples using LHS to ensure maximal coverage
-    # of the parameter space
-    limits = np.array([[h - hrange, h + hrange], [a - arange, a + arange]])
-    sampling = LHS(xlimits=limits)
-
-    # Create 2 column array out of param samples (try initial estimates first)
-    paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
-
-    return paramslist
 
 def fitFuncResp(h, a, df, resfunc, timeout, N):
     """Fits Holling's type II and III functinal response models to input data
