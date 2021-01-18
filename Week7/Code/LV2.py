@@ -16,7 +16,7 @@ import matplotlib.pylab as p
 
 ## Functions ##
 
-def dCR_dt(pops, t, r, a, z, e, K):
+def dCR_dt(RC0, t, r, a, z, e, K):
     """Returns the growth rate of consumer and resource
     population at any given time step using the Lotka-Volterra model.
 
@@ -34,8 +34,8 @@ def dCR_dt(pops, t, r, a, z, e, K):
     Output:
      - A numpy array containing the growth rate of the two populations
     """
-    R = pops[0]
-    C = pops[1]
+    R = RC0[0]
+    C = RC0[1]
     dRdt = r * R * (1 - R/K) - a * R * C
     dCdt = -z * C + e * a * R * C
 

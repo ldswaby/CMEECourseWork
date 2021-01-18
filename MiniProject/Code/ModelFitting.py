@@ -168,6 +168,33 @@ def residHoll3(params, x, y):
     # Return residuals
     return model - y
 
+def paramSample(h, a, N):
+    """Takes an N-sized Latin Hypercube sample from the spaces around the h
+    (handling time) and a (attack) rate parameters of C. S. Holling's type II
+    and III functional response models.
+
+    Arguments:
+        h: Handling time initial value estimate
+        a: Attack rate initial value estimate
+        N: Number of samples
+
+    Outputs:
+        paramslist: array of 1x2 arrays each of the form: [hi, ai]
+    """
+    # Create ranges around params to test
+    hrange = 0.8 * min(abs(h - 1e6), h)
+    arange = 0.8 * min(abs(a - 5e7), a)
+
+    # Generate random parameter samples using LHS to ensure maximal coverage
+    # of the parameter space
+    limits = np.array([[h - hrange, h + hrange], [a - arange, a + arange]])
+    sampling = LHS(xlimits=limits)
+
+    # Create 2 column array out of param samples (try initial estimates first)
+    paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
+
+    return paramslist
+
 def fitFuncResp(h, a, df, resfunc, timeout, N):
     """Fits Holling's type II and III functinal response models to input data
     (or any functional response model containing the 'handling time' and
@@ -187,24 +214,11 @@ def fitFuncResp(h, a, df, resfunc, timeout, N):
         best_fits: tuple of fit statistics and parameter estimates for the best
         fit (i.e. with the lowest AIC score)
     """
-    #valid = {'HollingII', 'HollingIII'}
-    #if model not in valid:
-    #    raise ValueError(f"model must be one of: {', '.join(valid)}.")
-
     x = df['ResDensity']
     y = df['N_TraitValue']
 
-    # Create ranges around params to test
-    hrange = 0.8 * min(abs(h - 1e6), h)
-    arange = 0.8 * min(abs(a - 5e7), a)
-
-    # Generate random parameter samples using LHS to ensure maximal coverage
-    # of the parameter space
-    limits = np.array([[h-hrange, h+hrange], [a-arange, a+arange]])
-    sampling = LHS(xlimits=limits)
-
-    # Create 2 column array out of param samples (try initial estimates first)
-    paramslist = np.append(np.array([h, a]), sampling(N)).reshape(N + 1, 2)
+    # Generate array of parameter samples using Latin Hypercubes
+    paramslist = paramSample(h, a, N)
 
     # Initialize timer, counter, and groups list
     i = 0
@@ -216,13 +230,11 @@ def fitFuncResp(h, a, df, resfunc, timeout, N):
 
         # Extract params to test
         testparams = paramslist[i]
-        hi = testparams[0]
-        ai = testparams[1]
 
         # Store paramteters
         params = lmfit.Parameters()
-        params.add('h', value=hi, min=0, max=1e6)  # Add h param
-        params.add('a', value=ai, min=0, max=5e7)  # Add a param
+        params.add('h', value=testparams[0], min=0, max=1e6)  # Add h param
+        params.add('a', value=testparams[1], min=0, max=5e7)  # Add a param
 
         try:
             # Attempt fit
