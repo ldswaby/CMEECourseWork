@@ -25,7 +25,6 @@ while z < 100:
     z = z + 1
     print(z)
 
-# Hashed out to not break marking script
-#b = True
-#while b:
-#    print("GERONIMO! infinite loop! ctrl+c to stop!")
+b = True
+while b:
+    print("GERONIMO! infinite loop! ctrl+c to stop!")

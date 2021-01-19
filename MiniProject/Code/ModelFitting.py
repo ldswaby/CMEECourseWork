@@ -225,7 +225,7 @@ def fitFuncResp(h, a, df, resfunc, timeout, N):
     groups = []
     t = time.time() + timeout  # Set fitting time limit for each ID
 
-    # Fit until time runs out of all values have been tested
+    # Fit until time runs out or all values have been tested
     while time.time() < t and i <= N:
 
         # Extract params to test
@@ -243,7 +243,7 @@ def fitFuncResp(h, a, df, resfunc, timeout, N):
             i += 1
             continue
 
-        # Extract otimised parameters
+        # Extract optimised parameters
         h_best = fit.params['h'].value
         a_best = fit.params['a'].value
 
@@ -292,7 +292,7 @@ def returnStats(data, id_):
     if bestfit:
         holl2aic, holl2bic, h2, a2 = bestfit
     else:
-        print(f"WARNING: insufficient data for ID {id_} to fit Holling II "
+        print(f"WARNING: insufficient data for ID {id_} to fit type II "
               f"model.")
         return None
 
@@ -301,8 +301,8 @@ def returnStats(data, id_):
     if bestfit:
         holl3aic, holl3bic, h3, a3 = bestfit
     else:
-        print(f"WARNING: insufficient data for ID {id_} to fit Generalised "
-              f"Functional Response model.")
+        print(f"WARNING: insufficient data for ID {id_} to fit type III "
+              f"model.")
         return None
 
     statistics = [id_,
