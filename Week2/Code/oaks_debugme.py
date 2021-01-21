@@ -2,7 +2,10 @@
 
 """Playing with doc tests and debugging"""
 
-__author__ = 'Luke Swaby (lds20@ic.ac.uk)'
+__author__ = 'Luke Swaby (lds20@ic.ac.uk), ' \
+             'Jinkai Sun (jingkai.sun20@imperial.ac.uk), ' \
+             'Acacia Tang (t.tang20@imperial.ac.uk), ' \
+             'Dengku Tang (dengkui.tang20@imperial.ac.uk)'
 __version__ = '0.0.1'
 
 ## Imports ##
@@ -33,11 +36,11 @@ def is_an_oak(name):
     """
     return 'quercus' in name.split()[0].lower()
 
-def main(argv):
+def main():
     """Run functions
     """
-    f = open('../Data/TestOaksData.csv','r')
-    g = open('../Data/JustOaksData.csv','w')
+    f = open('../Data/TestOaksData.csv', 'r')
+    g = open('../Data/JustOaksData.csv', 'w')
     taxa = csv.reader(f)
     header = next(taxa, None)
     csvwrite = csv.writer(g)
@@ -49,10 +52,10 @@ def main(argv):
         print(row[0] + '\n')
         if is_an_oak(row[0]):
             print('FOUND AN OAK!\n')
-            csvwrite.writerow([row[0], row[1]])    
+            csvwrite.writerow([row[0], row[1]])
 
     return 0
-    
+
 if __name__ == "__main__":
-    status = main(sys.argv)
+    status = main()
     sys.exit(status)
