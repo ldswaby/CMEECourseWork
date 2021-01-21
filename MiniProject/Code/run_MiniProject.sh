@@ -34,6 +34,7 @@ rm *.toc > /dev/null 2>&1
 rm *.bbl > /dev/null 2>&1
 rm *.blg > /dev/null 2>&1
 rm *.sum > /dev/null 2>&1
+rm Rplots.pdf > /dev/null 2>&1
 
 echo "\rOPENING REPORT..."
 mv Report.pdf ../Writeup/
