@@ -7,18 +7,18 @@ __version__ = '0.0.1'
 
 # Average UK Rainfall (mm) for 1910 by month
 # http://www.metoffice.gov.uk/climate/uk/datasets
-rainfall = (('JAN',111.4),
-            ('FEB',126.1),
+rainfall = (('JAN', 111.4),
+            ('FEB', 126.1),
             ('MAR', 49.9),
             ('APR', 95.3),
             ('MAY', 71.8),
             ('JUN', 70.2),
             ('JUL', 97.1),
-            ('AUG',140.2),
+            ('AUG', 140.2),
             ('SEP', 27.0),
             ('OCT', 89.4),
-            ('NOV',128.4),
-            ('DEC',142.2),
+            ('NOV', 128.4),
+            ('DEC', 142.2),
            )
 
 # (1) Use a list comprehension to create a list of month,rainfall tuples where
