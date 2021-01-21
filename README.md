@@ -7,7 +7,7 @@ This repository is divided into weeks, with the directory for each week containi
 * Code - contains all code scripts for the week.
 * Results - empty directory for any results files to be pushed into if they exist.
 
-Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if there are any) being pushed into the *Results/* directory.
+Scripts in the *Code/* directory are typically run on files in the *Data/* directory, with results (if any) being pushed into the *Results/* directory.
 
 E.g.
 
@@ -25,7 +25,7 @@ Each week's directory contains it's own README.md file detailing it's dependenci
 
 ### Week 1: Computing Bootcamp
 
-Oreientation with basic hardware/software concepts in computing such as the UNIX environment and terminal,
+Orientation with basic hardware/software concepts in computing such as the UNIX environment and terminal,
 typesetting documents, and version control.
 
 Topics covered:
@@ -115,6 +115,9 @@ The following packages (with versions) are used in the project:
 ### Jupyter Notebook
 * IPython kernel
 * R kernel (see [here](https://github.com/IRkernel/IRkernel))
+
+### Command Line
+* `texcount` - see [here](https://app.uio.no/ifi/texcount/intro.html)
 
 ## Contact
 

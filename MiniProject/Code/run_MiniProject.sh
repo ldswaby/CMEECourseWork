@@ -12,6 +12,9 @@ python3 ModelFitting.py
 
 Rscript PlotAnalyse.R
 
+# Obtain wordcount
+texcount -1 -sum Report.tex > words.sum
+
 # Compile project report
 pdflatex Report.tex > /dev/null 2>&1
 bibtex Report > /dev/null 2>&1
@@ -30,6 +33,7 @@ rm *.snm > /dev/null 2>&1
 rm *.toc > /dev/null 2>&1
 rm *.bbl > /dev/null 2>&1
 rm *.blg > /dev/null 2>&1
+rm *.sum > /dev/null 2>&1
 
 echo "\rOPENING REPORT..."
 mv Report.pdf ../Writeup/
