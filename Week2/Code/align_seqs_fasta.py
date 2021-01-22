@@ -12,25 +12,25 @@ __version__ = '0.0.1'
 import sys
 
 ## Functions ##
-def calculate_score(s1, s2, startpoint):
+
+def calculate_score(s1, s2, l2, startpoint):
     """Calculate best alignment score (no. of matched bases) of 2 padded
      sequences
 
      Arguments:
      - s1 (str) : sequence string 1
      - s2 (str) : inital consumer density
-     - i (int) : index of where to begin alignment
+     - startpoint (int) : index of where to begin alignment
 
     Output:
      - Integer representing number of matched bases
     """
     score = 0
-    for i in range(len(s1)):
-        if (i + startpoint) < len(s1):
-            if s1[i + startpoint] == s2[i] and s2[i] != '-':
-                score += 1
-            else:
-                continue
+    for i in range(l2):
+        if s1[i + startpoint] == s2[i]:
+            score += 1
+        else:
+            continue
 
     return score
 
@@ -62,7 +62,7 @@ def extract_seq(filename):
 def main(argv):
     """Align sequences and write alignment to fasta file, printing score
     achieved to the command line.
-    """    
+    """
     # Parse inputs
     if len(argv) == 1:
         seqfile1 = '../Data/407228326.fasta'
@@ -86,37 +86,30 @@ def main(argv):
     l1 = len(seq1)
     l2 = len(seq2)
     if l1 >= l2:
-        s1 = (l2 - 1) * '-' + seq1 + (l2 - 1) * '-'
+        s1 = (l2 - 1) * "-" + seq1 + (l2 - 1) * "-"
         s2 = seq2 + (l1 + l2 - 2) * '-'
         h1 = head1
         h2 = head2
-        padlen = len(s2)
     else:
-        l1, l2 = l2, l1  # swap the two lengths
-        s1 = (l2 - 1) * '-' + seq2 + (l2 - 1) * '-'
+        s1 = (l1 - 1) * "-" + seq2 + (l1 - 1) * "-"
         s2 = seq1 + (l1 + l2 - 2) * '-'
+        l1, l2 = l2, l1
         h1 = head2
         h2 = head1
-        padlen = len(s2)
 
     # Find the best match (highest score) for the two sequences
     my_best_align = None
     my_best_score = -1
 
-    for i in range(padlen - l2 + 1):  # Note that you just take the last alignment with the highest score
-        z = calculate_score(s1, s2, i)
+    for i in range(l1 + l2 - 1):  # Note that you just take the last alignment with the highest score
+        z = calculate_score(s1, s2, l2, i)
         if z > my_best_score:
             my_best_align = "-" * i + s2[:-i]  # start sequence at startpoint
             my_best_score = z
 
     # Clip trailing hyphens
-    s1start = s1.find(next(filter(str.isalpha, s1)))
-    s2start = s2.find(next(filter(str.isalpha, s2)))
-    start = max(s1start, s2start)
-
-    s1end = s1[start:].find('-')
-    s2end = my_best_align[start:].find('-')
-    stop = len(s1[start:]) - max(s1end, s2end)
+    start = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1, s2])
+    stop = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1[::-1], s2[::-1]])
 
     my_best_align = my_best_align[start:-stop]
     s1 = s1[start:-stop]
