@@ -108,8 +108,8 @@ def main(argv):
             my_best_score = z
 
     # Clip trailing hyphens
-    start = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1, s2])
-    stop = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1[::-1], s2[::-1]])
+    start = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1, my_best_align])
+    stop = min(aln.find(next(filter(str.isalpha, aln))) for aln in [s1[::-1], my_best_align[::-1]])
 
     my_best_align = my_best_align[start:-stop]
     s1 = s1[start:-stop]
