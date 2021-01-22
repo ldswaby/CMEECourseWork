@@ -67,7 +67,8 @@ More advanced Python topics.
 
 Topics covered:
 * Python program testing, debugging and documentation.
-* How to use Python for retrieving, managing, and analyzing data from local and remote databases. • to automate file handling, string manipulation, and run shell scripts.
+* How to use Python for retrieving, managing, and analyzing data from local and remote databases. 
+* How to automate file handling, string manipulation, and run shell scripts.
 * How to use Python for efficient numerical analyses.
 * How to run analyses by patching together R or R + Python scripts and functions.
 
@@ -110,7 +111,7 @@ The following packages (with versions) are used in the project:
 * `scales`
 
 ### LaTeX
-* `agsm.bst` (bibliography style to be stored in Code directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
+* `agsm.bst` (bibliography style to be stored in MiniProject/Code/ directory - see [here](http://ftp.math.utah.edu/pub/tex/bibtex/agsm.bst))
 
 ### Jupyter Notebook
 * IPython kernel
