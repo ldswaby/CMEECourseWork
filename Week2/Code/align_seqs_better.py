@@ -9,12 +9,22 @@ __author__ = 'Luke Swaby (lds20@ic.ac.uk), ' \
 __version__ = '0.0.1'
 
 ## Imports ##
+
 import sys
 
 ## Functions ##
+
 def calculate_score(s1, s2, startpoint):
     """Calculate best alignment score (no. of matched bases) of 2 padded
      sequences
+
+    Arguments:
+     - s1 (str) : sequence string 1
+     - s2 (str) : inital consumer density
+     - i (int) : index of where to begin alignment
+
+    Output:
+     - Integer representing number of matched bases
     """
     score = 0
     for i in range(len(s1)):
@@ -28,6 +38,13 @@ def calculate_score(s1, s2, startpoint):
 
 def extract_seq(filename):
     """Extract seq from file (and header if present)
+
+    Arguments:
+     - filename (str) : path to file containing sequence
+
+    Output:
+     - seq (str) : sequence string
+     - head (str) : header string (or None if absent)
     """
     with open(filename) as f:
         line1 = f.readline().strip()
@@ -45,7 +62,8 @@ def extract_seq(filename):
     return seq, head
 
 def main(argv):
-    """Run functions
+    """Align sequences and write alignment to fasta file, printing score
+    achieved to the command line.
     """
     # Parse inputs
     if len(argv) == 1:
