@@ -83,13 +83,11 @@ def main(argv):
             my_best_match = match
 
     # Clip trailing hyphens
-    s1start = s1.find(next(filter(str.isalpha, s1)))
-    s2start = s2.find(next(filter(str.isalpha, s2)))
-    start = max(s1start, s2start)
+    start = min(aln.find(next(filter(str.isalpha, aln))) for
+                aln in [s1, my_best_align])
 
-    s1end = s1[start:].find('-')
-    s2end = my_best_align[start:].find('-')
-    stop = len(s1[start:]) - max(s1end, s2end)
+    stop = min(aln.find(next(filter(str.isalpha, aln))) for
+               aln in [s1[::-1], my_best_align[::-1]])
 
     my_best_match = my_best_match[start:-stop]
     my_best_align = my_best_align[start:-stop]
